@@ -121,6 +121,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .cfg-row .x:hover{color:var(--danger)}
 .cfg-vals{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .lotflag{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--muted)}
+.gridsize{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center}
+.gridsize .side-l{font-size:12.5px;color:var(--muted)}
+.gridsize .ctl{display:inline-flex;gap:4px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .muted{color:var(--muted)}
 .mono{font-family:var(--font-mono)}
@@ -472,7 +475,11 @@ function renderPanel(){
   if(!st.d.cfg&&st.step!=="check"){p.innerHTML='<h2>Set up first</h2><p>The lists of ground types, buildings, streets and neighborhoods live in Config.</p><button class="btn primary" type="button" data-step="config">Open Config</button>';return;}
   const head=(t,d)=>"<h2>"+esc(t)+"</h2><p>"+esc(d)+"</p>";
   const how='<p class="note">Click a cell to paint it, or drag across several. Clicking a cell that already has this value clears it.</p>';
-  if(st.step==="ground"){p.innerHTML=head("1. Ground","Mark the lots where buildings go and paint everything else as terrain. One cell is "+(st.d.cfg.cellMeters||25)+" m in the game.")+statRow([[gw()+"×"+gh(),"grid"],[C.lots,"lots"],[C.blocks,"blocks"]])+"<h3>Brush</h3>"+swatches(brushList());return;}
+  if(st.step==="ground"){
+    const ctl=(side,label)=>'<span class="side-l">'+label+'</span><span class="ctl"><button class="btn sm" type="button" data-grow="'+side+'" data-n="1">+ Add</button><button class="btn sm" type="button" data-grow="'+side+'" data-n="-1">− Remove</button></span>';
+    p.innerHTML=head("1. Ground","Mark the blocks where buildings go and paint everything else as terrain. One cell is "+(st.d.cfg.cellMeters||25)+" m in the game.")+statRow([[gw()+"×"+gh(),"grid"],[C.lots,"blocks"],[C.blocks,"groups"]])
+      +'<div class="sec"><h3>Grid size</h3><p>Adds or removes a whole row or column on that side. What is painted stays where it is. Undo brings back anything removed.</p><div class="gridsize">'+ctl("top","Row on top")+ctl("bottom","Row at the bottom")+ctl("left","Column on the left")+ctl("right","Column on the right")+"</div></div>"
+      +"<h3>Brush</h3>"+swatches(brushList());return;}
   if(st.step==="areas"){p.innerHTML=head("2. Neighborhoods","Every lot needs a neighborhood. Each neighborhood becomes its own scene in Unity.")+statRow([[C.named+"/"+C.lots,"lots named"],[list("neighborhoods").length,"neighborhoods"],[list("districts").length,"districts"]])+how+"<h3>Brush</h3>"+swatches(brushList());return;}
   if(st.step==="streets"){p.innerHTML=head("3. Streets","Streets run on the lines between cells. In the game every street gets "+(st.d.cfg.roadWidth||14)+" m of road and "+(st.d.cfg.sidewalk||3)+" m sidewalks.")+statRow([[C.streets,"lines"],[C.blocks,"blocks"],[C.lots,"lots"]])+'<p class="note">Click a line to add or remove a street, or drag along several lines.</p><h3>Brush</h3>'+swatches(brushList());return;}
   if(st.step==="buildings"){p.innerHTML=head("4. Buildings","Give each lot its building type. Markers place HQs and recruitment sites.")+statRow([[C.built+"/"+C.lots,"lots built"],[list("buildings").length,"types"],[list("markers").length,"markers"]])+'<div class="seg" role="group" aria-label="Brush kind"><button type="button" data-bmode="buildings" aria-pressed="'+(st.bmode==="buildings")+'">Buildings</button><button type="button" data-bmode="markers" aria-pressed="'+(st.bmode==="markers")+'">Markers</button></div>'+how+swatches(brushList());return;}
@@ -567,6 +574,21 @@ function buildExport(){
     return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,purchasable:d.purchasable==null?null:+d.purchasable,illegal:Array.isArray(d.illegal)?d.illegal:[],robbery:d.robbery||null,otherRobbery:d.other||null,notes:d.notes||""};});
   return{format:"philly-map-planner",version:1,exportedAt:new Date().toISOString(),source:st.d.source||null,grid:{width:W,height:H,cellMeters:+st.d.cfg.cellMeters||25,roadWidth:+st.d.cfg.roadWidth||14,sidewalk:+st.d.cfg.sidewalk||3,origin:"A1 is the top-left cell; x grows right, y grows down"},config:st.d.cfg,cells,edges,blocks,review:st.d.review||[],issues:issues().map(i=>({severity:i.sev,cell:i.at,text:i.text}))};
 }
+function growGrid(side,n){
+  if(!st.d.cfg)return;const W=gw(),H=gh();
+  const horiz=side==="left"||side==="right";const nw=horiz?W+n:W,nh=horiz?H:H+n;
+  if(nw<4||nh<4||nw>60||nh>60){toast("The grid stays between 4 and 60 cells on each side.");return;}
+  const dx=side==="left"?n:0,dy=side==="top"?n:0;
+  pushUndo();
+  const cells={},edges={},blocks={};let lost=0;
+  for(const k of Object.keys(st.d.cells)){const [x,y]=k.split("_").map(Number);const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=nw||ny>=nh){lost++;continue;}cells[key(nx,ny)]=st.d.cells[k];}
+  for(const k of Object.keys(st.d.edges)){const p=k.split("_");const nx=+p[1]+dx,ny=+p[2]+dy;const ok=p[0]==="h"?(nx>=0&&nx<nw&&ny>=0&&ny<=nh):(nx>=0&&nx<=nw&&ny>=0&&ny<nh);if(ok)edges[p[0]+"_"+nx+"_"+ny]=st.d.edges[k];}
+  for(const k of Object.keys(st.d.blocks)){const [x,y]=k.split("_").map(Number);const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=nw||ny>=nh)continue;blocks[key(nx,ny)]=st.d.blocks[k];}
+  st.d.cells=cells;st.d.edges=edges;st.d.blocks=blocks;st.d.cfg=Object.assign({},st.d.cfg,{gridW:nw,gridH:nh});
+  if(st.sel){const [x,y]=st.sel.split("_").map(Number);st.sel=key(x+dx,y+dy);}
+  st.bc=null;st.draft=null;save();render();
+  toast((n>0?"Added":"Removed")+" a "+(horiz?"column":"row")+" "+(side==="top"?"on top":side==="bottom"?"at the bottom":"on the "+side)+". Grid is now "+nw+"×"+nh+(lost?". "+lost+" painted cells removed.":"."));
+}
 function doExport(){
   if(!st.d.cfg){toast("Nothing to export yet.");return;}
   const data=buildExport();const json=JSON.stringify(data,null,1);const errs=data.issues.filter(i=>i.severity==="error").length;
@@ -591,11 +613,12 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){closeModal();return;}
-  const t=e.target.closest("[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
   if(t.dataset.step){setStep(t.dataset.step);return;}
   if(t.dataset.brush!==undefined){const bl=brushList();if(bl){st.brush[bl.k]=t.dataset.brush;renderPanel();}return;}
   if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();return;}
+  if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
   if(t.dataset.add){st.draft[t.dataset.add].push(LISTS.find(l=>l.k===t.dataset.add).color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderPanel();return;}
   if(t.dataset.del){st.draft[t.dataset.del].splice(+t.dataset.i,1);markDirty();renderPanel();return;}
