@@ -141,6 +141,17 @@ button,input,select,textarea{font:inherit;color:inherit}
 .toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--gold);color:#060d2c;font-weight:600;padding:8px 14px;border-radius:8px;font-size:13px;z-index:30;box-shadow:var(--shadow);max-width:min(560px,90vw)}
 .review li{margin:2px 0;font-size:12.5px;color:var(--muted)}
 .review{margin:0;padding-left:18px}
+.cloud{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:5px 12px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.cloud::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.cloud.ok::before{background:var(--ok)}
+.cloud.busy::before{background:var(--gold)}
+.cloud.bad{border-color:var(--danger);color:var(--danger)}
+.cloud.bad::before{background:var(--danger)}
+.cloud.out{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.cloud.out::before{display:none}
+.vers{display:flex;flex-direction:column;gap:4px}
+.ver{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:12.5px}
+.ver .v{font-family:var(--font-mono);font-weight:600}
 .cfg{position:fixed;inset:0;z-index:15;background:var(--bg);display:grid;grid-template-rows:auto minmax(0,1fr) auto}
 .cfg-top{display:flex;align-items:center;gap:14px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--surface)}
 .cfg-top h2{font-family:var(--font-display);font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-size:20px;margin:0;line-height:1}
@@ -221,6 +232,7 @@ button,input,select,textarea{font:inherit;color:inherit}
     <div class="brand"><div class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h1>Philly Map Planner</h1></div>
     <div class="spacer"></div>
     <span class="saved" id="saved">Saved in this browser</span>
+    <button class="cloud" type="button" id="cloud-btn" hidden></button>
     <button class="btn icon" type="button" id="undo" title="Undo (Ctrl+Z)" aria-label="Undo">&#8630;</button>
     <button class="btn icon" type="button" id="redo" title="Redo (Ctrl+Y)" aria-label="Redo">&#8631;</button>
     <button class="btn" type="button" data-step="file">Import</button>
@@ -245,6 +257,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 (function(){
 const WEALTH=["Poor","Medium","Rich"];
 const OWNER_KINDS=["Player","Civilian","SpecialCivilian","ArmedCivilian","EnemyGang","Police","Empty"];
+const FIREBASE_CONFIG={apiKey:"AIzaSyANll17yqLSMopnyvAheDYm_ZwPiyJ30v8",authDomain:"micromapper-da9c8.firebaseapp.com",projectId:"micromapper-da9c8",storageBucket:"micromapper-da9c8.firebasestorage.app",messagingSenderId:"1076938578901",appId:"1:1076938578901:web:14f47913620fd254f5bb5c"};
+const MAP_ID="philly";
+const BOOT_ADMIN="admin@762interactive.com";
+const FB="https://www.gstatic.com/firebasejs/10.12.2/";
+const cloud={role:null,team:null,secAuth:null,on:false,fb:null,user:null,ready:false,version:0,rev:0,pushedRev:0,saving:false,err:null,denied:false,conflict:null,first:null,savedAt:null,lastPushed:null,histAt:0,history:null,unsub:null,timer:null};
 const S=40,OFF=28,STORE="philly-map-planner.v5";
 const STEPS=[
   {id:"ground",n:"1",label:"Ground",hint:"Mark lots and paint terrain"},
@@ -287,7 +304,7 @@ function load(){
   st.d=seed?fromExport(seed):{cfg:null,cells:{},edges:{},blocks:{},review:[]};
 }
 let saveTimer=null;
-function save(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{st.d.savedAt=new Date().toISOString();localStorage.setItem(STORE,JSON.stringify(st.d));st.savedAt=st.d.savedAt;st.saveErr=false;}catch(_){st.saveErr=true;}renderSaved();},250);}
+function save(fromCloud){if(!fromCloud)cloudChanged();clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{st.d.savedAt=new Date().toISOString();localStorage.setItem(STORE,JSON.stringify(st.d));st.savedAt=st.d.savedAt;st.saveErr=false;}catch(_){st.saveErr=true;}renderSaved();},250);}
 function renderSaved(){const el=$("#saved");if(st.saveErr){el.textContent="Not saved in this browser. Export to keep your work.";el.style.color="var(--danger)";return;}el.style.color="";el.textContent=st.savedAt?"Saved in this browser, "+new Date(st.savedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}):"Not saved yet";}
 function snapshot(){return JSON.stringify({cfg:st.d.cfg,cells:st.d.cells,edges:st.d.edges,blocks:st.d.blocks});}
 function pushUndo(){st.undo.push(snapshot());if(st.undo.length>60)st.undo.shift();st.redo=[];}
@@ -621,8 +638,157 @@ function checkPanel(){
   if(iss.length>st.issuesShown.length)h+='<p class="muted">'+(iss.length-st.issuesShown.length)+" more not shown.</p>";
   return h;
 }
+function payload(){return JSON.stringify({cfg:st.d.cfg,cells:st.d.cells,edges:st.d.edges,blocks:st.d.blocks,source:st.d.source||null,review:st.d.review||[]});}
+function who(email){return String(email||"someone").split("@")[0];}
+function hhmm(d){return d?d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"";}
+function when(r){const d=r&&r.updatedAt&&r.updatedAt.toDate?r.updatedAt.toDate():null;return d?d.toLocaleString([],{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"";}
+async function cloudInit(){
+  if(!FIREBASE_CONFIG||!FIREBASE_CONFIG.apiKey)return;
+  try{
+    const [app,auth,fs]=await Promise.all([import(FB+"firebase-app.js"),import(FB+"firebase-auth.js"),import(FB+"firebase-firestore.js")]);
+    const a=app.initializeApp(FIREBASE_CONFIG);
+    cloud.fb=Object.assign({},app,auth,fs,{auth:auth.getAuth(a),db:fs.getFirestore(a)});
+    cloud.on=true;
+    auth.onAuthStateChanged(cloud.fb.auth,u=>{cloud.user=u;cloud.ready=false;cloud.denied=false;cloud.err=null;cloud.role=null;cloud.team=null;cloud.history=null;if(cloud.unsub){cloud.unsub();cloud.unsub=null;}if(u)cloudStart();renderCloud();});
+  }catch(e){cloud.on=false;}
+  renderCloud();
+}
+function myEmail(){return String(cloud.user&&cloud.user.email||"").toLowerCase();}
+async function cloudStart(){
+  const f=cloud.fb;const me=myEmail();
+  try{const s=await f.getDoc(f.doc(f.db,"editors",me));cloud.role=s.exists()?(s.data().role||"editor"):(me===BOOT_ADMIN?"admin":null);}
+  catch(e){cloud.role=me===BOOT_ADMIN?"admin":null;}
+  if(!cloud.role){cloud.denied=true;renderCloud();return;}
+  cloudListen();renderCloud();
+}
+function openLogin(msg){
+  openModal('<h2>Sign in</h2><p>Use the email and password your admin gave you.</p><form id="login-form" class="row" style="flex-direction:column;align-items:stretch;gap:10px"><div class="field"><label for="lg-email">Email</label><input type="email" id="lg-email" autocomplete="username" required></div><div class="field"><label for="lg-pass">Password</label><input type="password" id="lg-pass" autocomplete="current-password" required minlength="6"></div><p class="note warn" id="lg-err"'+(msg?"":" hidden")+">"+esc(msg||"")+'</p><div class="row"><button class="btn primary" type="submit">Sign in</button><button class="btn" type="button" data-modal-close>Cancel</button><span class="spacer"></span><button class="btn sm" type="button" id="lg-forgot">Forgot password</button></div></form>');
+  setTimeout(()=>{const e=$("#lg-email");if(e)e.focus();},30);
+}
+function authMsg(e){const c=e&&e.code||"";if(/invalid-credential|wrong-password|user-not-found|invalid-email/.test(c))return"Email or password is wrong.";if(/too-many-requests/.test(c))return"Too many tries. Wait a few minutes.";if(/weak-password/.test(c))return"Use at least 6 characters.";if(/email-already-in-use/.test(c))return"That email already has an account.";if(/requires-recent-login/.test(c))return"Sign out and in again, then try once more.";if(/network/.test(c))return"No connection.";return c||String(e&&e.message||e);}
+async function loadTeam(){
+  const f=cloud.fb;cloud.team="loading";
+  try{const s=await f.getDocs(f.collection(f.db,"editors"));cloud.team=s.docs.map(d=>Object.assign({email:d.id},d.data())).sort((a,b)=>a.email.localeCompare(b.email));}
+  catch(e){cloud.team=[];toast("Could not load the team: "+authMsg(e));}
+  if(st.step==="file")renderPanel();
+}
+async function addMember(email,pass,role){
+  const f=cloud.fb;email=email.trim().toLowerCase();
+  if(pass){
+    if(!cloud.secAuth)cloud.secAuth=f.getAuth(f.initializeApp(FIREBASE_CONFIG,"team"));
+    try{await f.createUserWithEmailAndPassword(cloud.secAuth,email,pass);await f.signOut(cloud.secAuth);}
+    catch(e){if(e.code!=="auth/email-already-in-use")throw e;}
+  }
+  await f.setDoc(f.doc(f.db,"editors",email),{role,addedBy:myEmail(),addedAt:f.serverTimestamp()});
+}
+function teamSection(){
+  if(cloud.role!=="admin")return"";
+  if(cloud.team===null){setTimeout(loadTeam,0);cloud.team="loading";}
+  let h='<div class="sec"><h3>Team</h3><p>Who can open and edit the shared map. Give each person a first password; they change it after signing in.</p>';
+  if(cloud.team==="loading")h+='<p class="muted">Loading…</p>';
+  else h+='<div class="vers">'+cloud.team.map(m=>'<div class="ver" style="grid-template-columns:1fr auto auto"><span>'+esc(m.email)+'</span><span class="muted">'+esc(m.role||"editor")+"</span>"+(m.email===myEmail()?'<span class="muted">you</span>':'<button class="btn sm" type="button" data-unmember="'+esc(m.email)+'">Remove</button>')+"</div>").join("")+(cloud.team.length?"":'<p class="muted">Nobody yet.</p>')+"</div>";
+  h+='<form id="member-form" style="display:flex;flex-direction:column;gap:8px"><div class="field"><label for="mb-email">Email</label><input type="email" id="mb-email" required placeholder="name@762interactive.com"></div><div class="field"><label for="mb-pass">First password</label><input type="text" id="mb-pass" minlength="6" placeholder="At least 6 characters; empty if they already have one"></div><div class="field"><label for="mb-role">Role</label><select id="mb-role"><option value="editor">Editor: edits the map</option><option value="admin">Admin: also manages the team</option></select></div><div class="row"><button class="btn primary" type="submit">Add to the team</button></div></form></div>';
+  return h;
+}
+function accountSection(){
+  return'<div class="sec"><h3>Your password</h3><form id="pw-form" class="row"><input type="password" id="pw-new" minlength="6" required autocomplete="new-password" placeholder="New password" aria-label="New password" style="flex:1;min-width:160px;border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:7px 9px"><button class="btn" type="submit">Change</button></form></div>';
+}
+function cloudRef(){const f=cloud.fb;return f.doc(f.db,"maps",MAP_ID);}
+function cloudListen(){
+  const f=cloud.fb;
+  cloud.unsub=f.onSnapshot(cloudRef(),snap=>{
+    if(snap.metadata.hasPendingWrites)return;
+    const r=snap.exists()?snap.data():null;
+    if(!cloud.ready){
+      if(!r){cloud.version=0;cloud.ready=true;cloudChanged();renderCloud();return;}
+      if(r.data===payload()||!st.d.savedAt){if(r.data!==payload())applyRemote(r,false);cloud.version=r.version;cloud.ready=true;renderCloud();return;}
+      cloud.first=r;
+      openModal('<h2>Which map do you want?</h2><p>The shared map (last saved by <b>'+esc(who(r.updatedBy))+"</b>, "+esc(when(r))+') is different from the one in this browser.</p><div class="row"><button class="btn primary" type="button" id="cloud-use-shared">Use the shared map</button><button class="btn" type="button" id="cloud-upload-mine">Replace it with mine</button></div><p class="muted" style="font-size:12.5px">Using the shared map keeps yours in Undo.</p>');
+      return;
+    }
+    if(!r||r.version<=cloud.version)return;
+    if(r.data===cloud.lastPushed){cloud.version=r.version;return;}
+    if(cloud.rev===cloud.pushedRev&&!cloud.saving){applyRemote(r,false);cloud.version=r.version;toast("Updated with "+who(r.updatedBy)+"'s changes");renderCloud();return;}
+    showConflict(r);
+  },e=>{cloud.denied=e.code==="permission-denied";cloud.err=e.code||String(e);renderCloud();});
+}
+function applyRemote(r,undoable){
+  let o=null;try{o=JSON.parse(r.data);}catch(_){toast("The shared map could not be read.");return;}
+  if(undoable)pushUndo();
+  st.d.cfg=o.cfg||st.d.cfg;st.d.cells=o.cells||{};st.d.edges=o.edges||{};st.d.blocks=o.blocks||{};st.d.source=o.source||null;st.d.review=o.review||[];
+  rebuildIdx();st.bc=null;if(!st.draftDirty)st.draft=null;cloud.pushedRev=cloud.rev;save(true);render();
+}
+function cloudChanged(){
+  if(!cloud.on||!cloud.ready||!cloud.user)return;
+  cloud.rev++;clearTimeout(cloud.timer);cloud.timer=setTimeout(cloudPush,1500);renderCloud();
+}
+async function cloudPush(){
+  if(!cloud.ready||cloud.conflict||cloud.saving)return;
+  const f=cloud.fb;const data=payload();const rev=cloud.rev;const me=cloud.user.email;
+  if(data.length>950000){cloud.err="too-big";renderCloud();return;}
+  cloud.saving=true;cloud.lastPushed=data;renderCloud();
+  try{
+    const v=await f.runTransaction(f.db,async tx=>{
+      const s=await tx.get(cloudRef());const cur=s.exists()?(s.data().version||0):0;
+      if(cur!==cloud.version){const e=new Error("conflict");e.remote=s.data();throw e;}
+      tx.set(cloudRef(),{data,version:cur+1,updatedAt:f.serverTimestamp(),updatedBy:me});return cur+1;
+    });
+    cloud.version=v;cloud.pushedRev=rev;cloud.savedAt=new Date();cloud.err=null;
+    if(Date.now()-cloud.histAt>10*60*1000)saveVersion(data,v,false);
+  }catch(e){if(e.message==="conflict"&&e.remote)showConflict(e.remote);else{cloud.denied=e.code==="permission-denied";cloud.err=e.code||e.message;}}
+  cloud.saving=false;renderCloud();
+  if(cloud.rev!==cloud.pushedRev&&!cloud.conflict&&!cloud.err){clearTimeout(cloud.timer);cloud.timer=setTimeout(cloudPush,800);}
+}
+function saveVersion(data,v,manual){
+  const f=cloud.fb;cloud.histAt=Date.now();
+  return f.addDoc(f.collection(f.db,"maps",MAP_ID,"versions"),{data,version:v,updatedAt:f.serverTimestamp(),updatedBy:cloud.user.email,manual:!!manual}).then(()=>{if(manual)toast("Version saved");cloud.history=null;if(st.step==="file")renderPanel();}).catch(e=>{if(manual)toast("Could not save the version: "+(e.code||e.message));});
+}
+function showConflict(r){
+  cloud.conflict=r;renderCloud();
+  openModal('<h2>Someone else saved</h2><p><b>'+esc(who(r.updatedBy))+"</b> saved the shared map at "+esc(when(r))+' while you were editing. Pick which one stays.</p><div class="row"><button class="btn primary" type="button" id="cloud-load-theirs">Load theirs</button><button class="btn" type="button" id="cloud-keep-mine">Keep mine</button></div><p class="muted" style="font-size:12.5px">Load theirs keeps your version in Undo. Keep mine replaces theirs.</p>');
+}
+async function loadHistory(){
+  const f=cloud.fb;cloud.history="loading";renderPanel();
+  try{const q=f.query(f.collection(f.db,"maps",MAP_ID,"versions"),f.orderBy("updatedAt","desc"),f.limit(25));const s=await f.getDocs(q);cloud.history=s.docs.map(d=>Object.assign({id:d.id},d.data()));}
+  catch(e){cloud.history=[];toast("Could not load versions: "+(e.code||e.message));}
+  renderPanel();
+}
+function cloudStatus(){
+  if(!cloud.on)return null;
+  if(!cloud.user)return{cls:"out",text:"Sign in"};
+  if(cloud.denied)return{cls:"bad",text:"No access to the shared map"};
+  if(cloud.err==="too-big")return{cls:"bad",text:"Map too big to share"};
+  if(cloud.err)return{cls:"bad",text:"Not shared: offline or error"};
+  if(cloud.conflict)return{cls:"bad",text:"Pick a version"};
+  if(!cloud.ready)return{cls:"busy",text:"Connecting…"};
+  if(cloud.saving||cloud.rev!==cloud.pushedRev)return{cls:"busy",text:"Sharing…"};
+  return{cls:"ok",text:"Shared"+(cloud.savedAt?" · "+hhmm(cloud.savedAt):"")};
+}
+function renderCloud(){
+  const b=$("#cloud-btn");const s=cloudStatus();
+  if(!s){b.hidden=true;return;}
+  b.hidden=false;b.className="cloud "+s.cls;b.textContent=s.text;b.title=cloud.user?"Signed in as "+cloud.user.email:"Sign in to work on the shared map";
+  if(st.step==="file")renderPanel();
+}
+function cloudSection(){
+  if(!cloud.on)return'<div class="sec"><h3>Shared map</h3><p>Not set up yet. Everyone works on their own copy; share it with Export and Import.</p></div>';
+  if(!cloud.user)return'<div class="sec"><h3>Shared map</h3><p>Sign in to work on the same map as the team. Every change is shared in a second and old versions stay in the history.</p><div class="row"><button class="btn primary" type="button" id="cloud-signin">Sign in</button></div></div>';
+  const s=cloudStatus();
+  let h='<div class="sec"><h3>Shared map</h3><p>Signed in as <b>'+esc(cloud.user.email)+'</b>. '+esc(s.text)+".</p>";
+  if(cloud.denied)return h+'<p class="note warn">This account is not on the team. Ask an admin to add it.</p><div class="row"><button class="btn" type="button" id="cloud-signout">Sign out</button></div></div>';
+  else if(cloud.err==="too-big")h+='<p class="note warn">The map is over the size the shared save allows. Export it instead and tell Alberto.</p>';
+  else if(cloud.err)h+='<p class="note warn">Your work is still saved in this browser. It will be shared on your next change.</p><div class="row"><button class="btn" type="button" id="cloud-retry">Try again</button></div>';
+  h+='<div class="row"><button class="btn" type="button" id="cloud-version"'+(cloud.ready?"":" disabled")+'>Save a version now</button><button class="btn" type="button" id="cloud-signout">Sign out</button></div></div>';
+  h+='<div class="sec"><h3>Versions</h3><p>A version is kept every 10 minutes of work and whenever you save one. Restoring one makes it the shared map; Undo brings back what was there.</p>';
+  if(cloud.history==="loading")h+='<p class="muted">Loading…</p>';
+  else if(Array.isArray(cloud.history))h+=cloud.history.length?'<div class="vers">'+cloud.history.map((r,i)=>'<div class="ver"><span class="v">v'+esc(r.version)+'</span><span>'+esc(who(r.updatedBy))+" · "+esc(when(r))+(r.manual?" · saved":"")+'</span><button class="btn sm" type="button" data-restore="'+i+'">Restore</button></div>').join("")+"</div>":'<p class="muted">No versions yet.</p>';
+  else h+='<div class="row"><button class="btn" type="button" id="cloud-history"'+(cloud.ready?"":" disabled")+'>Show versions</button></div>';
+  h+="</div>";
+  if(!cloud.denied)h+=teamSection()+accountSection();
+  return h;
+}
 function filePanel(){
-  let h="<h2>Save and share</h2><p>Your work is saved in this browser automatically. To send it to someone, or to import it in Unity, export the JSON.</p>";
+  let h="<h2>Save and share</h2><p>Your work is saved in this browser automatically"+(cloud.on?", and shared with the team when you are signed in":"")+". Unity reads the exported JSON.</p>"+cloudSection();
   h+='<div class="sec"><h3>Export</h3><p>Downloads the map as a JSON file. Send it to the team or put it in the repo for the Unity import.</p><div class="row"><button class="btn primary" type="button" id="export-btn2">Export JSON</button></div></div>';
   h+='<div class="sec"><h3>Import</h3><p>Opens a JSON exported from this tool. It replaces the current map. Undo brings it back.</p><div class="row"><button class="btn" type="button" id="import-btn">Choose a file</button></div></div>';
   if(seed)h+='<div class="sec"><h3>Miro version</h3><p>The map as it was read from the Miro board'+(seed.source?" ("+esc(seed.source)+")":"")+'. Loading it replaces the current map.</p><div class="row"><button class="btn" type="button" id="seed-btn">Load the Miro version</button></div></div>';
@@ -813,9 +979,21 @@ function setStep(id){if(id==="config"){openConfig();return;}st.step=id;st.hover=
 function render(){renderSide();renderToolbar();renderMap();renderPanel();renderCaption();renderSaved();renderConfig();}
 
 document.addEventListener("click",e=>{
-  if(e.target.matches&&e.target.matches("[data-modal-bg]")){closeModal();return;}
-  const t=e.target.closest("[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
+  const t=e.target.closest("#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
+  if(t.id==="cloud-btn"||t.id==="cloud-signin"){if(!cloud.user)openLogin();else setStep("file");return;}
+  if(t.id==="lg-forgot"){const em=($("#lg-email")||{}).value||"";if(!em){const er=$("#lg-err");er.textContent="Type your email first.";er.hidden=false;return;}cloud.fb.sendPasswordResetEmail(cloud.fb.auth,em.trim()).then(()=>toast("If that email has an account, a reset link is on its way.")).catch(e=>toast(authMsg(e)));return;}
+  if(t.dataset.unmember){const em=t.dataset.unmember;if(!confirm("Remove "+em+" from the team? They lose access to the shared map."))return;cloud.fb.deleteDoc(cloud.fb.doc(cloud.fb.db,"editors",em)).then(()=>{toast(em+" removed");loadTeam();}).catch(e=>toast(authMsg(e)));return;}
+  if(t.id==="cloud-signout"){cloud.fb.signOut(cloud.fb.auth);cloud.history=null;return;}
+  if(t.id==="cloud-retry"){cloud.err=null;cloud.denied=false;if(!cloud.ready){if(cloud.unsub)cloud.unsub();cloudListen();}else cloudPush();renderCloud();return;}
+  if(t.id==="cloud-version"){saveVersion(payload(),cloud.version,true);return;}
+  if(t.id==="cloud-history"){loadHistory();return;}
+  if(t.dataset.restore!==undefined){const r=Array.isArray(cloud.history)&&cloud.history[+t.dataset.restore];if(r){applyRemote(r,true);cloudChanged();toast("Version "+r.version+" restored");}return;}
+  if(t.id==="cloud-use-shared"){const r=cloud.first;closeModal();if(r){applyRemote(r,true);cloud.version=r.version;cloud.ready=true;cloud.first=null;renderCloud();}return;}
+  if(t.id==="cloud-upload-mine"){const r=cloud.first;closeModal();if(r){cloud.version=r.version;cloud.ready=true;cloud.first=null;cloudChanged();}return;}
+  if(t.id==="cloud-load-theirs"){const r=cloud.conflict;closeModal();if(r){cloud.conflict=null;applyRemote(r,true);cloud.version=r.version;toast("Loaded "+who(r.updatedBy)+"'s map. Undo brings yours back.");renderCloud();}return;}
+  if(t.id==="cloud-keep-mine"){const r=cloud.conflict;closeModal();if(r){cloud.conflict=null;cloud.version=r.version;cloud.rev++;cloudPush();}return;}
   if(t.dataset.cfgtab){st.cfgTab=t.dataset.cfgtab;renderConfig();const m=$(".cfg-main");if(m)m.scrollTop=0;return;}
   if(t.dataset.dup!==undefined){const items=st.draft.businesses;const i=+t.dataset.dup;items.splice(i+1,0,nextVariant(items[i],items));markDirty();renderConfig();const el=document.getElementById("cf-businesses-"+(i+1)+"-name");if(el){el.focus();el.select();}return;}
   if(t.id==="cfg-close"){closeConfig(false);return;}
@@ -845,6 +1023,16 @@ document.addEventListener("click",e=>{
   if(t.id==="modal-copy"){const ta=$("#modal-json");try{navigator.clipboard.writeText(ta.value).then(()=>{t.textContent="Copied";},()=>{ta.select();});}catch(_){ta.select();}return;}
   if(t.id==="import-confirm"){if(importData)replaceWith(importData,"Map imported");return;}
 });
+document.addEventListener("submit",async e=>{
+  const fm=e.target;if(!fm.id)return;e.preventDefault();const f=cloud.fb;if(!f)return;
+  const btn=fm.querySelector('[type="submit"]');if(btn)btn.disabled=true;
+  try{
+    if(fm.id==="login-form"){await f.signInWithEmailAndPassword(f.auth,$("#lg-email").value.trim(),$("#lg-pass").value);closeModal();toast("Signed in");}
+    if(fm.id==="member-form"){const em=$("#mb-email").value;await addMember(em,$("#mb-pass").value,$("#mb-role").value);toast(em.trim().toLowerCase()+" added");loadTeam();}
+    if(fm.id==="pw-form"){await f.updatePassword(f.auth.currentUser,$("#pw-new").value);toast("Password changed");$("#pw-new").value="";}
+  }catch(err){if(fm.id==="login-form"){const er=$("#lg-err");if(er){er.textContent=authMsg(err);er.hidden=false;}}else toast(authMsg(err));}
+  if(btn)btn.disabled=false;
+});
 document.addEventListener("input",e=>{
   const t=e.target;if(!t.dataset)return;
   if(t.dataset.list){const it=st.draft[t.dataset.list][+t.dataset.i];if(!it)return;it[t.dataset.f]=t.type==="checkbox"?t.checked:t.value;markDirty();return;}
@@ -859,7 +1047,7 @@ document.addEventListener("change",e=>{
   if(t.id==="f-purch"||t.id==="f-rob"||t.id==="f-other"||t.id==="f-notes"||t.id==="f-reqill"||t.id==="f-random"||(t.dataset&&(t.dataset.op||t.dataset.buy)))saveBlock();
 });
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"&&$("#modal-root").innerHTML){closeModal();return;}
+  if(e.key==="Escape"&&$("#modal-root").innerHTML){if(!cloud.first&&!cloud.conflict)closeModal();return;}
   if(st.cfgOpen){if(e.key==="Escape"){closeConfig(false);return;}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveConfig();}return;}
   const typing=/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
   if((e.ctrlKey||e.metaKey)&&!typing){const k=e.key.toLowerCase();if(k==="z"&&!e.shiftKey){e.preventDefault();undo();return;}if(k==="y"||(k==="z"&&e.shiftKey)){e.preventDefault();redo();return;}}
@@ -874,6 +1062,7 @@ svg.addEventListener("pointerleave",()=>{if(!stroke){st.hover=null;renderHover()
 load();rebuildIdx();
 try{const s=localStorage.getItem(STORE+".step");if(s&&s!=="config"&&STEPS.concat(TOOLS).some(x=>x.id===s))st.step=s;}catch(_){}
 render();
+cloudInit();
 })();
 </script>
 </body>
