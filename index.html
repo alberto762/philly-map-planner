@@ -141,6 +141,68 @@ button,input,select,textarea{font:inherit;color:inherit}
 .toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--gold);color:#060d2c;font-weight:600;padding:8px 14px;border-radius:8px;font-size:13px;z-index:30;box-shadow:var(--shadow);max-width:min(560px,90vw)}
 .review li{margin:2px 0;font-size:12.5px;color:var(--muted)}
 .review{margin:0;padding-left:18px}
+.cfg{position:fixed;inset:0;z-index:15;background:var(--bg);display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.cfg-top{display:flex;align-items:center;gap:14px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--surface)}
+.cfg-top h2{font-family:var(--font-display);font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-size:20px;margin:0;line-height:1}
+.cfg-top .sub{color:var(--muted);font-size:13px}
+.cfg-body{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:0}
+.cfg-tabs{border-right:1px solid var(--line);background:var(--surface);padding:14px 10px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.cfg-tabs .group{font-family:var(--font-display);font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-size:12px;margin:14px 10px 6px}
+.cfg-tabs .group:first-child{margin-top:0}
+.cfg-tab{display:flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:7px;padding:9px 10px;text-align:left;cursor:pointer;font-weight:500;width:100%}
+.cfg-tab:hover{background:var(--surface-2)}
+.cfg-tab[aria-selected="true"]{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--gold)}
+.cfg-tab .n{margin-left:auto;font-family:var(--font-mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cfg-tab .dot{width:8px;height:8px;border-radius:50%;background:var(--danger);flex:none}
+.cfg-main{overflow:auto;padding:22px 28px 48px}
+.cfg-main .inner{max-width:1180px;display:flex;flex-direction:column;gap:22px}
+.cfg-head h3{font-family:var(--font-display);font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-size:19px;margin:0}
+.cfg-head p{color:var(--muted);margin:6px 0 0;max-width:78ch}
+.cfg-sub{display:flex;align-items:baseline;gap:10px}
+.cfg-sub h4{font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:14px;margin:0;color:var(--ink)}
+.cfg-sub p{color:var(--muted);margin:0;font-size:12.5px}
+.tbl{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.trow{display:grid;grid-template-columns:var(--cols);gap:10px;align-items:center;padding:7px 12px;border-top:1px solid var(--line)}
+.trow.head{border-top:0;background:var(--surface-2);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--label);padding:9px 12px}
+.trow.bad{background:linear-gradient(90deg,var(--danger-soft),transparent 60%)}
+.trow input[type="text"],.trow select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 8px;width:100%;min-width:0;font-size:13px}
+.trow input.c{font-family:var(--font-mono);font-weight:600}
+.trow input.bad{border-color:var(--danger)}
+.trow input[type="color"]{width:36px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer}
+.trow .chk{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.trow .chk input{width:16px;height:16px}
+.trow .err{grid-column:1 / -1;color:var(--danger);font-size:12px;margin-top:-2px}
+.trow .used{font-family:var(--font-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.trow .used.on{color:var(--ink)}
+.trow .act{display:flex;gap:2px;justify-content:flex-end}
+.ibtn{border:0;background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;padding:5px 7px;font-size:15px;line-height:1}
+.ibtn:hover{background:var(--surface-2);color:var(--ink)}
+.ibtn.del:hover{color:var(--danger)}
+.tfoot{display:flex;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);background:var(--surface)}
+.tfoot .muted{font-size:12.5px}
+.empty{padding:18px 12px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+.filter{border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:7px 10px;min-width:240px}
+.vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.vals .field small{color:var(--muted);font-size:12px}
+.cfg-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px max(16px,env(safe-area-inset-right,0px)) max(11px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.cfg-foot .state{font-size:13px;color:var(--muted)}
+.cfg-foot .state.dirty{color:var(--warn)}
+.cfg-foot .state.bad{color:var(--danger)}
+.cfg-foot .state.ok{color:var(--ok)}
+@media (max-width:760px){
+  .cfg-top .sub{display:none}
+  .cfg-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .cfg-tabs{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px 10px}
+  .cfg-tabs .group{display:none}
+  .cfg-tab{white-space:nowrap;width:auto}
+  .cfg-tab[aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--gold)}
+  .cfg-main{padding:16px 16px 36px}
+  .trow.head{display:none}
+  .trow{grid-template-columns:1fr 1fr;padding:12px}
+  .trow > [data-label]::before{content:attr(data-label);display:block;font-size:10.5px;font-weight:600;color:var(--label);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+  .trow .act{align-self:end}
+  .filter{min-width:0;width:100%}
+}
 @media (max-width:1180px){.app{grid-template-columns:210px minmax(0,1fr) 300px}}
 @media (max-width:960px){
   .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(420px,1fr) auto;height:auto;min-height:100%}
@@ -174,6 +236,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </section>
   <aside class="panel" id="panel"></aside>
 </div>
+<div id="cfg-root"></div>
 <div id="modal-root"></div>
 <div class="toast" id="toast" hidden></div>
 <input type="file" id="import-file" accept=".json,application/json" hidden>
@@ -416,7 +479,7 @@ function renderSide(){
     if(t.id==="check"&&st.d.cfg)extra=errs?'<span class="badge err">'+errs+"</span>":warns?'<span class="badge warn">'+warns+"</span>":'<span class="badge ok">ok</span>';
     if(t.id==="config"&&st.draftDirty)extra='<span class="badge warn">unsaved</span>';
     const icon=t.id==="check"?"✓":t.id==="config"?"⚙":"⇅";
-    h+='<button class="step" type="button" data-step="'+t.id+'" aria-current="'+(st.step===t.id)+'"><span class="num">'+icon+'</span><span><span class="lbl">'+esc(t.label)+extra+'</span><span class="meta">'+esc(t.hint)+"</span></span></button>";
+    h+='<button class="step" type="button" data-step="'+t.id+'" aria-current="'+(t.id==="config"?!!st.cfgOpen:st.step===t.id)+'"><span class="num">'+icon+'</span><span><span class="lbl">'+esc(t.label)+extra+'</span><span class="meta">'+esc(t.hint)+"</span></span></button>";
   }
   h+='<select class="step-select" id="step-select" aria-label="Step">'+STEPS.map(s=>'<option value="'+s.id+'"'+(st.step===s.id?" selected":"")+">"+s.n+". "+esc(s.label)+"</option>").join("")+TOOLS.map(t=>'<option value="'+t.id+'"'+(st.step===t.id?" selected":"")+">"+esc(t.label)+"</option>").join("")+"</select>";
   $("#side").innerHTML=h;
@@ -490,7 +553,6 @@ function swatches(bl){
 function statRow(a){return'<div class="stats">'+a.map(([v,l])=>'<div class="stat"><b>'+v+"</b><span>"+esc(l)+"</span></div>").join("")+"</div>";}
 function renderPanel(){
   const p=$("#panel");const C=counts();
-  if(st.step==="config"){p.innerHTML=configPanel();return;}
   if(st.step==="file"){p.innerHTML=filePanel();return;}
   if(!st.d.cfg&&st.step!=="check"){p.innerHTML='<h2>Set up first</h2><p>The lists of ground types, buildings, streets and neighborhoods live in Config.</p><button class="btn primary" type="button" data-step="config">Open Config</button>';return;}
   const head=(t,d)=>"<h2>"+esc(t)+"</h2><p>"+esc(d)+"</p>";
@@ -567,43 +629,142 @@ function filePanel(){
   if(st.d.review&&st.d.review.length)h+='<div class="sec"><h3>To review from Miro</h3><ul class="review">'+st.d.review.map(r=>"<li>"+esc(r)+"</li>").join("")+"</ul></div>";
   return h;
 }
-function configPanel(){
-  if(!st.draft)st.draft=clone(st.d.cfg||{gridW:21,gridH:21,cellMeters:25,roadWidth:14,sidewalk:3,terrain:[],streets:[],buildings:[],markers:[],districts:[],neighborhoods:[],operations:[],robbery:[]});
-  const d=st.draft;
-  let h="<h2>Config</h2><p>Codes are what the Unity import reads. Keep them short and never reuse one for something else.</p>";
-  const val=(id,label,v,min,max)=>'<div class="field"><label for="cfg-'+id+'">'+label+'</label><input type="number" id="cfg-'+id+'" data-val="'+id+'" min="'+min+'" max="'+max+'" value="'+esc(v)+'"></div>';
-  h+='<div class="cfg-vals">'+val("gridW","Columns",d.gridW,4,60)+val("gridH","Rows",d.gridH,4,60)+val("cellMeters","Meters per cell",d.cellMeters,1,500)+val("roadWidth","Road width (m)",d.roadWidth,1,100)+val("sidewalk","Sidewalk (m)",d.sidewalk,0,50)+"</div>";
-  for(const L of LISTS){
-    const items=Array.isArray(d[L.k])?d[L.k]:(d[L.k]=[]);
-    h+='<div class="sec"><div class="row"><h3>'+esc(L.title)+'</h3><span class="spacer"></span><span class="muted mono">'+items.length+'</span><button class="btn sm" type="button" data-add="'+L.k+'">Add</button></div>';
-    if(L.k==="businesses")h+='<p class="muted" style="font-size:12px">One row per business the map can use, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics). Same Type groups the variants. Price and income are set in Unity.</p>';
-    if(L.k==="owners")h+='<p class="muted" style="font-size:12px">Kind is what the game uses: Player, Civilian, EnemyGang, Police and so on. Which gang each owner is gets set in Unity.</p>';
-    if(L.k==="terrain")h+='<p class="muted" style="font-size:12px">Tick "lot" on the type where buildings go. The first type fills empty cells.</p>';
-    items.forEach((it,i)=>{
-      const base='data-list="'+L.k+'" data-i="'+i+'"';const del='<button class="x" type="button" data-del="'+L.k+'" data-i="'+i+'" aria-label="Remove">×</button>';
-      const code='<input type="text" class="c" '+base+' data-f="code" value="'+esc(it.code)+'" aria-label="Code">';const nm='<input type="text" '+base+' data-f="name" value="'+esc(it.name)+'" aria-label="Name">';
-      const clr='<input type="color" '+base+' data-f="color" value="'+esc(it.color||"#888888")+'" aria-label="Color">';
-      if(L.biz){const sel=(f,opts,cur,lab,cls)=>'<select '+base+' data-f="'+f+'" aria-label="'+lab+'"'+(cls?' class="'+cls+'"':"")+">"+opts.map(([v,n])=>'<option value="'+esc(v)+'"'+((cur||"")===v?" selected":"")+">"+esc(n)+"</option>").join("")+"</select>";
-        h+='<div class="cfg-row biz">'+code+nm+'<input type="text" '+base+' data-f="type" value="'+esc(it.type)+'" aria-label="Type" placeholder="Type">'+del+sel("wealth",WEALTH.map(w=>[w,w]),it.wealth||"Medium","Wealth")+'<span class="wide">'+sel("op",[["","No illegal operation"]].concat((d.operations||[]).map(o=>[o.code,o.name||o.code])),it.op,"Illegal operation")+'</span><label><input type="checkbox" '+base+' data-f="recruit"'+(it.recruit?" checked":"")+">recruits</label></div>";}
-      else if(L.own)h+='<div class="cfg-row nb">'+code+nm+'<select '+base+' data-f="kind" aria-label="Kind in the game">'+OWNER_KINDS.map(k=>'<option value="'+k+'"'+(it.kind===k?" selected":"")+">"+k+"</option>").join("")+"</select>"+clr+del+"</div>";
-      else if(L.nb)h+='<div class="cfg-row nb">'+code+nm+'<select '+base+' data-f="district" aria-label="District"><option value="">District</option>'+(d.districts||[]).map(x=>'<option value="'+esc(x.code)+'"'+(it.district===x.code?" selected":"")+">"+esc(x.code)+"</option>").join("")+"</select>"+clr+del+"</div>";
-      else if(!L.color)h+='<div class="cfg-row ops">'+code+nm+del+"</div>";
-      else h+='<div class="cfg-row">'+code+nm+(L.lot?'<label class="lotflag"><input type="checkbox" '+base+' data-f="lot"'+(it.lot?" checked":"")+">lot</label>":"<span></span>")+'<span class="row" style="gap:2px;flex-wrap:nowrap">'+clr+del+"</span></div>";
-    });
-    h+="</div>";
-  }
-  h+='<div class="sec" style="position:sticky;bottom:-16px;background:var(--surface);padding-bottom:12px"><div class="row"><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>Save config</button><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard</button><span class="muted" id="cfg-msg">'+esc(st.draftMsg)+"</span></div></div>";
+const CFG_TABS=[
+  {id:"map",group:"Map",label:"Map size",lists:[],title:"Map size",text:"How big the grid is and how it turns into meters in the game. To add rows or columns on one side, use the controls in 1. Ground."},
+  {id:"terrain",group:"Map",label:"Ground",lists:["terrain"],title:"Ground types",text:"What each cell is made of. Buildable lots are where buildings go; the first row fills empty cells."},
+  {id:"streets",group:"Map",label:"Streets",lists:["streets"],title:"Street types",text:"Streets run on the lines between cells."},
+  {id:"buildings",group:"Map",label:"Buildings",lists:["buildings"],title:"Building types",text:"The type of building on each lot. Unity picks the 3D models for each code."},
+  {id:"markers",group:"Map",label:"Markers",lists:["markers"],title:"Markers",text:"Special spots on a lot: HQs and recruitment sites. PLY, G1, G2, G3 and REC are read by Unity, keep those codes."},
+  {id:"areas",group:"People and places",label:"Neighborhoods",lists:["neighborhoods","districts"],title:"Neighborhoods and districts",text:"Each neighborhood becomes its own scene in Unity, named after it."},
+  {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
+  {id:"businesses",group:"Gameplay",label:"Businesses",lists:["businesses"],title:"Businesses",text:"Every business the map can place. Make one row per variant, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics); the same Type groups them. Price and income are set in Unity."},
+  {id:"rules",group:"Gameplay",label:"Operations and robbery",lists:["operations","robbery"],title:"Operations and robbery",text:"The lists used by businesses and by 6. Gameplay."}
+];
+const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business"};
+const LIST_TEXT={districts:"Groups of neighborhoods.",robbery:"How much a robbery on the block is worth.",operations:"Illegal operations a building can run."};
+function cfgDefaults(){return{gridW:21,gridH:21,cellMeters:25,roadWidth:14,sidewalk:3,terrain:[],streets:[],buildings:[],markers:[],districts:[],neighborhoods:[],owners:[],operations:[],robbery:[],businesses:[]};}
+function ensureDraft(){
+  if(st.draft)return st.draft;
+  st.draft=clone(st.d.cfg||cfgDefaults());
+  for(const L of LISTS){if(!Array.isArray(st.draft[L.k]))st.draft[L.k]=[];for(const it of st.draft[L.k])it._o=it.code;}
+  return st.draft;
+}
+function openConfig(tab){ensureDraft();st.cfgOpen=true;if(tab)st.cfgTab=tab;if(!st.cfgTab)st.cfgTab=st.d.cfg?"terrain":"map";renderConfig();renderSide();const m=$(".cfg-main");if(m)m.scrollTop=0;}
+function closeConfig(force){
+  if(st.draftDirty&&!force){openModal('<h2>Save your changes?</h2><p>Config has changes that are not saved yet.</p><div class="row"><button class="btn primary" type="button" id="cfg-close-save">Save</button><button class="btn" type="button" id="cfg-close-discard">Discard</button><button class="btn" type="button" data-modal-close>Keep editing</button></div>');return;}
+  st.cfgOpen=false;st.draft=null;st.draftDirty=false;st.draftMsg="";renderConfig();render();
+}
+function usage(){
+  const u={};for(const L of LISTS)u[L.k]={};
+  const inc=(k,c)=>{if(c)u[k][c]=(u[k][c]||0)+1;};
+  for(const c of Object.values(st.d.cells)){inc("terrain",c.t);inc("buildings",c.b);inc("markers",c.m);inc("neighborhoods",c.n);inc("owners",c.o);}
+  for(const v of Object.values(st.d.edges))inc("streets",v);
+  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;(b.illegal||[]).forEach(o=>inc("operations",o));inc("robbery",b.robbery);inc("robbery",b.other);inc("businesses",b.reqIll);(b.reqBuy||[]).forEach(x=>inc("businesses",x));}
+  for(const n of list("neighborhoods"))inc("districts",n.district);
+  for(const b of list("businesses"))inc("operations",b.op);
+  return u;
+}
+function draftErrors(){
+  const d=ensureDraft();const e={};
+  for(const L of LISTS){const seen={};(d[L.k]||[]).forEach((it,i)=>{
+    const c=(it.code||"").trim();let m=null;
+    if(!c)m="Give it a code.";else if(!/^[A-Za-z0-9_\-]+$/.test(c))m="Codes use letters, numbers, _ and - only.";else if(seen[c]!=null)m="Same code as row "+(seen[c]+1)+".";
+    if(c&&seen[c]==null)seen[c]=i;
+    if(!m&&L.k==="businesses"&&it.op&&!(d.operations||[]).some(o=>o.code===it.op))m="Its illegal operation is not in the list anymore.";
+    if(!m&&L.k==="neighborhoods"&&it.district&&!(d.districts||[]).some(o=>o.code===it.district))m="Its district is not in the list anymore.";
+    if(m)e[L.k+":"+i]=m;});}
+  if((d.terrain||[]).length&&!d.terrain.some(x=>x.lot))e["terrain:lot"]='Tick "Buildable" on at least one ground type.';
+  return e;
+}
+function tabOf(k){const tb=CFG_TABS.find(x=>x.lists.indexOf(k)>=0);return tb?tb.id:"map";}
+function cfgCols(k){
+  const code={h:"Code",w:"minmax(96px,130px)"},name={h:"Name",w:"minmax(140px,1.6fr)"},color={h:"Color",w:"56px"},used={h:"Used",w:"56px"},act={h:"",w:"72px"};
+  if(k==="terrain")return[code,name,color,{h:"Buildable",w:"96px"},used,act];
+  if(k==="neighborhoods")return[code,name,{h:"District",w:"minmax(120px,1fr)"},color,used,act];
+  if(k==="owners")return[code,name,{h:"Kind in the game",w:"minmax(140px,1fr)"},color,used,act];
+  if(k==="businesses")return[code,name,{h:"Type",w:"minmax(100px,1fr)"},{h:"Wealth",w:"110px"},{h:"Illegal operation",w:"minmax(150px,1.3fr)"},{h:"Recruits",w:"84px"},used,act];
+  if(LISTS.find(l=>l.k===k).color)return[code,name,color,used,act];
+  return[code,name,used,act];
+}
+function cfgTable(k,errs,u){
+  const d=ensureDraft();const L=LISTS.find(l=>l.k===k);const cols=cfgCols(k);const items=d[k];
+  const style=' style="--cols:'+cols.map(c=>c.w).join(" ")+'"';
+  let h="";
+  if(L&&k!==CFG_TABS.find(x=>x.id===st.cfgTab).lists[0]||LIST_TEXT[k])h+='<div class="cfg-sub"><h4>'+esc(L.title)+"</h4>"+(LIST_TEXT[k]?"<p>"+esc(LIST_TEXT[k])+"</p>":"")+"</div>";
+  if(k==="businesses")h+='<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code, name or type" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter businesses"><span class="muted" style="font-size:12.5px">Duplicate a row (⧉) to make the next variant.</span></div>';
+  h+='<div class="tbl"><div class="trow head"'+style+">"+cols.map(c=>"<div>"+esc(c.h)+"</div>").join("")+"</div>";
+  const f=(st.cfgFilter||"").trim().toLowerCase();let shown=0;
+  items.forEach((it,i)=>{
+    if(k==="businesses"&&f&&![it.code,it.name,it.type].some(v=>String(v||"").toLowerCase().indexOf(f)>=0))return;
+    shown++;
+    const base='data-list="'+k+'" data-i="'+i+'"';const id=f2=>'id="cf-'+k+"-"+i+"-"+f2+'"';
+    const err=errs[k+":"+i];const n=it._o?(u[k][it._o]||0):0;
+    const txt=(f2,lab,cls,ph)=>'<div data-label="'+lab+'"><input type="text" '+id(f2)+" "+base+' data-f="'+f2+'" value="'+esc(it[f2])+'" aria-label="'+lab+'"'+(cls?' class="'+cls+'"':"")+(ph?' placeholder="'+ph+'"':"")+"></div>";
+    const sel=(f2,lab,opts)=>'<div data-label="'+lab+'"><select '+id(f2)+" "+base+' data-f="'+f2+'" aria-label="'+lab+'">'+opts.map(([v,nm])=>'<option value="'+esc(v)+'"'+((it[f2]||"")===v?" selected":"")+">"+esc(nm)+"</option>").join("")+"</select></div>";
+    const chk=(f2,lab,txt2)=>'<div data-label="'+lab+'"><label class="chk"><input type="checkbox" '+id(f2)+" "+base+' data-f="'+f2+'"'+(it[f2]?" checked":"")+">"+esc(txt2)+"</label></div>";
+    const clr='<div data-label="Color"><input type="color" '+id("color")+" "+base+' data-f="color" value="'+esc(it.color||"#888888")+'" aria-label="Color"></div>';
+    let cells=txt("code","Code","c"+(err&&/code/i.test(err)?" bad":""))+txt("name","Name","",k==="businesses"?"Bakery 02":"");
+    if(k==="terrain")cells+=clr+chk("lot","Buildable","Lot");
+    else if(k==="neighborhoods")cells+=sel("district","District",[["","No district"]].concat((d.districts||[]).map(x=>[x.code,(x.name||x.code)])))+clr;
+    else if(k==="owners")cells+=sel("kind","Kind in the game",OWNER_KINDS.map(x=>[x,x]))+clr;
+    else if(k==="businesses")cells+=txt("type","Type","","Bakery")+sel("wealth","Wealth",WEALTH.map(x=>[x,x]))+sel("op","Illegal operation",[["","None"]].concat((d.operations||[]).map(o=>[o.code,o.name||o.code])))+chk("recruit","Recruits","Recruits");
+    else if(L.color)cells+=clr;
+    cells+='<div data-label="Used"><span class="used'+(n?" on":"")+'" title="'+(n?"Used "+n+" times on the map":"Not used on the map")+'">'+(n||"–")+"</span></div>";
+    cells+='<div class="act">'+(k==="businesses"?'<button class="ibtn" type="button" data-dup="'+i+'" title="Duplicate as the next variant" aria-label="Duplicate">⧉</button>':"")+'<button class="ibtn del" type="button" data-del="'+k+'" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
+    h+='<div class="trow'+(err?" bad":"")+'"'+style+">"+cells+(err?'<div class="err">'+esc(err)+"</div>":"")+"</div>";
+  });
+  if(!items.length)h+='<div class="empty">Nothing here yet.</div>';else if(!shown)h+='<div class="empty">No row matches the filter.</div>';
+  h+='<div class="tfoot"><button class="btn sm" type="button" data-add="'+k+'">+ Add '+esc(ADD_LABEL[k]||"row")+'</button><span class="spacer"></span><span class="muted">'+items.length+(items.length===1?" row":" rows")+"</span></div></div>";
+  if(errs[k+":lot"])h+='<p class="note warn">'+esc(errs[k+":lot"])+"</p>";
   return h;
 }
-function markDirty(){st.draftDirty=true;st.draftMsg="";const b=$("#cfg-save");if(b)b.disabled=false;const r=$("#cfg-reset");if(r)r.disabled=false;}
+function renderConfig(){
+  const root=$("#cfg-root");
+  if(!st.cfgOpen){root.innerHTML="";return;}
+  const d=ensureDraft();const errs=draftErrors();const u=usage();
+  const tab=CFG_TABS.find(x=>x.id===st.cfgTab)||CFG_TABS[0];
+  let nav="";let g=null;
+  for(const tb of CFG_TABS){
+    if(tb.group!==g){g=tb.group;nav+='<div class="group">'+esc(g)+"</div>";}
+    const n=tb.lists.reduce((s,k)=>s+(d[k]||[]).length,0);const bad=tb.lists.some(k=>Object.keys(errs).some(e=>e.indexOf(k+":")===0));
+    nav+='<button class="cfg-tab" type="button" role="tab" data-cfgtab="'+tb.id+'" aria-selected="'+(tb.id===tab.id)+'">'+(bad?'<span class="dot" title="Has problems"></span>':"")+esc(tb.label)+(tb.lists.length?'<span class="n">'+n+"</span>":"")+"</button>";
+  }
+  let main='<div class="cfg-head"><h3>'+esc(tab.title)+"</h3><p>"+esc(tab.text)+"</p></div>";
+  if(tab.id==="map"){
+    const val=(id,label,v,min,max,help)=>'<div class="field"><label for="cfg-'+id+'">'+label+'</label><input type="number" id="cfg-'+id+'" data-val="'+id+'" min="'+min+'" max="'+max+'" value="'+esc(v)+'"><small>'+help+"</small></div>";
+    main+='<div class="vals">'+val("gridW","Columns",d.gridW,4,60,"Cells across, 4 to 60.")+val("gridH","Rows",d.gridH,4,60,"Cells down, 4 to 60.")+val("cellMeters","Meters per cell",d.cellMeters,1,500,"Size of one cell in the game.")+val("roadWidth","Road width (m)",d.roadWidth,1,100,"Asphalt only.")+val("sidewalk","Sidewalk (m)",d.sidewalk,0,50,"On each side of the road.")+"</div>";
+  }else for(const k of tab.lists)main+=cfgTable(k,errs,u);
+  const nErr=Object.keys(errs).length;
+  const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving":st.draftDirty?"Unsaved changes":"All changes saved";
+  const cls=st.draftMsg==="Saved"?"ok":nErr?"bad":st.draftDirty?"dirty":"";
+  root.innerHTML='<div class="cfg" role="dialog" aria-modal="true" aria-labelledby="cfg-title"><header class="cfg-top"><h2 id="cfg-title">Config</h2><span class="sub">Codes are what Unity reads. Rename freely: the map follows.</span><span class="spacer"></span><button class="btn icon" type="button" id="cfg-close" title="Close (Esc)" aria-label="Close">✕</button></header><div class="cfg-body"><nav class="cfg-tabs" role="tablist" aria-label="Config sections">'+nav+'</nav><section class="cfg-main" role="tabpanel"><div class="inner">'+main+'</div></section></div><footer class="cfg-foot"><span class="state '+cls+'" id="cfg-state">'+esc(state)+'</span><span class="spacer"></span><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard changes</button><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>Save config</button></footer></div>';
+  const cur=root.querySelector('.cfg-tab[aria-selected="true"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest",inline:"nearest"});
+}
+function rerenderConfig(){setTimeout(()=>{const a=document.activeElement;const id=a&&a.id;const m=$(".cfg-main");const top=m?m.scrollTop:0;renderConfig();const m2=$(".cfg-main");if(m2)m2.scrollTop=top;if(id){const el=document.getElementById(id);if(el)el.focus();}},0);}
+function markDirty(){st.draftDirty=true;st.draftMsg="";const s=$("#cfg-state");if(s){s.textContent="Unsaved changes";s.className="state dirty";}const b=$("#cfg-save");if(b)b.disabled=false;const r=$("#cfg-reset");if(r)r.disabled=false;}
+function nextVariant(it,items){
+  const name=String(it.name||"");const m=/^(.*?)(\d+)$/.exec(name);
+  const nm=m?m[1]+String(+m[2]+1).padStart(m[2].length,"0"):(name?name+" 2":"");
+  const cm=/^(.*?)(\d+)$/.exec(it.code||"");let code;let n=cm?+cm[2]+1:2;
+  do{code=cm?cm[1]+String(n).padStart(cm[2].length,"0"):(it.code||"NEW")+"_"+n;n++;}while(items.some(x=>x.code===code));
+  const c=clone(it);delete c._o;c.code=code;c.name=nm;return c;
+}
+function remap(ren,d){
+  const m=(k,v)=>v&&ren[k][v]!==undefined?ren[k][v]:v;
+  for(const c of Object.values(st.d.cells)){if(c.t)c.t=m("terrain",c.t);if(c.b)c.b=m("buildings",c.b);if(c.m)c.m=m("markers",c.m);if(c.n)c.n=m("neighborhoods",c.n);if(c.o)c.o=m("owners",c.o);}
+  for(const k of Object.keys(st.d.edges))st.d.edges[k]=m("streets",st.d.edges[k]);
+  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;if(Array.isArray(b.illegal))b.illegal=b.illegal.map(x=>m("operations",x));b.robbery=m("robbery",b.robbery);b.other=m("robbery",b.other);b.reqIll=m("businesses",b.reqIll);if(Array.isArray(b.reqBuy))b.reqBuy=b.reqBuy.map(x=>m("businesses",x));}
+  for(const n of d.neighborhoods||[])n.district=m("districts",n.district);
+  for(const b of d.businesses||[])b.op=m("operations",b.op);
+}
 function saveConfig(){
-  const d=st.draft;const msgs=[];
-  for(const it of d.businesses||[])if(it.op&&!(d.operations||[]).some(o=>o.code===it.op))msgs.push('Businesses: "'+(it.code||"?")+'" uses an operation that is not in the list');
-  for(const L of LISTS){const seen=new Set();for(const it of d[L.k]||[]){const c=(it.code||"").trim();if(!c)msgs.push(L.title+": a row has no code");else if(!/^[A-Za-z0-9_\-]+$/.test(c))msgs.push(L.title+': "'+c+'" uses spaces or symbols');else if(seen.has(c))msgs.push(L.title+': "'+c+'" is used twice');seen.add(c);it.code=c;}}
-  if(!(d.terrain||[]).some(t=>t.lot))msgs.push('Ground types: tick "lot" on at least one');
-  if(msgs.length){st.draftMsg=msgs[0];renderPanel();return;}
+  const d=ensureDraft();const errs=draftErrors();const keys=Object.keys(errs);
+  if(keys.length){st.cfgTab=tabOf(keys[0].split(":")[0]);st.draftMsg="";renderConfig();toast(keys.length+(keys.length===1?" problem":" problems")+" to fix first");return false;}
+  const ren={};for(const L of LISTS){ren[L.k]={};for(const it of d[L.k]||[]){it.code=it.code.trim();if(it._o&&it._o!==it.code)ren[L.k][it._o]=it.code;}}
   d.gridW=num(d.gridW,21,4,60);d.gridH=num(d.gridH,21,4,60);
-  pushUndo();st.d.cfg=clone(d);rebuildIdx();st.bc=null;st.draft=null;st.draftDirty=false;st.draftMsg="Saved";save();render();toast("Config saved");
+  pushUndo();remap(ren,d);
+  const out=clone(d);for(const L of LISTS)for(const it of out[L.k]||[])delete it._o;
+  st.d.cfg=out;rebuildIdx();st.bc=null;st.draft=null;st.draftDirty=false;save();ensureDraft();st.draftMsg="Saved";render();toast("Config saved");return true;
 }
 
 function buildExport(){
@@ -648,26 +809,33 @@ function replaceWith(x,msg){pushUndo();const d=fromExport(x);st.d.cfg=d.cfg||st.
 function openModal(html){$("#modal-root").innerHTML='<div class="modal-wrap" data-modal-bg><div class="modal" role="dialog" aria-modal="true">'+html+"</div></div>";}
 function closeModal(){$("#modal-root").innerHTML="";importData=null;}
 
-function setStep(id){st.step=id;st.hover=null;try{localStorage.setItem(STORE+".step",id);}catch(_){}render();}
-function render(){renderSide();renderToolbar();renderMap();renderPanel();renderCaption();renderSaved();}
+function setStep(id){if(id==="config"){openConfig();return;}st.step=id;st.hover=null;try{localStorage.setItem(STORE+".step",id);}catch(_){}render();}
+function render(){renderSide();renderToolbar();renderMap();renderPanel();renderCaption();renderSaved();renderConfig();}
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){closeModal();return;}
-  const t=e.target.closest("[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
+  if(t.dataset.cfgtab){st.cfgTab=t.dataset.cfgtab;renderConfig();const m=$(".cfg-main");if(m)m.scrollTop=0;return;}
+  if(t.dataset.dup!==undefined){const items=st.draft.businesses;const i=+t.dataset.dup;items.splice(i+1,0,nextVariant(items[i],items));markDirty();renderConfig();const el=document.getElementById("cf-businesses-"+(i+1)+"-name");if(el){el.focus();el.select();}return;}
+  if(t.id==="cfg-close"){closeConfig(false);return;}
+  if(t.id==="cfg-close-save"){closeModal();if(saveConfig())closeConfig(true);return;}
+  if(t.id==="cfg-close-discard"){closeModal();closeConfig(true);return;}
   if(t.dataset.step){setStep(t.dataset.step);return;}
   if(t.dataset.brush!==undefined){const bl=brushList();if(bl){st.brush[bl.k]=t.dataset.brush;renderPanel();}return;}
   if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();return;}
   if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
-  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.biz?{code:"",name:"",type:"",wealth:"Medium",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderPanel();return;}
-  if(t.dataset.del){st.draft[t.dataset.del].splice(+t.dataset.i,1);markDirty();renderPanel();return;}
+  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.biz?{code:"",name:"",type:"",wealth:"Medium",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
+  if(t.dataset.del){const k=t.dataset.del,i=+t.dataset.i,it=st.draft[k][i];const n=it&&it._o?(usage()[k][it._o]||0):0;
+    if(n&&!confirm('"'+(it.code||"")+'" is used '+n+" times on the map. Remove it anyway? Those places lose it."))return;
+    st.draft[k].splice(i,1);markDirty();renderConfig();return;}
   if(t.dataset.issue!==undefined){const i=st.issuesShown[+t.dataset.issue];if(!i)return;const B=computeBlocks();const bi=B.id[i.y*B.W+i.x];
     if(/block|gameplay|purchasable|operation|robbery/i.test(i.text)&&bi>=0){st.sel=B.blocks[bi].anchor;setStep("gameplay");}
     else{const map={"Lot without a neighborhood":"areas","Lot without a building":"buildings","Marker outside a lot":"buildings","Building on a cell that is not a lot":"buildings"};setStep(map[i.text]||"ground");}
     st.hover={cell:{x:i.x,y:i.y}};renderHover();renderCaption();return;}
   if(t.id==="cfg-save"){saveConfig();return;}
-  if(t.id==="cfg-reset"){st.draft=null;st.draftDirty=false;st.draftMsg="";renderPanel();renderSide();return;}
+  if(t.id==="cfg-reset"){st.draft=null;st.draftDirty=false;st.draftMsg="";renderConfig();renderSide();return;}
   if(t.id==="export-btn"||t.id==="export-btn2"){doExport();return;}
   if(t.id==="import-btn"){$("#import-file").click();return;}
   if(t.id==="seed-btn"){openModal('<h2>Load the Miro version</h2><p>This replaces the current map with the one read from Miro. Undo brings your map back.</p><div class="row"><button class="btn primary" type="button" id="seed-confirm">Load it</button><button class="btn" type="button" data-modal-close>Cancel</button></div>');document.getElementById("seed-confirm").onclick=()=>replaceWith(seed,"Miro version loaded");return;}
@@ -681,16 +849,18 @@ document.addEventListener("input",e=>{
   const t=e.target;if(!t.dataset)return;
   if(t.dataset.list){const it=st.draft[t.dataset.list][+t.dataset.i];if(!it)return;it[t.dataset.f]=t.type==="checkbox"?t.checked:t.value;markDirty();return;}
   if(t.dataset.val){st.draft[t.dataset.val]=t.value===""?"":Number(t.value);markDirty();return;}
+  if(t.id==="cfg-filter"){st.cfgFilter=t.value;const pos=t.selectionStart;renderConfig();const f=$("#cfg-filter");if(f){f.focus();try{f.setSelectionRange(pos,pos);}catch(_){}}return;}
 });
 document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="step-select"){setStep(t.value);return;}
   if(t.id==="import-file"){readImport(t);return;}
-  if(t.dataset&&t.dataset.list&&(t.dataset.f==="code"||t.tagName==="SELECT")){renderPanel();renderSide();return;}
+  if(t.dataset&&t.dataset.list){rerenderConfig();renderSide();return;}
   if(t.id==="f-purch"||t.id==="f-rob"||t.id==="f-other"||t.id==="f-notes"||t.id==="f-reqill"||t.id==="f-random"||(t.dataset&&(t.dataset.op||t.dataset.buy)))saveBlock();
 });
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&$("#modal-root").innerHTML){closeModal();return;}
+  if(st.cfgOpen){if(e.key==="Escape"){closeConfig(false);return;}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveConfig();}return;}
   const typing=/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
   if((e.ctrlKey||e.metaKey)&&!typing){const k=e.key.toLowerCase();if(k==="z"&&!e.shiftKey){e.preventDefault();undo();return;}if(k==="y"||(k==="z"&&e.shiftKey)){e.preventDefault();redo();return;}}
   if(!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&/^[1-6]$/.test(e.key)){setStep(STEPS[+e.key-1].id);}
@@ -702,7 +872,7 @@ svg.addEventListener("pointerdown",onDown);svg.addEventListener("pointermove",on
 svg.addEventListener("pointerleave",()=>{if(!stroke){st.hover=null;renderHover();renderCaption();}});
 
 load();rebuildIdx();
-try{const s=localStorage.getItem(STORE+".step");if(s&&STEPS.concat(TOOLS).some(x=>x.id===s))st.step=s;}catch(_){}
+try{const s=localStorage.getItem(STORE+".step");if(s&&s!=="config"&&STEPS.concat(TOOLS).some(x=>x.id===s))st.step=s;}catch(_){}
 render();
 })();
 </script>
