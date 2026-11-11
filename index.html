@@ -385,7 +385,6 @@ const DEMAND=[{k:"demandBudBags",label:"Bud bags"},{k:"demandJointPacks",label:"
 const MARTIN_DEMAND="Fairview\t3\t40\t40\t20\t40\nCramer Hill\t4\t20\t60\t0\t60\nPennrose\t4\t0\t40\t0\t20\nCooper Crossing\t2\t80\t20\t100\t0\nBellview\t5\t0\t60\t0\t60\nGrant Terrace\t2\t80\t20\t100\t0\nParkside\t3\t40\t40\t20\t20\nWaterfront South\t2\t80\t20\t100\t0\nLinnwood\t1\t100\t20\t100\t0";
 const LEGAL_SEED=[{code:"GALLERY",name:"Art Gallery",ill:{}},{code:"AUTOSHOP",name:"Auto Shop",ill:{DRYING_RACK:"average"}},{code:"BAR",name:"Bar",ill:{SALES:"good"}},{code:"OFFICE",name:"Office Building",ill:{}},{code:"CASINO",name:"Casino",ill:{}},{code:"CHURCH",name:"Church",ill:{HYDROPONICS:"good"}},{code:"CLUB",name:"Club",ill:{}},{code:"DRUGSTORE",name:"Drug Store",ill:{}},{code:"GROCERY",name:"Grocery Store",ill:{HYDROPONICS:"good"}},{code:"HOUSING",name:"Habitation",ill:{HYDROPONICS:"poor"}},{code:"PAPER",name:"Paper Company",ill:{STASH:"poor"}},{code:"POLICE",name:"Police Department",ill:{}}];
 const FITS=["good","average","poor"];
-const MIRO_SITES={"Fairview":{sites:[{ops:["HYDROPONICS","DRYING_RACK"],n:1},{ops:["HYDROPONICS","LAUNDERING"],n:1},{ops:["STASH","DRYING_RACK"],n:1},{ops:["STASH"],n:1},{ops:["SALES","LAUNDERING"],n:1},{ops:["SALES","PACKAGING"],n:1},{ops:["SALES","PROCESSING"],n:1},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]},"Cramer Hill":{sites:[{ops:["SALES","HYDROPONICS"],n:1},{ops:["LAUNDERING"],n:1},{ops:["LAUNDERING","SALES"],n:1},{ops:["SALES","STASH"],n:1},{ops:["STASH"],n:1}],res:[{r:"Hydroponics",q:"",n:1}]},"Pennrose":{sites:[{ops:["STASH"],n:1},{ops:["REFINERY","STASH"],n:1},{ops:["SALES","STASH"],n:1},{ops:["SALES","LAUNDERING"],n:1}],res:[{r:"P2P",q:"High",n:1},{r:"P2P",q:"Medium",n:1},{r:"Acid",q:"High",n:1},{r:"Acid",q:"Medium",n:1},{r:"Acid",q:"Low",n:1}]},"Cooper Crossing":{sites:[{ops:["HYDROPONICS"],n:1},{ops:["HYDROPONICS","STASH"],n:1},{ops:["HYDROPONICS","PACKAGING"],n:1},{ops:["STASH","DRYING_RACK"],n:1},{ops:["STASH","PROCESSING"],n:1},{ops:["STASH","PACKAGING"],n:1},{ops:["PROCESSING"],n:1},{ops:["PACKAGING"],n:1},{ops:["SALES","STASH"],n:1},{ops:["SALES","DRYING_RACK"],n:1},{ops:["SALES","LAUNDERING"],n:1},{ops:["LAUNDERING"],n:2}],res:[{r:"Hydroponics",q:"",n:3}]},"Bellview":{sites:[{ops:["SALES"],n:3},{ops:["LAUNDERING"],n:3},{ops:["STASH"],n:2},{ops:["STASH","SALES"],n:1}],res:[]},"Grant Terrace":{sites:[{ops:["HYDROPONICS","PACKAGING"],n:1},{ops:["HYDROPONICS","PROCESSING"],n:1},{ops:["DRYING_RACK","PACKAGING"],n:1},{ops:["DRYING_RACK","PROCESSING"],n:1},{ops:["STASH"],n:1},{ops:["SALES"],n:3},{ops:["SALES","LAUNDERING"],n:1},{ops:["LAUNDERING"],n:2},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]},"Parkside":{sites:[{ops:["HYDROPONICS","PACKAGING","STASH"],n:1},{ops:["SALES","HYDROPONICS"],n:1},{ops:["PROCESSING","LAUNDERING"],n:1},{ops:["SALES","STASH","PROCESSING"],n:1},{ops:["DRYING_RACK","PACKAGING","PROCESSING"],n:1},{ops:["SALES","DRYING_RACK"],n:1},{ops:["PACKAGING","LAUNDERING"],n:1},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]},"Waterfront South":{sites:[{ops:["HYDROPONICS"],n:1},{ops:["SALES"],n:1},{ops:["STASH"],n:1},{ops:["DRYING_RACK"],n:1},{ops:["PACKAGING"],n:1},{ops:["LAUNDERING"],n:1},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:1}]},"Linwood":{sites:[{ops:["HYDROPONICS","PACKAGING"],n:1},{ops:["HYDROPONICS","REFINERY"],n:1},{ops:["CHEM_LAB","PACKAGING"],n:1},{ops:["CHEM_LAB","PROCESSING"],n:1},{ops:["DRYING_RACK","PACKAGING"],n:1},{ops:["DRYING_RACK","PROCESSING"],n:1},{ops:["STASH"],n:1},{ops:["PROCESSING"],n:1},{ops:["LAUNDERING"],n:1},{ops:["SALES"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]}};
 const RESOURCES=["Hydroponics","P2P","Acid"];
 const QUALITIES=["High","Medium","Low"];
 const FIT_LABEL={good:"Good",average:"Average",poor:"Poor"};
@@ -1029,7 +1028,7 @@ const CFG_TABS=[
   {id:"values",area:"values",group:"Buildings",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
   {id:"bizvalues",area:"values",group:"Buildings",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
   {id:"matrix",area:"values",group:"Businesses",label:"Legal and illegal",lists:[],title:"Legal and illegal",text:"Which illegal operation can run behind which legal front, and how well it fits. Good, Average and Poor change how the operation does in the game. Empty means it can't go there."},
-  {id:"sites",area:"values",group:"Neighborhoods",label:"Illegal sites",lists:[],title:"Illegal sites and resources",text:"The illegal buildings each neighborhood has and which operations each one can run, plus its drug resources. In Unity the illegal sites become the illegal buildings of the neighborhood's blocks."},
+  {id:"sites",area:"values",group:"Neighborhoods",label:"Illegal sites",lists:[],title:"Illegal sites and resources",text:"Illegal sites: the illegal buildings of each neighborhood. One row is one building and the operations it can run, like Hydroponics + Drying Rack. In Unity they fill the legal + illegal spots of the neighborhood's blocks. Resources: the raw drugs found in the neighborhood (hydroponics, P2P, acid). Saved here only for now."},
   {id:"demand",area:"values",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
   {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
 ];
@@ -1165,7 +1164,7 @@ function sitesTab(d){
     h+=res.length?res.map((r,j)=>'<div class="site res">'+step("res",j,r.n||1)+'<select data-sx="res" data-ni="'+i+'" data-j="'+j+'" data-act="r" aria-label="Resource">'+RESOURCES.map(x=>'<option'+(r.r===x?" selected":"")+">"+x+"</option>").join("")+'</select><select data-sx="res" data-ni="'+i+'" data-j="'+j+'" data-act="q" aria-label="Quality"><option value="">Any quality</option>'+QUALITIES.map(x=>'<option'+(r.q===x?" selected":"")+">"+x+"</option>").join("")+'</select><button type="button" class="ibtn del" data-sx="res" data-ni="'+i+'" data-j="'+j+'" data-act="del" title="Remove" aria-label="Remove">✕</button></div>').join(""):'<p class="muted" style="font-size:12.5px;margin:4px 0">No resources.</p>';
     h+='<button class="btn sm" type="button" data-sx="res" data-ni="'+i+'" data-act="add">+ Add a resource</button></div>';
     return h;});
-  return'<div class="row"><button class="btn" type="button" id="sites-miro">Fill from Martin\'s Miro</button><span class="muted" style="font-size:12.5px">Each site is one illegal building. Pick every operation it can run; HQ marks a gang HQ site.</span></div><div class="cards">'+cards.join("")+"</div>";
+  return'<div class="cards">'+cards.join("")+"</div>";
 }
 function sitesAction(t){
   const n=st.draft.neighborhoods[+t.dataset.ni];if(!n)return;const kind=t.dataset.sx,act=t.dataset.act,j=+t.dataset.j;
@@ -1181,14 +1180,6 @@ function sitesAction(t){
   else if(act==="r")it.r=t.value;
   else if(act==="q")it.q=t.value;
   markDirty();rerenderConfig();
-}
-function fillSitesFromMiro(){
-  const d=ensureDraft();const byName={};(d.neighborhoods||[]).forEach(n=>{byName[nameKey(n.name)]=n;});
-  const has=(d.neighborhoods||[]).some(n=>(n.sites||[]).length||(n.res||[]).length);
-  if(has&&!confirm("Replace the illegal sites and resources you already have with Martin's Miro list?"))return;
-  let filled=0;const missing=[];
-  for(const name of Object.keys(MIRO_SITES)){const n=byName[nameKey(name)];if(!n){missing.push(name);continue;}n.sites=clone(MIRO_SITES[name].sites);n.res=clone(MIRO_SITES[name].res);filled++;}
-  markDirty();renderConfig();toast(filled+" neighborhoods filled from Miro. Press Save values to keep it."+(missing.length?" Not found: "+missing.join(", ")+".":""));
 }
 function demandTab(d){
   const wsel=(i,v)=>'<div data-label="Wealth"><select id="cf-dm-'+i+'-wealth" data-list="neighborhoods" data-i="'+i+'" data-f="wealth" aria-label="Wealth"><option value="">Keep</option>'+NB_WEALTH.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o])+"</option>").join("")+"</select></div>";
@@ -1330,14 +1321,13 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
-  const t=e.target.closest("button[data-sx],#sites-miro,[data-mx],#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("button[data-sx],[data-mx],#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
   if(t.dataset.bump){const el=document.getElementById(t.dataset.bump);if(!el)return;el.value=Math.max(0,(parseInt(el.value,10)||0)+(+t.dataset.d));el.dispatchEvent(new Event("change",{bubbles:true}));return;}
   if(t.id==="sel-btn"){st.selMode=!st.selMode;st.pasting=false;renderToolbar();renderHover();toast(st.selMode?"Drag over the map to select an area, then Copy.":"Select is off.");return;}
   if(t.id==="copy-btn"){copyArea();return;}
   if(t.id==="fill-btn"){fillArea();return;}
   if(t.dataset.sx){sitesAction(t);return;}
-  if(t.id==="sites-miro"){fillSitesFromMiro();return;}
   if(t.dataset.mx!==undefined){const l=st.draft.legal[+t.dataset.mx];if(!l)return;if(!isObj(l.ill))l.ill={};const cur=l.ill[t.dataset.op2]||"";const next=cur?FITS[FITS.indexOf(cur)+1]||"":FITS[0];if(next)l.ill[t.dataset.op2]=next;else delete l.ill[t.dataset.op2];markDirty();rerenderConfig();renderSide();return;}
   if(t.id==="demand-paste"){openDemandPaste();return;}
   if(t.id==="demand-apply"){applyDemandPaste();return;}
