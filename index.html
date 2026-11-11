@@ -251,13 +251,17 @@ body{font-size:14px;line-height:1.45}
 .stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:15px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #f-total{margin-top:2px}
-.tblwrap.wide2 .tbl{min-width:1850px}
+.cfg.values .cfg-main .inner{max-width:none}
+.cfg.values .cfg-main{padding:18px 20px 40px}
+.cfg.values .trow{gap:8px;padding:7px 10px}
+.cfg.values .trow input[type="number"],.cfg.values .trow input[type="text"],.cfg.values .trow select{padding:6px 7px;font-size:13px}
+.cfg.values .cfg-sub{margin-top:6px}
+.vhead{position:sticky;top:-18px;z-index:2;background:var(--bg);padding:8px 0}
 .slot.one{grid-template-columns:1fr}
 .illpick{display:grid;grid-template-columns:1fr 100px;gap:6px}
 .illpick select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 8px;font-size:13px;min-width:0}
 .illpick select.ill{border-color:var(--boundary)}
 .tblwrap{overflow-x:auto}
-.tblwrap .tbl{min-width:1120px}
 .chipwrap{display:inline-flex;align-items:center;gap:1px}
 .chip2.on{display:inline-flex;align-items:center;gap:4px;background:var(--accent-soft);border-color:var(--accent);color:var(--ink);font-weight:600;cursor:default}
 .chipx{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:0 2px;font-size:11px}
@@ -1002,6 +1006,55 @@ function gameplayPanel(C){
   h+='<details class="more" id="more-info"'+(st.moreOpen?" open":"")+'><summary>Show more info</summary><div class="more-body">'+more+"</div></details>";
   return h;
 }
+const NB_PEOPLE=[["population","Citizens on the street"],["mixPoor","Poor %"],["mixAverage","Average %"],["mixRich","Rich %"],["mixWorker","Worker %"],["candidates","Recruits available"],["intel","Starting intel"],["installLevel","Level for Stash or HQ"]];
+const NB_COLS=[["code","Code"],["name","Name"],["wealth","Wealth (1 to 5)"],["nbType","Type"]].concat(DEMAND.flatMap(p=>[[p.k,p.label+" a day"],[p.pk,p.label+" price"]])).concat(NB_PEOPLE);
+const SHEETS={legal:{cols:()=>LEGAL_COLS,file:"legal-operations",sheet:"Legal",add:true},operations:{cols:()=>ILLEGAL_COLS,file:"illegal-operations",sheet:"Illegal",add:true},neighborhoods:{cols:()=>NB_COLS,file:"neighborhoods",sheet:"Neighborhoods",add:false}};
+function sheetHead(k,placeholder){return'<div class="row vhead"><input type="search" class="filter" id="cfg-filter" placeholder="'+esc(placeholder||"Filter by code or name")+'" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter"><span class="spacer"></span><button class="btn sm" type="button" data-xls="down" data-xk="'+k+'">⬇ Download Excel</button><button class="btn sm" type="button" data-xls="up" data-xk="'+k+'">⬆ Upload Excel</button></div>';}
+function vcol(fld){return fld==="code"?"minmax(104px,116px)":fld==="name"?"minmax(120px,1.3fr)":fld==="illegalText"?"minmax(200px,2.4fr)":fld==="type"||fld==="nbType"||fld==="wealth"?"minmax(124px,1fr)":"minmax(60px,1fr)";}
+function matchesFilter(it){const f=(st.cfgFilter||"").trim().toLowerCase();return!f||[it.code,it.name].some(v=>String(v||"").toLowerCase().indexOf(f)>=0);}
+function nbDataTab(d,errs){
+  const sel=(i,f,lab,opts,v,labels)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc((labels&&labels[o])||o)+"</option>").join("")+"</select></div>";
+  const nb=(i,f,lab,v,ph)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'"',lab,v,ph||"");
+  const name=n=>'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>";
+  const L=(d.neighborhoods||[]).map((n,i)=>({n,i})).filter(x=>matchesFilter(x.n));
+  const demandCols=[{h:"Neighborhood",w:vcol("name")},{h:"Wealth",w:vcol("wealth")},{h:"Type",w:vcol("nbType")}].concat(DEMAND.flatMap(p=>[{h:p.label+" a day",w:vcol("")},{h:p.label+" price",w:vcol("")}]));
+  const demandRows=L.map(({n,i})=>({html:name(n)+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth,NB_WEALTH_LABEL)+sel(i,"nbType","Type",NB_TYPES,n.nbType)+DEMAND.map(p=>nb(i,p.k,p.label+" a day",n[p.k])+nb(i,p.pk,p.label+" price",n[p.pk],p.price)).join("")}));
+  const peopleCols=[{h:"Neighborhood",w:vcol("name")}].concat(NB_PEOPLE.map(([,lab])=>({h:lab,w:vcol("")})));
+  const peopleRows=L.map(({n,i})=>({err:errs["nbdata:"+i],html:name(n)+NB_PEOPLE.map(([f,lab])=>nb(i,f,lab,n[f])).join("")}));
+  const empty=(d.neighborhoods||[]).length?"Nothing matches the filter.":"Add neighborhoods first, in Config.";
+  return sheetHead("neighborhoods","Filter by code or name")+'<div class="cfg-sub"><h4>Wealth, demand and price</h4><p>Per day and the price a citizen pays.</p></div><div class="tblwrap">'+plainTable(demandCols,demandRows,empty)+'</div><div class="cfg-sub"><h4>People</h4><p>Citizen mix is in percent and adds up to 100, or leave all four empty.</p></div><div class="tblwrap">'+plainTable(peopleCols,peopleRows,empty)+"</div>";
+}
+async function downloadSheet(k){
+  try{const X=await xlsxLib();const d=ensureDraft();const S=SHEETS[k];const cols=S.cols();const ops=d.operations||[];
+    const val=(it,f)=>f==="illegalText"?illText(it,ops):f==="wealth"?(NB_WEALTH.indexOf(it.wealth)>=0?NB_WEALTH.indexOf(it.wealth)+1:""):(it[f]==null?"":it[f]);
+    const rows=(d[k]||[]).map(it=>cols.map(([f])=>val(it,f)));
+    const ws=X.utils.aoa_to_sheet([cols.map(c=>c[1])].concat(rows));const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,S.sheet);X.writeFile(wb,S.file+".xlsx");}
+  catch(e){toast("Could not make the Excel file: "+e.message);}
+}
+function uploadSheet(k){st.xlsTarget=k;const inp=$("#xls-file");inp.value="";inp.click();}
+async function readSheet(file){
+  const k=st.xlsTarget;if(!file||!k)return;const S=SHEETS[k];
+  try{const X=await xlsxLib();const wb=X.read(await file.arrayBuffer());const ws=wb.Sheets[wb.SheetNames[0]];const rows=X.utils.sheet_to_json(ws,{header:1,defval:""});
+    if(!rows.length){toast("The file is empty.");return;}
+    const cols=S.cols();const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,"");
+    const alias={neighborhood:"name",neighbourhood:"name",wealth:"wealth",legal:"name",illegal:"name"};const idx=rows[0].map(hd=>{const c=cols.find(([f,lab])=>norm(lab)===norm(hd)||norm(f)===norm(hd));if(c)return c[0];const al=alias[norm(hd)];return al&&cols.some(([f])=>f===al)?al:null;});
+    const ci=idx.indexOf("code"),ni=idx.indexOf("name");
+    if(ci<0&&(S.add||ni<0)){toast("The file needs a Code column"+(S.add?".":" or a Name column."));return;}
+    const d=ensureDraft();const L=d[k];const ops=d.operations||[];let upd=0,add=0;const unknown=[];
+    for(const r of rows.slice(1)){
+      const code=ci>=0?String(r[ci]||"").trim():"";const nm=ni>=0?String(r[ni]||"").trim():"";if(!code&&!nm)continue;
+      let it=(code&&L.find(x=>x.code===code))||(!S.add&&nm&&L.find(x=>nameKey(x.name)===nameKey(nm)));
+      if(!it){if(!S.add||!code){unknown.push(code||nm);continue;}it={code};if(k==="legal")it.ill={};L.push(it);add++;}else upd++;
+      idx.forEach((f,j)=>{if(!f||f==="code")return;const v=r[j];
+        if(f==="name"){if(S.add&&String(v).trim())it.name=String(v).trim();return;}
+        if(f==="illegalText"){const ill={};String(v).split(",").map(s=>s.trim()).filter(Boolean).forEach(p=>{const nm2=p.split(":")[0].trim();const op=ops.find(o=>norm(o.name)===norm(nm2)||norm(o.code)===norm(nm2));if(op)ill[op.code]=(isObj(it.ill)&&it.ill[op.code])||"average";});it.ill=ill;return;}
+        if(f==="wealth"){const s=String(v).trim();if(!s){delete it.wealth;return;}const n=parseInt(s,10);if(n>=1&&n<=5)it.wealth=NB_WEALTH[n-1];else{const w=NB_WEALTH.find(x=>norm(x)===norm(s));if(w)it.wealth=w;}return;}
+        if(f==="nbType"){const s=String(v).trim();if(!s){delete it.nbType;return;}const w=NB_TYPES.find(x=>norm(x)===norm(s));if(w)it.nbType=w;return;}
+        if(f==="type"){if(String(v).trim())it.type=String(v).trim();return;}
+        if(v===""||v==null)delete it[f];else{const n=Number(v);if(isFinite(n))it[f]=n;}});}
+    markDirty();renderConfig();toast(upd+" updated"+(S.add?", "+add+" added":"")+(unknown.length?". Not found: "+unknown.slice(0,6).join(", "):"")+". Press Save values to keep it.");}
+  catch(e){toast("Could not read the file: "+e.message);}
+}
 function opsTable(k,d,errs){
   const items=d[k]||[];const isLegal=k==="legal";const cols=isLegal?LEGAL_COLS:ILLEGAL_COLS;const ops=d.operations||[];
   const f=(st.cfgFilter||"").trim().toLowerCase();
@@ -1017,36 +1070,11 @@ function opsTable(k,d,errs){
     }
     html+='<div class="act"><button class="ibtn del" type="button" data-del="'+k+'" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
     rows.push({err,html});});
-  const widths=cols.map(([fld])=>fld==="code"?"minmax(96px,120px)":fld==="name"?"minmax(150px,1.3fr)":fld==="illegalText"?"minmax(260px,2.2fr)":fld==="type"?"minmax(130px,1fr)":"minmax(84px,1fr)");
-  const head='<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code or name" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter"><span class="spacer"></span><button class="btn sm" type="button" data-xls="down" data-xk="'+k+'">⬇ Download Excel</button><button class="btn sm" type="button" data-xls="up" data-xk="'+k+'">⬆ Upload Excel</button></div>';
-  return head+'<div class="tblwrap">'+plainTable(cols.map(([,lab],j)=>({h:lab,w:widths[j]})).concat([{h:"",w:"40px"}]),rows,items.length?"Nothing matches the filter.":"None yet.")+'</div><div class="row"><button class="btn sm" type="button" data-add="'+k+'">+ Add '+(isLegal?"legal":"illegal")+"</button>"+(isLegal?'<span class="muted" style="font-size:12.5px">A legal can run several illegals. On a block it gets one of them at random. Headquarter makes the HQ of whoever owns the block.</span>':'<span class="muted" style="font-size:12.5px">Headquarter is the HQ of the block owner (player or gang). Recruitment site is where crew can be recruited.</span>')+"</div>";
+  const widths=cols.map(([fld])=>vcol(fld));
+  const head=sheetHead(k);
+  return head+'<div class="tblwrap">'+plainTable(cols.map(([,lab],j)=>({h:lab,w:widths[j]})).concat([{h:"",w:"36px"}]),rows,items.length?"Nothing matches the filter.":"None yet.")+'</div><div class="row"><button class="btn sm" type="button" data-add="'+k+'">+ Add '+(isLegal?"legal":"illegal")+"</button>"+(isLegal?'<span class="muted" style="font-size:12.5px">A legal can run several illegals. On a block it gets one of them at random. Headquarter makes the HQ of whoever owns the block.</span>':'<span class="muted" style="font-size:12.5px">Headquarter is the HQ of the block owner (player or gang). Recruitment site is where crew can be recruited.</span>')+"</div>";
 }
 async function xlsxLib(){if(window.XLSX)return window.XLSX;await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";s.onload=res;s.onerror=()=>rej(new Error("Excel library did not load"));document.head.appendChild(s);});return window.XLSX;}
-async function downloadSheet(k){
-  try{const X=await xlsxLib();const d=ensureDraft();const cols=k==="legal"?LEGAL_COLS:ILLEGAL_COLS;const ops=d.operations||[];
-    const rows=(d[k]||[]).map(it=>cols.map(([f])=>f==="illegalText"?illText(it,ops):(it[f]==null?"":it[f])));
-    const ws=X.utils.aoa_to_sheet([cols.map(c=>c[1])].concat(rows));const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,k==="legal"?"Legal":"Illegal");X.writeFile(wb,(k==="legal"?"legal-operations":"illegal-operations")+".xlsx");}
-  catch(e){toast("Could not make the Excel file: "+e.message);}
-}
-function uploadSheet(k){st.xlsTarget=k;const inp=$("#xls-file");inp.value="";inp.click();}
-async function readSheet(file){
-  const k=st.xlsTarget;if(!file||!k)return;
-  try{const X=await xlsxLib();const wb=X.read(await file.arrayBuffer());const ws=wb.Sheets[wb.SheetNames[0]];const rows=X.utils.sheet_to_json(ws,{header:1,defval:""});
-    if(!rows.length){toast("The file is empty.");return;}
-    const cols=k==="legal"?LEGAL_COLS:ILLEGAL_COLS;const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,"");
-    const idx=rows[0].map(hd=>{const c=cols.find(([f,lab])=>norm(lab)===norm(hd)||norm(f)===norm(hd));return c?c[0]:null;});
-    if(idx.indexOf("code")<0){toast("The file needs a Code column.");return;}
-    const d=ensureDraft();const list2=d[k];const ops=d.operations||[];let upd=0,add=0;
-    for(const r of rows.slice(1)){const code=String(r[idx.indexOf("code")]||"").trim();if(!code)continue;
-      let it=list2.find(x=>x.code===code);if(!it){it={code};if(k==="legal")it.ill={};list2.push(it);add++;}else upd++;
-      idx.forEach((f,j)=>{if(!f||f==="code")return;const v=r[j];
-        if(f==="illegalText"){const ill={};String(v).split(",").map(s=>s.trim()).filter(Boolean).forEach(p=>{const [nm,lv]=p.split(":").map(s=>s.trim());const op=ops.find(o=>norm(o.name)===norm(nm)||norm(o.code)===norm(nm));if(op)ill[op.code]=({good:"good",average:"average",poor:"poor"})[String(lv||"average").toLowerCase()]||"average";});it.ill=ill;}
-        else if(f==="name"||f==="type")it[f]=String(v);
-        else if(v===""||v==null)delete it[f];
-        else{const n=Number(v);if(isFinite(n))it[f]=n;}});}
-    markDirty();renderConfig();toast(upd+" updated, "+add+" added. Press Save values to keep it.");}
-  catch(e){toast("Could not read the file: "+e.message);}
-}
 function saveBlock(){
   const B=computeBlocks();const b=B.blocks.find(x=>x.anchor===st.sel);if(!b)return;
   const bd=blockData(b);const was=normBlock(bd?bd.data:null);const d=clone(was);
@@ -1378,15 +1406,6 @@ function bizValuesTab(d,errs){
     +plainTable([{h:"Code",w:"minmax(90px,110px)"},{h:"Name",w:"minmax(140px,1.3fr)"},{h:"Illegal data",w:"minmax(150px,1.3fr)"},{h:"Can purchase",w:"76px"},{h:"Legal front",w:"minmax(120px,1fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(82px,1fr)"}))).concat([{h:"Used",w:"48px"},{h:"",w:"64px"}]),rows,(d.businesses||[]).length?"Nothing matches the filter.":"No legal data yet.")
     +'<div class="row"><button class="btn sm" type="button" data-add="businesses">+ Add legal data</button></div>';
 }
-function nbDataTab(d,errs){
-  const sel=(i,f,lab,opts,v,labels)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc((labels&&labels[o])||o)+"</option>").join("")+"</select></div>";
-  const nb=(i,f,lab,v)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'"',lab,v,"");
-  const cols=[{h:"Neighborhood",w:"minmax(150px,1.4fr)"},{h:"Wealth",w:"minmax(118px,1fr)"},{h:"Type",w:"minmax(112px,1fr)"}].concat(DEMAND.flatMap(p=>[{h:p.label+" a day",w:"80px"},{h:p.label+" price",w:"80px"}])).concat([{h:"Citizens on the street",w:"84px"},{h:"Poor %",w:"68px"},{h:"Average %",w:"68px"},{h:"Rich %",w:"68px"},{h:"Worker %",w:"68px"},{h:"Recruits available",w:"84px"},{h:"Starting intel",w:"72px"},{h:"Level for Stash or HQ",w:"84px"}]);
-  const rows=(d.neighborhoods||[]).map((n,i)=>({err:errs["nbdata:"+i],html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth,NB_WEALTH_LABEL)+sel(i,"nbType","Type",NB_TYPES,n.nbType)
-    +DEMAND.map(p=>nb(i,p.k,p.label+" a day",n[p.k])+numIn("cf-nd-"+i+"-"+p.pk,'data-list="neighborhoods" data-i="'+i+'" data-f="'+p.pk+'"',p.label+" price",n[p.pk],p.price)).join("")
-    +nb(i,"population","Citizens on the street",n.population)+nb(i,"mixPoor","Poor %",n.mixPoor)+nb(i,"mixAverage","Average %",n.mixAverage)+nb(i,"mixRich","Rich %",n.mixRich)+nb(i,"mixWorker","Worker %",n.mixWorker)+nb(i,"candidates","Recruits available",n.candidates)+nb(i,"intel","Starting intel",n.intel)+nb(i,"installLevel","Level for Stash or HQ",n.installLevel)}));
-  return'<div class="row"><button class="btn" type="button" id="demand-paste">Paste from a spreadsheet</button><span class="muted" style="font-size:12.5px">Name, wealth 1 to 5, then daily demand of the four products.</span></div><div class="tblwrap wide2">'+plainTable(cols,rows,"Add neighborhoods first, in Config.")+"</div>";
-}
 function matrixTab(d){
   const ops=d.operations||[],legal=d.legal||[];
   if(!legal.length||!ops.length)return'<p class="note">Add legal operations and illegal operations in Config first.</p>';
@@ -1533,7 +1552,7 @@ function renderConfig(){
   const where=firstTab&&modeOf(firstTab.id)!==(st.cfgMode||"config")?" in "+(modeOf(firstTab.id)==="values"?"Values":"Config")+" › "+firstTab.label:"";
   const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving"+where:st.draftDirty?"Unsaved changes":"All changes saved";
   const cls=st.draftMsg==="Saved"?"ok":nErr?"bad":st.draftDirty?"dirty":"";
-  root.innerHTML='<div class="cfg" role="dialog" aria-modal="true" aria-labelledby="cfg-title"><header class="cfg-top"><h2 id="cfg-title">'+(st.cfgMode==="values"?"Values":"Config")+'</h2><span class="sub">'+(st.cfgMode==="values"?"What each building and neighborhood is worth in the game.":"Codes are what Unity reads. Rename freely: the map follows.")+'</span><span class="spacer"></span><button class="btn icon" type="button" id="cfg-close" title="Close (Esc)" aria-label="Close">✕</button></header><div class="cfg-body"><nav class="cfg-tabs" role="tablist" aria-label="Config sections">'+nav+'</nav><section class="cfg-main" role="tabpanel"><div class="inner">'+main+'</div></section></div><footer class="cfg-foot"><span class="state '+cls+'" id="cfg-state">'+esc(state)+'</span><span class="spacer"></span><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard changes</button><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>'+(st.cfgMode==="values"?"Save values":"Save config")+'</button></footer></div>';
+  root.innerHTML='<div class="cfg'+(st.cfgMode==="values"?" values":"")+'" role="dialog" aria-modal="true" aria-labelledby="cfg-title"><header class="cfg-top"><h2 id="cfg-title">'+(st.cfgMode==="values"?"Values":"Config")+'</h2><span class="sub">'+(st.cfgMode==="values"?"What each building and neighborhood is worth in the game.":"Codes are what Unity reads. Rename freely: the map follows.")+'</span><span class="spacer"></span><button class="btn icon" type="button" id="cfg-close" title="Close (Esc)" aria-label="Close">✕</button></header><div class="cfg-body"><nav class="cfg-tabs" role="tablist" aria-label="Config sections">'+nav+'</nav><section class="cfg-main" role="tabpanel"><div class="inner">'+main+'</div></section></div><footer class="cfg-foot"><span class="state '+cls+'" id="cfg-state">'+esc(state)+'</span><span class="spacer"></span><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard changes</button><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>'+(st.cfgMode==="values"?"Save values":"Save config")+'</button></footer></div>';
   const cur=root.querySelector('.cfg-tab[aria-selected="true"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest",inline:"nearest"});
 }
 function rerenderConfig(){setTimeout(()=>{const a=document.activeElement;const id=a&&a.id;const m=$(".cfg-main");const top=m?m.scrollTop:0;renderConfig();const m2=$(".cfg-main");if(m2)m2.scrollTop=top;if(id){const el=document.getElementById(id);if(el)el.focus();}},0);}
