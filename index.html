@@ -251,6 +251,17 @@ body{font-size:14px;line-height:1.45}
 .stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:15px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #f-total{margin-top:2px}
+.acct{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acct b{display:block;font-size:14px}
+.acct span{font-size:12.5px}
+.syncline{font-size:13px;display:flex;gap:8px;align-items:center}
+.syncline::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.syncline.ok::before{background:var(--ok)}
+.syncline.busy::before{background:var(--gold)}
+.syncline.bad{color:var(--danger)}
+.syncline.bad::before{background:var(--danger)}
+.pwbox{flex:1;min-width:150px;border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:7px 9px}
+.ver.hist{grid-template-columns:auto 1fr auto}
 .cfg.values .cfg-main .inner{max-width:none}
 .cfg.values .cfg-main{padding:18px 20px 40px}
 .cfg.values .trow{gap:8px;padding:7px 10px}
@@ -454,7 +465,7 @@ const STEPS=[
   {id:"owners",n:"5",label:"Owners",hint:"Who owns each block"},
   {id:"gameplay",n:"6",label:"Gameplay",hint:"Click a block to fill its data"}
 ];
-const TOOLS=[{id:"check",label:"Check",hint:"Errors before the Unity import"},{id:"values",label:"Values",hint:"Prices and neighborhood data"},{id:"config",label:"Config",hint:"Lists, codes and colors"},{id:"file",label:"Share",hint:"Save and share: team, export, import"}];
+const TOOLS=[{id:"check",label:"Check",hint:"Errors before the Unity import"},{id:"values",label:"Values",hint:"Prices and neighborhood data"},{id:"config",label:"Config",hint:"Lists, codes and colors"},{id:"file",label:"Share",hint:"Account, older copies, team and files"}];
 const LISTS=[
   {k:"terrain",title:"Ground types",color:true,lot:true},{k:"streets",title:"Street types",color:true},
   {k:"buildings",title:"Building types",color:true},{k:"markers",title:"Markers",color:true},
@@ -1160,14 +1171,11 @@ async function addMember(email,pass,role){
 function teamSection(){
   if(cloud.role!=="admin")return"";
   if(cloud.team===null){setTimeout(loadTeam,0);cloud.team="loading";}
-  let h='<div class="sec"><h3>Team</h3><p>Who can open and edit the shared map. Give each person a first password; they change it after signing in.</p>';
+  let h='<div class="sec"><h3>Team</h3><p>Who can open and edit the map. Give each person a first password; they change it themselves in Share.</p>';
   if(cloud.team==="loading")h+='<p class="muted">Loading…</p>';
   else h+='<div class="vers">'+cloud.team.map(m=>'<div class="ver" style="grid-template-columns:1fr auto auto"><span>'+esc(m.email)+'</span><span class="muted">'+esc(m.role||"editor")+"</span>"+(m.email===myEmail()?'<span class="muted">you</span>':'<button class="btn sm" type="button" data-unmember="'+esc(m.email)+'">Remove</button>')+"</div>").join("")+(cloud.team.length?"":'<p class="muted">Nobody yet.</p>')+"</div>";
   h+='<form id="member-form" style="display:flex;flex-direction:column;gap:8px"><div class="field"><label for="mb-email">Email</label><input type="email" id="mb-email" required placeholder="name@762interactive.com"></div><div class="field"><label for="mb-pass">First password</label><input type="text" id="mb-pass" minlength="6" placeholder="At least 6 characters; empty if they already have one"></div><div class="field"><label for="mb-role">Role</label><select id="mb-role"><option value="editor">Editor: edits the map</option><option value="admin">Admin: also manages the team</option></select></div><div class="row"><button class="btn primary" type="submit">Add to the team</button></div></form></div>';
   return h;
-}
-function accountSection(){
-  return'<div class="sec"><h3>Your password</h3><form id="pw-form" class="row"><input type="password" id="pw-new" minlength="6" required autocomplete="new-password" placeholder="New password" aria-label="New password" style="flex:1;min-width:160px;border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:7px 9px"><button class="btn" type="submit">Change</button></form></div>';
 }
 function cloudRef(){const f=cloud.fb;return f.doc(f.db,"maps",MAP_ID);}
 function cloudListen(){
@@ -1179,7 +1187,7 @@ function cloudListen(){
       if(!r){cloud.version=0;cloud.ready=true;cloudChanged();renderCloud();return;}
       if(r.data===payload()||!st.d.savedAt){if(r.data!==payload())applyRemote(r,false);cloud.version=r.version;cloud.ready=true;renderCloud();return;}
       cloud.first=r;
-      openModal('<h2>Which map do you want?</h2><p>The shared map (last saved by <b>'+esc(who(r.updatedBy))+"</b>, "+esc(when(r))+') is different from the one in this browser.</p><div class="row"><button class="btn primary" type="button" id="cloud-use-shared">Use the shared map</button><button class="btn" type="button" id="cloud-upload-mine">Replace it with mine</button></div><p class="muted" style="font-size:12.5px">Using the shared map keeps yours in Undo.</p>');
+      openModal('<h2>Which map do you want?</h2><p>The team map (last saved by <b>'+esc(who(r.updatedBy))+"</b>, "+esc(when(r))+') is different from the one in this browser.</p><div class="row"><button class="btn primary" type="button" id="cloud-use-shared">Use the team map</button><button class="btn" type="button" id="cloud-upload-mine">Use mine for everyone</button></div><p class="muted" style="font-size:12.5px">Your map stays in Undo either way.</p>');
       return;
     }
     if(!r||r.version<=cloud.version)return;
@@ -1217,87 +1225,60 @@ async function cloudPush(){
 }
 function saveVersion(data,v,manual){
   const f=cloud.fb;cloud.histAt=Date.now();
-  return f.addDoc(f.collection(f.db,"maps",MAP_ID,"versions"),{data,version:v,updatedAt:f.serverTimestamp(),updatedBy:cloud.user.email,manual:!!manual}).then(()=>{if(manual)toast("Version saved");cloud.history=null;if(st.step==="file")renderPanel();}).catch(e=>{if(manual)toast("Could not save the version: "+(e.code||e.message));});
+  return f.addDoc(f.collection(f.db,"maps",MAP_ID,"versions"),{data,version:v,updatedAt:f.serverTimestamp(),updatedBy:cloud.user.email,manual:!!manual}).then(()=>{if(manual)toast("Copy kept");cloud.history=null;if(st.step==="file")renderPanel();}).catch(e=>{if(manual)toast("Could not keep a copy: "+(e.code||e.message));});
 }
 function showConflict(r){
   cloud.conflict=r;renderCloud();
-  openModal('<h2>Someone else saved</h2><p><b>'+esc(who(r.updatedBy))+"</b> saved the shared map at "+esc(when(r))+' while you were editing. Pick which one stays.</p><div class="row"><button class="btn primary" type="button" id="cloud-load-theirs">Load theirs</button><button class="btn" type="button" id="cloud-keep-mine">Keep mine</button></div><p class="muted" style="font-size:12.5px">Load theirs keeps your version in Undo. Keep mine replaces theirs.</p>');
+  openModal('<h2>Someone else saved</h2><p><b>'+esc(who(r.updatedBy))+"</b> saved the map at "+esc(when(r))+' while you were editing. Pick which one stays.</p><div class="row"><button class="btn primary" type="button" id="cloud-load-theirs">Load theirs</button><button class="btn" type="button" id="cloud-keep-mine">Keep mine</button></div><p class="muted" style="font-size:12.5px">Your work stays in Undo either way.</p>');
 }
 async function loadHistory(){
   const f=cloud.fb;cloud.history="loading";renderPanel();
   try{const q=f.query(f.collection(f.db,"maps",MAP_ID,"versions"),f.orderBy("updatedAt","desc"),f.limit(25));const s=await f.getDocs(q);cloud.history=s.docs.map(d=>Object.assign({id:d.id},d.data()));}
-  catch(e){cloud.history=[];toast("Could not load versions: "+(e.code||e.message));}
+  catch(e){cloud.history=[];toast("Could not load older copies: "+(e.code||e.message));}
   renderPanel();
 }
 function cloudStatus(){
   if(!cloud.on)return null;
   if(!cloud.user)return{cls:"out",text:"Sign in"};
-  if(cloud.denied)return{cls:"bad",text:"No access to the shared map"};
-  if(cloud.err==="too-big")return{cls:"bad",text:"Map too big to share"};
-  if(cloud.err)return{cls:"bad",text:"Not shared: offline or error"};
-  if(cloud.conflict)return{cls:"bad",text:"Pick a version"};
+  if(cloud.denied)return{cls:"bad",text:"Not on the team"};
+  if(cloud.err==="too-big")return{cls:"bad",text:"Too big to save online"};
+  if(cloud.err)return{cls:"bad",text:"Not saved online"};
+  if(cloud.conflict)return{cls:"bad",text:"Someone else saved: choose"};
   if(!cloud.ready)return{cls:"busy",text:"Connecting…"};
-  if(cloud.saving||cloud.rev!==cloud.pushedRev)return{cls:"busy",text:"Sharing…"};
-  return{cls:"ok",text:"Shared"+(cloud.savedAt?" · "+hhmm(cloud.savedAt):"")};
+  if(cloud.saving||cloud.rev!==cloud.pushedRev)return{cls:"busy",text:"Saving…"};
+  return{cls:"ok",text:"Saved for the team"+(cloud.savedAt?" · "+hhmm(cloud.savedAt):"")};
 }
 function renderCloud(){
   const b=$("#cloud-btn");const s=cloudStatus();
   if(!s){b.hidden=true;return;}
-  b.hidden=false;b.className="cloud "+s.cls;b.textContent=s.text;b.title=cloud.user?"Signed in as "+cloud.user.email:"Sign in to work on the shared map";
+  b.hidden=false;b.className="cloud "+s.cls;b.textContent=s.text;b.title=cloud.user?"Signed in as "+cloud.user.email:"Sign in to work on the team map";
   if(st.step==="file")renderPanel();
 }
 function cloudSection(){
-  if(!cloud.on)return'<div class="sec"><h3>Shared map</h3><p>Not set up yet. Everyone works on their own copy; share it with Export and Import.</p></div>';
-  if(!cloud.user)return'<div class="sec"><h3>Shared map</h3><p>Sign in to work on the same map as the team. Every change is shared in a second and old versions stay in the history.</p><div class="row"><button class="btn primary" type="button" id="cloud-signin">Sign in</button></div></div>';
+  if(!cloud.on)return'<div class="sec"><h3>Account</h3><p>Online saving is not set up. Use Export and Import to pass the map around.</p></div>';
+  if(!cloud.user)return'<div class="sec"><h3>Account</h3><p>Sign in so your work is saved online and everyone sees the same map.</p><div class="row"><button class="btn primary" type="button" id="cloud-signin">Sign in</button></div></div>';
   const s=cloudStatus();
-  let h='<div class="sec"><h3>Shared map</h3><p>Signed in as <b>'+esc(cloud.user.email)+'</b>. '+esc(s.text)+".</p>";
-  if(cloud.denied)return h+'<p class="note warn">This account is not on the team. Ask an admin to add it.</p><div class="row"><button class="btn" type="button" id="cloud-signout">Sign out</button></div></div>';
-  else if(cloud.err==="too-big")h+='<p class="note warn">The map is over the size the shared save allows. Export it instead and tell Alberto.</p>';
-  else if(cloud.err)h+='<p class="note warn">Your work is still saved in this browser. It will be shared on your next change.</p><div class="row"><button class="btn" type="button" id="cloud-retry">Try again</button></div>';
-  h+='<div class="row"><button class="btn" type="button" id="cloud-version"'+(cloud.ready?"":" disabled")+'>Save a version now</button><button class="btn" type="button" id="cloud-signout">Sign out</button></div></div>';
-  h+='<div class="sec"><h3>Versions</h3><p>A version is kept every 10 minutes of work and whenever you save one. Restoring one makes it the shared map; Undo brings back what was there.</p>';
+  let h='<div class="sec"><h3>Account</h3><div class="acct"><div><b>'+esc(cloud.user.email)+'</b><span class="muted">'+esc(cloud.role==="admin"?"Admin":"Editor")+'</span></div><button class="btn sm" type="button" id="cloud-signout">Sign out</button></div>';
+  if(cloud.denied)return h+'<p class="note warn">This account is not on the team yet. Ask an admin to add it.</p></div>';
+  h+='<p class="syncline '+s.cls+'">'+esc(cloud.err||cloud.conflict?s.text:(s.cls==="ok"?"Everything you do is saved online and the team sees it right away.":s.text))+"</p>";
+  if(cloud.err==="too-big")h+='<p class="note warn">The map is too big to save online. Export it instead and tell Alberto.</p>';
+  else if(cloud.err)h+='<p class="note warn">Your work is safe in this browser. It goes online on your next change.</p><div class="row"><button class="btn" type="button" id="cloud-retry">Try again</button></div>';
+  h+='<form id="pw-form" class="row"><input type="password" id="pw-new" minlength="6" required autocomplete="new-password" placeholder="New password" aria-label="New password" class="pwbox"><button class="btn" type="submit">Change my password</button></form></div>';
+  h+='<div class="sec"><h3>History</h3><p>A copy of the map is kept every 10 minutes. If something went wrong, go back to an older copy. Undo can bring the newer one back.</p>';
   if(cloud.history==="loading")h+='<p class="muted">Loading…</p>';
-  else if(Array.isArray(cloud.history))h+=cloud.history.length?'<div class="vers">'+cloud.history.map((r,i)=>'<div class="ver"><span class="v">v'+esc(r.version)+'</span><span>'+esc(who(r.updatedBy))+" · "+esc(when(r))+(r.manual?" · saved":"")+'</span><button class="btn sm" type="button" data-restore="'+i+'">Restore</button></div>').join("")+"</div>":'<p class="muted">No versions yet.</p>';
-  else h+='<div class="row"><button class="btn" type="button" id="cloud-history"'+(cloud.ready?"":" disabled")+'>Show versions</button></div>';
-  h+="</div>";
-  if(!cloud.denied)h+=teamSection()+accountSection();
+  else if(Array.isArray(cloud.history))h+=cloud.history.length?'<div class="vers">'+cloud.history.map((r,i)=>'<div class="ver hist"><span>'+esc(when(r))+'</span><span class="muted">'+esc(who(r.updatedBy))+(r.manual?" · saved by hand":"")+'</span><button class="btn sm" type="button" data-restore="'+i+'">Go back to this</button></div>').join("")+"</div>":'<p class="muted">No copies yet.</p>';
+  h+='<div class="row">'+(Array.isArray(cloud.history)||cloud.history==="loading"?"":'<button class="btn" type="button" id="cloud-history"'+(cloud.ready?"":" disabled")+">See older copies</button>")+'<button class="btn" type="button" id="cloud-version"'+(cloud.ready?"":" disabled")+">Keep a copy now</button></div></div>";
+  h+=teamSection();
   return h;
 }
 function filePanel(){
-  let h="<h2>Save and share</h2><p>Your work is saved in this browser automatically"+(cloud.on?", and shared with the team when you are signed in":"")+". Unity reads the exported JSON.</p>"+cloudSection();
-  h+='<div class="sec"><h3>Export</h3><p>Downloads the map as a JSON file. Send it to the team or put it in the repo for the Unity import.</p><div class="row"><button class="btn primary" type="button" id="export-btn2">Export JSON</button></div></div>';
-  h+='<div class="sec"><h3>Import</h3><p>Opens a JSON exported from this tool. It replaces the current map. Undo brings it back.</p><div class="row"><button class="btn" type="button" id="import-btn">Choose a file</button></div></div>';
-  if(seed)h+='<div class="sec"><h3>Miro version</h3><p>The map as it was read from the Miro board'+(seed.source?" ("+esc(seed.source)+")":"")+'. Loading it replaces the map (ground, neighborhoods, streets, lots, owners, blocks). Config and Values stay as they are.</p><div class="row"><button class="btn" type="button" id="seed-btn">Load the Miro map</button></div></div>';
+  let h="<h2>Share</h2><p>Your account, older copies of the map, the team and the files Unity reads.</p>"+cloudSection();
+  h+='<div class="sec"><h3>Files</h3><p><b>Export JSON</b> makes the file Unity imports. <b>Import</b> opens one of those files and replaces the map (Undo brings it back).</p><div class="row"><button class="btn primary" type="button" id="export-btn2">Export JSON</button><button class="btn" type="button" id="import-btn">Import a file</button></div>';
+  if(seed)h+='<p style="margin-top:10px">Start over from Martin’s Miro board: puts the map back as it is there. Config and Values stay.</p><div class="row"><button class="btn" type="button" id="seed-btn">Load the Miro map</button></div>';
+  h+="</div>";
   if(st.d.review&&st.d.review.length)h+='<div class="sec"><h3>To review from Miro</h3><ul class="review">'+st.d.review.map(r=>"<li>"+esc(r)+"</li>").join("")+"</ul></div>";
   return h;
 }
-const CFG_TABS=[
-  {id:"map",group:"Map",label:"Map size",lists:[],title:"Map size",text:"How big the grid is and how it turns into meters in the game. To add rows or columns on one side, use the controls in 1. Ground."},
-  {id:"terrain",group:"Map",label:"Ground",lists:["terrain"],title:"Ground types",text:"What each cell is made of. Buildable lots are where buildings go; the first row fills empty cells."},
-  {id:"streets",group:"Map",label:"Streets",lists:["streets"],title:"Street types",text:"Streets run on the lines between cells."},
-  {id:"buildings",group:"Map",label:"Buildings",lists:["buildings"],title:"Building types",text:"The type of building on each lot. Unity picks the 3D models for each code."},
-  {id:"templates",area:"hidden",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Each block has 0 to 2 legal + illegal buildings, 0 to 3 legal only (can be bought), and the rest are other buildings."},
-  {id:"markers",area:"hidden",group:"Map",label:"Markers",lists:["markers"],title:"Markers",text:"Special spots on a lot: HQs and recruitment sites. PLY, G1, G2, G3 and REC are read by Unity, keep those codes."},
-  {id:"areas",group:"People and places",label:"Neighborhoods",lists:["neighborhoods","districts"],title:"Neighborhoods and districts",text:"Each neighborhood becomes its own scene in Unity, named after it."},
-  {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
-  {id:"businesses",area:"hidden",group:"Gameplay",label:"Businesses",lists:["businesses"],title:"Businesses",text:"Every business the map can place. Make one row per variant, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics); the same Type groups them. Price and income are set in Unity."},
-  {id:"legal",area:"hidden",group:"Gameplay",label:"Legal operations",lists:["legal"],title:"Legal operations",text:"The legal fronts a business can run, like Bar or Grocery Store. Which illegal operations fit behind each one is set in Values > Legal and illegal."},
-  {id:"rules",group:"Gameplay",label:"Robbery",lists:["robbery"],title:"Robbery levels",text:"How much a robbery on a block is worth. Legal and illegal operations live in Values."},
-  {id:"lotdata",area:"hidden",group:"Lots",label:"Lot data",lists:[],title:"Lot data",text:"What a block holds: how many of each legal data, plus other buildings. Rule: 0 to 2 with illegal, 0 to 3 legal only, the rest other. On the map, click a block and pick one."},
-  {id:"values",area:"hidden",group:"Rules",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
-  {id:"bizvalues",area:"hidden",group:"Lots",label:"Legal data",lists:[],title:"Legal data",text:"A legal building: its legal front, whether the player can buy it, its values, and the illegal data inside it (optional). Empty values use the defaults, shown in grey."},
-  {id:"matrix",area:"hidden",group:"Rules",label:"Legal and illegal",lists:[],title:"Legal and illegal",text:"Which illegal operation can run behind which legal front, and how well it fits. Good, Average and Poor change how the operation does in the game. Empty means it can't go there."},
-  {id:"itpl",area:"hidden",group:"Lots",label:"Illegal data",lists:[],title:"Illegal data",text:"The illegal side of a building: the illegal operations it runs and its values. Pick one inside a legal data."},
-  {id:"resources",area:"values",group:"Neighborhoods",label:"Resources",lists:[],title:"Resources",text:"The raw drugs found in each neighborhood: hydroponics, P2P and acid, with their quality. Saved here only for now; Unity does not place them yet."},
-  {id:"sites",area:"hidden",group:"Neighborhoods",label:"Illegal sites",lists:[],title:"Illegal sites and resources",text:"Illegal sites: the illegal buildings of each neighborhood. One row is one building and the operations it can run, like Hydroponics + Drying Rack. In Unity they fill the legal + illegal spots of the neighborhood's blocks. Resources: the raw drugs found in the neighborhood (hydroponics, P2P, acid). Saved here only for now."},
-  {id:"blocktypes",area:"values",group:"Operations",label:"Blocks",lists:[],title:"Blocks",text:"Block types: how many buildings a block has, which are legal and which also run illegal, by hand or random. In 6. Gameplay, click a block on the map and pick one. Rule: 0 to 2 with illegal, 0 to 3 legal only, the rest other."},
-  {id:"legalops",area:"values",group:"Operations",label:"Legal",lists:["legal"],title:"Legal",text:"The legal operations of the game (LegalOperationSO): every front a building can run, its values, and the illegal it can run behind it. Unity gets them on import; new rows become new operations."},
-  {id:"illops",area:"values",group:"Operations",label:"Illegal",lists:["operations"],title:"Illegal",text:"The illegal operations of the game (IllegalOperationSO) and their values, plus Headquarter and Recruitment site, which used to be markers. Unity gets them on import; new rows become new operations, copied from an existing one."},
-  {id:"demand",area:"hidden",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
-  {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhoods",lists:[],title:"Neighborhoods",text:"Everything each neighborhood scriptable gets in Unity: wealth (1 to 5), type, daily demand and price, citizens and recruits. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
-];
-const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business",templates:"template",legal:"legal operation"};
-const LIST_TEXT={districts:"Groups of neighborhoods.",robbery:"How much a robbery on the block is worth.",operations:"Illegal operations a building can run."};
 function cfgDefaults(){return{gridW:21,gridH:21,cellMeters:25,roadWidth:14,sidewalk:3,terrain:[],streets:[],buildings:[],markers:[],districts:[],neighborhoods:[],owners:[],operations:[],robbery:[],businesses:[],templates:[],legal:clone(LEGAL_SEED),defaults:{}};}
 function ensureDraft(){
   if(st.draft)return st.draft;
@@ -1674,12 +1655,12 @@ document.addEventListener("click",e=>{
   if(t.dataset.cfgopen){openConfig(t.dataset.cfgopen);return;}
   if(t.id==="cloud-btn"||t.id==="cloud-signin"){if(!cloud.user)openLogin();else setStep("file");return;}
   if(t.id==="lg-forgot"){const em=($("#lg-email")||{}).value||"";if(!em){const er=$("#lg-err");er.textContent="Type your email first.";er.hidden=false;return;}cloud.fb.sendPasswordResetEmail(cloud.fb.auth,em.trim()).then(()=>toast("If that email has an account, a reset link is on its way.")).catch(e=>toast(authMsg(e)));return;}
-  if(t.dataset.unmember){const em=t.dataset.unmember;if(!confirm("Remove "+em+" from the team? They lose access to the shared map."))return;cloud.fb.deleteDoc(cloud.fb.doc(cloud.fb.db,"editors",em)).then(()=>{toast(em+" removed");loadTeam();}).catch(e=>toast(authMsg(e)));return;}
+  if(t.dataset.unmember){const em=t.dataset.unmember;if(!confirm("Remove "+em+" from the team? They can no longer open the map."))return;cloud.fb.deleteDoc(cloud.fb.doc(cloud.fb.db,"editors",em)).then(()=>{toast(em+" removed");loadTeam();}).catch(e=>toast(authMsg(e)));return;}
   if(t.id==="cloud-signout"){cloud.fb.signOut(cloud.fb.auth);cloud.history=null;return;}
   if(t.id==="cloud-retry"){cloud.err=null;cloud.denied=false;if(!cloud.ready){if(cloud.unsub)cloud.unsub();cloudListen();}else cloudPush();renderCloud();return;}
   if(t.id==="cloud-version"){saveVersion(payload(),cloud.version,true);return;}
   if(t.id==="cloud-history"){loadHistory();return;}
-  if(t.dataset.restore!==undefined){const r=Array.isArray(cloud.history)&&cloud.history[+t.dataset.restore];if(r){applyRemote(r,true);cloudChanged();toast("Version "+r.version+" restored");}return;}
+  if(t.dataset.restore!==undefined){const r=Array.isArray(cloud.history)&&cloud.history[+t.dataset.restore];if(r){applyRemote(r,true);cloudChanged();toast("Back to the copy from "+when(r)+". Undo brings back the newer one.");}return;}
   if(t.id==="cloud-use-shared"){const r=cloud.first;closeModal();if(r){applyRemote(r,true);cloud.version=r.version;cloud.ready=true;cloud.first=null;renderCloud();}return;}
   if(t.id==="cloud-upload-mine"){const r=cloud.first;closeModal();if(r){cloud.version=r.version;cloud.ready=true;cloud.first=null;cloudChanged();}return;}
   if(t.id==="cloud-load-theirs"){const r=cloud.conflict;closeModal();if(r){cloud.conflict=null;applyRemote(r,true);cloud.version=r.version;toast("Loaded "+who(r.updatedBy)+"'s map. Undo brings yours back.");renderCloud();}return;}
