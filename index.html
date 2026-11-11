@@ -251,6 +251,13 @@ body{font-size:14px;line-height:1.45}
 .stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:15px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #f-total{margin-top:2px}
+.lotsum{display:flex;flex-direction:column;gap:4px;margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface-2)}
+.lotrow{display:grid;grid-template-columns:34px 1fr;gap:6px;font-size:13.5px}
+.lotrow b{font-family:var(--font-mono);color:var(--gold)}
+.illtag{font-style:normal;color:var(--boundary)}
+.lothead{display:flex;align-items:center;gap:8px;flex:1}
+.lothead input{flex:1;border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:5px 8px;font-size:14px;font-weight:600}
+.site.lotitem{grid-template-columns:auto 1fr auto}
 .slot-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}
 .slot-head b{display:block;font-size:14px}
 .slot-head small{display:block;color:var(--muted);font-size:12px}
@@ -462,7 +469,7 @@ function restore(s){const o=JSON.parse(s);st.d.cfg=o.cfg;st.d.cells=o.cells;st.d
 function undo(){if(!st.undo.length)return;st.redo.push(snapshot());restore(st.undo.pop());toast("Undone");}
 function redo(){if(!st.redo.length)return;st.undo.push(snapshot());restore(st.redo.pop());toast("Redone");}
 
-function list(k){return st.d.cfg&&Array.isArray(st.d.cfg[k])?st.d.cfg[k]:[];}
+function list(k){return st.d&&st.d.cfg&&Array.isArray(st.d.cfg[k])?st.d.cfg[k]:[];}
 function rebuildIdx(){st.idx={};for(const L of LISTS){const m=new Map();for(const it of list(L.k))if(it&&it.code)m.set(it.code,it);st.idx[L.k]=m;}}
 function num(v,d,lo,hi){const n=parseInt(v,10);if(!isFinite(n))return d;return Math.max(lo,Math.min(hi,n));}
 const gw=()=>num(st.d.cfg&&st.d.cfg.gridW,21,4,60);
@@ -508,11 +515,14 @@ function normBlock(x){x=isObj(x)?x:{};const n=v=>v==null||v===""?null:Math.max(0
     if(!Array.isArray(x.buys)){const c=n(x.legal!=null?x.legal:x.purchasable)||0;while(buys0.length<c)buys0.push("");}
     buys0.forEach(b=>slots.push({biz:b,it:""}));
   }
+  let lotOther=null;
+  if(x.lot){const lp=lotList().find(l=>l.code===x.lot);if(lp){slots=[];for(const li of lp.items||[]){const lg=list("businesses").find(q=>q.code===li.legal);if(!lg)continue;for(let k=0;k<Math.max(1,+li.n||1);k++)slots.push({biz:lg.code,it:lg.it||""});}lotOther=Math.max(0,+lp.other||0);}}
   const pairs=slots.filter(s=>s.it),buys=slots.filter(s=>!s.it).map(s=>s.biz);
-  const hasCounts=Array.isArray(x.slots)||Array.isArray(x.pairs)||Array.isArray(x.buys)||x.ill!=null||x.legal!=null||x.purchasable!=null;
-  return{legal:hasCounts?buys.length:null,ill:hasCounts?pairs.length:null,nonPlay:n(x.nonPlay),slots,pairs,buys,tpl:x.tpl||null,illegal:Array.isArray(x.illegal)?x.illegal:[],robbery:x.robbery||null,other:x.other||null,notes:x.notes||"",reqIll:null,reqBuy:buys.filter(Boolean),vals:isObj(x.vals)?x.vals:{}};}
-function itList(){return(st.d.cfg&&Array.isArray(st.d.cfg.illegalTemplates))?st.d.cfg.illegalTemplates:[];}
-function itName(it,ops){return(it&&it.ops&&it.ops.length)?it.ops.map(c=>((ops||list("operations")).find(o=>o.code===c)||{}).name||c).join(" + "):"Empty template";}
+  const hasCounts=!!x.lot||Array.isArray(x.slots)||Array.isArray(x.pairs)||Array.isArray(x.buys)||x.ill!=null||x.legal!=null||x.purchasable!=null;
+  return{lot:x.lot||null,legal:hasCounts?buys.length:null,ill:hasCounts?pairs.length:null,nonPlay:lotOther!=null?lotOther:n(x.nonPlay),slots,pairs,buys,tpl:x.tpl||null,illegal:Array.isArray(x.illegal)?x.illegal:[],robbery:x.robbery||null,other:x.other||null,notes:x.notes||"",reqIll:null,reqBuy:buys.filter(Boolean),vals:isObj(x.vals)?x.vals:{}};}
+function lotList(){return(st.d&&st.d.cfg&&Array.isArray(st.d.cfg.lots))?st.d.cfg.lots:[];}
+function itList(){return(st.d&&st.d.cfg&&Array.isArray(st.d.cfg.illegalTemplates))?st.d.cfg.illegalTemplates:[];}
+function itName(it,ops){if(it&&it.name)return it.name;return(it&&it.ops&&it.ops.length)?it.ops.map(c=>((ops||list("operations")).find(o=>o.code===c)||{}).name||c).join(" + "):"Empty template";}
 function seedIllegalTemplates(){
   if(!st.d.cfg||Array.isArray(st.d.cfg.illegalTemplates))return;
   const seen={},out=[];
@@ -549,7 +559,8 @@ function issues(){
     const d=normBlock(bd.data);
     if(d.robbery&&!I.robbery.has(d.robbery))add("error",b.ax,b.ay,'Unknown robbery level "'+d.robbery+'"');
     if(d.other&&!I.robbery.has(d.other))add("error",b.ax,b.ay,'Unknown robbery level "'+d.other+'"');
-    if(d.legal==null&&d.ill==null&&d.nonPlay==null)add("warn",b.ax,b.ay,"Block has no buildings set (legal + illegal, legal only, other)");
+    if(!d.lot&&d.legal==null&&d.ill==null&&d.nonPlay==null)add("warn",b.ax,b.ay,"Block has no lot data");
+    if(d.lot&&!lotList().some(l=>l.code===d.lot))add("error",b.ax,b.ay,'Unknown lot data "'+d.lot+'"');
     if((d.ill||0)>MAX_LI)add("warn",b.ax,b.ay,"Block has "+d.ill+" legal + illegal buildings, the rule is 0 to "+MAX_LI);
     if((d.legal||0)>MAX_LO)add("warn",b.ax,b.ay,"Block has "+d.legal+" legal only buildings, the rule is 0 to "+MAX_LO);
     const its=itList();
@@ -835,36 +846,30 @@ function templatePicker(){
   return'<p class="note">Click the top-left cell where the block goes. Its cells become lots with streets around them. Undo takes it back.</p><div class="swatches">'+T.map(t=>'<button class="sw" type="button" data-tpl="'+esc(t.code)+'" aria-pressed="'+(t.code===st.tpl)+'"><span class="chip" style="background:'+esc(color("buildings",t.building,"#888888"))+'"></span><span class="code">'+esc(t.code)+'</span><span class="nm" title="'+esc(t.name||"")+'">'+esc((+t.ill||0)+" legal + illegal · "+(+t.legal||0)+" legal only · "+(+t.other||0)+" other")+'</span><span class="cnt">'+num(t.w,1,1,20)+"×"+num(t.h,1,1,20)+"</span></button>").join("")+'</div><div class="row"><button class="btn sm" type="button" data-cfgopen="templates">Edit templates</button></div>';
 }
 function gameplayPanel(C){
-  const B=computeBlocks();const stamp=st.gmode==="stamp";
-  let h="<h2>6. Gameplay</h2><p>Click a block and set its buildings, or place a ready-made template.</p>";
-  h+='<div class="seg" role="group" aria-label="Mode"><button type="button" data-gmode="select" aria-pressed="'+!stamp+'">Pick a block</button><button type="button" data-gmode="stamp" aria-pressed="'+stamp+'">Place a template</button></div>';
-  if(stamp)return h+templatePicker();
+  const B=computeBlocks();st.gmode="select";
+  let h="<h2>6. Gameplay</h2><p>Click a block on the map and pick its lot data.</p>";
   const b=B.blocks.find(x=>x.anchor===st.sel);
-  if(!b)return h+statRow([[C.filled+"/"+C.blocks,"blocks set"],[C.lots,"lots"],[itList().length,"illegal presets"]])+'<p class="note">Click a block on the map. The number on a block is how many buildings it has.</p>';
-  const bd=blockData(b);const d=normBlock(bd?bd.data:null);const ns=blockNbs(b);
-  const bz=list("businesses"),its=itList();
-  const nLI=d.slots.filter(s=>s.it).length,nLO=d.slots.length-nLI;
+  if(!b)return h+statRow([[C.filled+"/"+C.blocks,"blocks set"],[lotList().length,"lot data"],[list("businesses").length,"legal data"]])+'<p class="note">Click a block on the map. The number on a block is how many buildings it has.</p>';
+  const bd=blockData(b);const raw=bd?bd.data:{};const d=normBlock(raw);const ns=blockNbs(b);
+  const lots=lotList();const lot=lots.find(x=>x.code===raw.lot);
   h+='<div class="blockline"><b>Block '+esc(cellName(b.ax,b.ay))+"</b><span>"+esc(ns.map(c=>nameOf("neighborhoods",c)).join(", ")||"No neighborhood")+"</span></div>";
   if(ns.length>1)h+='<p class="note warn">This block touches '+ns.length+" neighborhoods. Add a street between them.</p>";
-  const bizOpts=cur=>'<option value="">Any business</option>'+bz.map(x=>'<option value="'+esc(x.code)+'"'+(cur===x.code?" selected":"")+">"+esc(x.name||x.code)+"</option>").join("")+'<option value="__new">+ New business…</option>';
-  const itOpts=cur=>'<option value="">No illegal</option><option value="*"'+(cur==="*"?" selected":"")+">Any illegal preset</option>"+its.map(x=>'<option value="'+esc(x.code)+'"'+(cur===x.code?" selected":"")+">"+esc(itName(x))+"</option>").join("");
-  h+='<div class="sec"><h3>Playable buildings</h3><p class="muted" style="font-size:12.5px">Up to '+MAX_LO+" legal only and up to "+MAX_LI+" with illegal.</p>";
-  h+=d.slots.length?d.slots.map((s,i)=>{const bzi=bz.find(x=>x.code===s.biz),it=its.find(x=>x.code===s.it);const bad=bzi&&bzi.legal&&it?it.ops.filter(o=>!legalAllows(bzi.legal,o)):[];
-    return'<div class="slot"><select data-slot="1" data-i="'+i+'" data-f="biz" aria-label="Legal business">'+bizOpts(s.biz)+'</select><select data-slot="1" data-i="'+i+'" data-f="it" aria-label="Illegal preset"'+(s.it?' class="ill"':"")+">"+itOpts(s.it)+'</select><button type="button" class="ibtn del" data-slotdel="1" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button>'+(bad.length?'<div class="slot-warn">'+esc((bzi.name||bzi.code)+" does not take "+bad.map(o=>nameOf("operations",o)).join(", "))+"</div>":"")+"</div>";}).join(""):'<p class="slot-none">No playable buildings yet.</p>';
-  const over=nLI>MAX_LI?"More than "+MAX_LI+" with illegal.":nLO>MAX_LO?"More than "+MAX_LO+" legal only.":"";
-  if(over)h+='<p class="note warn">'+esc(over)+"</p>";
-  h+='<div class="row" style="margin-top:8px"><button class="btn sm" type="button" data-slotadd="1"'+(d.slots.length>=MAX_LI+MAX_LO?" disabled":"")+">+ Add a building</button></div></div>";
-  h+='<div class="count-row"><label for="f-np"><b>Other buildings</b><small>Background, not playable</small></label><div class="stepper"><button type="button" data-bump="f-np" data-d="-1" aria-label="One less">−</button><input type="number" id="f-np" min="0" max="999" inputmode="numeric" placeholder="0" value="'+esc(d.nonPlay==null?"":d.nonPlay)+'"><button type="button" data-bump="f-np" data-d="1" aria-label="One more">+</button></div></div>';
-  h+='<p id="f-total" style="font-size:12.5px" class="muted">'+esc(blockTotal(d)+" buildings in total.")+"</p>";
+  h+='<div class="sec"><h3>Lot data</h3><div class="slot"><select id="f-lot" aria-label="Lot data"><option value="">None</option>'+lots.map(x=>'<option value="'+esc(x.code)+'"'+(raw.lot===x.code?" selected":"")+">"+esc(x.name||x.code)+"</option>").join("")+'<option value="__new">+ New lot data…</option></select>'+(lot?'<button class="btn sm" type="button" data-cfgopen="lotdata">Edit</button>':"")+"</div>";
+  if(lot){
+    const L=list("businesses"),I=itList();
+    h+='<div class="lotsum">'+(lot.items||[]).filter(x=>x.legal).map(x=>{const lg=L.find(y=>y.code===x.legal)||{};const il=I.find(y=>y.code===lg.it);return'<div class="lotrow"><b>'+(+x.n||1)+"×</b><span>"+esc(lg.name||x.legal)+(il?' <em class="illtag">+ '+esc(itName(il))+"</em>":"")+(lg.canBuy===false?' <em class="muted">can\'t buy</em>':"")+"</span></div>";}).join("")+'<div class="lotrow"><b>'+(+lot.other||0)+"×</b><span>Other buildings</span></div></div>";
+    h+='<p id="f-total" style="font-size:12.5px" class="muted">'+esc(blockTotal(d)+" buildings in total.")+"</p>";
+  }else if(d.slots.length||d.nonPlay)h+='<p class="note">Set before lot data existed: '+esc(blockTotal(d)+" buildings")+". Pick a lot data to replace it.</p>";
+  else h+='<p class="slot-none">Pick the lot data for this block. Make new ones in Values › Lot data.</p>';
+  h+="</div>";
   const types={};for(const [x,y] of b.cells){const t=cellAt(x,y).b;if(t)types[t]=(types[t]||0)+1;}
   const mk=[];for(const [x,y] of b.cells){const m=cellAt(x,y).m;if(m)mk.push(m+" "+cellName(x,y));}
   const ro=list("robbery");
   const opt=cur=>'<option value="">Not set</option>'+ro.map(r=>'<option value="'+esc(r.code)+'"'+(cur===r.code?" selected":"")+">"+esc(r.name||r.code)+"</option>").join("");
-  const tp=d.tpl&&st.idx.templates.get(d.tpl);
   const df=(st.d.cfg&&isObj(st.d.cfg.defaults))?st.d.cfg.defaults:{};
-  let more='<dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Building types</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+(mk.length?"<dt>Markers</dt><dd>"+esc(mk.join(", "))+"</dd>":"")+(d.tpl?"<dt>Template</dt><dd>"+esc(tp?(tp.name||tp.code):d.tpl)+"</dd>":"")+"</dl>";
+  let more='<dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Building types</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+(mk.length?"<dt>Markers</dt><dd>"+esc(mk.join(", "))+"</dd>":"")+"</dl>";
   more+='<div class="field"><label for="f-rob">Robbery, playable buildings</label><select id="f-rob">'+opt(d.robbery||"")+'</select></div><div class="field"><label for="f-other">Robbery, other buildings</label><select id="f-other">'+opt(d.other||"")+"</select></div>";
-  more+='<h3>Values for this block</h3><p class="muted" style="font-size:12.5px">Empty uses the business value, then the default in Values.</p><div class="vgrid">'+VALUES.map(v=>'<div class="field"><label for="f-v-'+v.k+'">'+esc(v.label)+'</label><input type="number" min="0" id="f-v-'+v.k+'" value="'+esc(d.vals[v.k]==null?"":d.vals[v.k])+'" placeholder="'+esc(df[v.k]==null?"Not set":"Default "+df[v.k])+'"></div>').join("")+"</div>";
+  more+='<h3>Values for this block</h3><p class="muted" style="font-size:12.5px">Empty uses the legal data value, then the default in Values.</p><div class="vgrid">'+VALUES.map(v=>'<div class="field"><label for="f-v-'+v.k+'">'+esc(v.label)+'</label><input type="number" min="0" id="f-v-'+v.k+'" value="'+esc(d.vals[v.k]==null?"":d.vals[v.k])+'" placeholder="'+esc(df[v.k]==null?"Not set":"Default "+df[v.k])+'"></div>').join("")+"</div>";
   more+='<div class="field"><label for="f-notes">Notes (not imported)</label><textarea id="f-notes">'+esc(d.notes)+"</textarea></div>";
   if(bd&&bd.key!==b.anchor)more+='<p class="note">This data was saved when the block had another shape. The next edit moves it to '+esc(cellName(b.ax,b.ay))+".</p>";
   h+='<details class="more" id="more-info"'+(st.moreOpen?" open":"")+'><summary>Show more info</summary><div class="more-body">'+more+"</div></details>";
@@ -876,12 +881,14 @@ function saveBlock(){
   const n=id=>{const el=$("#"+id);if(!el)return undefined;return el.value===""?null:Math.max(0,parseInt(el.value,10)||0);};
   const set=(f,v)=>{if(v!==undefined)d[f]=v;};
   set("nonPlay",n("f-np"));
+  const lotSel=$("#f-lot");if(lotSel){if(lotSel.value==="__new"){renderPanel();openConfig("lotdata");lotAdd();return;}d.lot=lotSel.value||null;}
   if($("#f-rob")){d.robbery=$("#f-rob").value||null;d.other=$("#f-other").value||null;d.notes=$("#f-notes").value||"";}
   const vals={};let any=false;for(const v of VALUES){const el=$("#f-v-"+v.k);if(!el)continue;any=true;if(el.value!=="")vals[v.k]=Math.max(0,Number(el.value)||0);}if(any)d.vals=vals;
   if(JSON.stringify(d)===JSON.stringify(was))return;
   pushUndo();
   if(bd){for(const k of bd.legacy)delete st.d.blocks[k];delete st.d.blocks[bd.key];}
   st.d.blocks[b.anchor]=d;save();renderMap();renderSide();renderToolbar();
+  if(was.lot!==d.lot){renderPanel();return;}
   const tot=$("#f-total");if(tot)tot.textContent=blockTotal(d)+" buildings in total. Any business means one is picked at random.";
 }
 function editBlock(fn){
@@ -1063,17 +1070,18 @@ const CFG_TABS=[
   {id:"terrain",group:"Map",label:"Ground",lists:["terrain"],title:"Ground types",text:"What each cell is made of. Buildable lots are where buildings go; the first row fills empty cells."},
   {id:"streets",group:"Map",label:"Streets",lists:["streets"],title:"Street types",text:"Streets run on the lines between cells."},
   {id:"buildings",group:"Map",label:"Buildings",lists:["buildings"],title:"Building types",text:"The type of building on each lot. Unity picks the 3D models for each code."},
-  {id:"templates",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Each block has 0 to 2 legal + illegal buildings, 0 to 3 legal only (can be bought), and the rest are other buildings."},
+  {id:"templates",area:"hidden",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Each block has 0 to 2 legal + illegal buildings, 0 to 3 legal only (can be bought), and the rest are other buildings."},
   {id:"markers",group:"Map",label:"Markers",lists:["markers"],title:"Markers",text:"Special spots on a lot: HQs and recruitment sites. PLY, G1, G2, G3 and REC are read by Unity, keep those codes."},
   {id:"areas",group:"People and places",label:"Neighborhoods",lists:["neighborhoods","districts"],title:"Neighborhoods and districts",text:"Each neighborhood becomes its own scene in Unity, named after it."},
   {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
-  {id:"businesses",group:"Gameplay",label:"Businesses",lists:["businesses"],title:"Businesses",text:"Every business the map can place. Make one row per variant, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics); the same Type groups them. Price and income are set in Unity."},
+  {id:"businesses",area:"hidden",group:"Gameplay",label:"Businesses",lists:["businesses"],title:"Businesses",text:"Every business the map can place. Make one row per variant, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics); the same Type groups them. Price and income are set in Unity."},
   {id:"legal",group:"Gameplay",label:"Legal operations",lists:["legal"],title:"Legal operations",text:"The legal fronts a business can run, like Bar or Grocery Store. Which illegal operations fit behind each one is set in Values > Legal and illegal."},
   {id:"rules",group:"Gameplay",label:"Operations and robbery",lists:["operations","robbery"],title:"Operations and robbery",text:"The lists used by businesses and by 6. Gameplay."},
-  {id:"values",area:"values",group:"Buildings",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
-  {id:"bizvalues",area:"values",group:"Buildings",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
-  {id:"matrix",area:"values",group:"Businesses",label:"Legal and illegal",lists:[],title:"Legal and illegal",text:"Which illegal operation can run behind which legal front, and how well it fits. Good, Average and Poor change how the operation does in the game. Empty means it can't go there."},
-  {id:"itpl",area:"values",group:"Businesses",label:"Illegal templates",lists:[],title:"Illegal templates",text:"The mixes of illegal operations a building can run, like Hydroponics + Drying Rack. On each block, a legal + illegal building is a legal business plus one of these."},
+  {id:"lotdata",area:"values",group:"Lots",label:"Lot data",lists:[],title:"Lot data",text:"What a block holds: how many of each legal data, plus other buildings. Rule: 0 to 2 with illegal, 0 to 3 legal only, the rest other. On the map, click a block and pick one."},
+  {id:"values",area:"values",group:"Rules",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
+  {id:"bizvalues",area:"values",group:"Lots",label:"Legal data",lists:[],title:"Legal data",text:"A legal building: its legal front, whether the player can buy it, its values, and the illegal data inside it (optional). Empty values use the defaults, shown in grey."},
+  {id:"matrix",area:"values",group:"Rules",label:"Legal and illegal",lists:[],title:"Legal and illegal",text:"Which illegal operation can run behind which legal front, and how well it fits. Good, Average and Poor change how the operation does in the game. Empty means it can't go there."},
+  {id:"itpl",area:"values",group:"Lots",label:"Illegal data",lists:[],title:"Illegal data",text:"The illegal side of a building: the illegal operations it runs and its values. Pick one inside a legal data."},
   {id:"resources",area:"values",group:"Neighborhoods",label:"Resources",lists:[],title:"Resources",text:"The raw drugs found in each neighborhood: hydroponics, P2P and acid, with their quality. Saved here only for now; Unity does not place them yet."},
   {id:"sites",area:"hidden",group:"Neighborhoods",label:"Illegal sites",lists:[],title:"Illegal sites and resources",text:"Illegal sites: the illegal buildings of each neighborhood. One row is one building and the operations it can run, like Hydroponics + Drying Rack. In Unity they fill the legal + illegal spots of the neighborhood's blocks. Resources: the raw drugs found in the neighborhood (hydroponics, P2P, acid). Saved here only for now."},
   {id:"demand",area:"values",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
@@ -1088,6 +1096,7 @@ function ensureDraft(){
   for(const L of LISTS){if(!Array.isArray(st.draft[L.k]))st.draft[L.k]=[];for(const it of st.draft[L.k])it._o=it.code;}
   if(!isObj(st.draft.defaults))st.draft.defaults={};
   if(!Array.isArray(st.draft.illegalTemplates))st.draft.illegalTemplates=[];
+  if(!Array.isArray(st.draft.lots))st.draft.lots=[];
   return st.draft;
 }
 const modeOf=id=>{const tb=CFG_TABS.find(x=>x.id===id);return tb&&tb.area==="values"?"values":"config";};
@@ -1177,13 +1186,20 @@ function valuesTab(d){
   return plainTable([{h:"Value",w:"minmax(180px,1.2fr)"},{h:"Default",w:"160px"},{h:"What it is",w:"minmax(200px,2fr)"}],VALUES.map(v=>({html:'<div class="ro">'+esc(v.label)+"</div>"+numIn("cf-def-"+v.k,'data-def="'+v.k+'"',v.label,d.defaults[v.k],"Not set")+'<div class="muted" style="font-size:12.5px">'+esc(v.help)+"</div>"})),"");
 }
 function bizValuesTab(d,errs){
-  const f=(st.cfgFilter||"").trim().toLowerCase();const u=usage();
-  const rows=[];(d.businesses||[]).forEach((it,i)=>{if(f&&![it.code,it.name,it.type].some(v=>String(v||"").toLowerCase().indexOf(f)>=0))return;
-    const base='data-list="businesses" data-i="'+i+'"';const err=errs["businesses:"+i];const n=it._o?(u.businesses[it._o]||0):0;
-    rows.push({err,html:'<div data-label="Code"><input type="text" class="c'+(err&&/code/i.test(err)?" bad":"")+'" id="cf-businesses-'+i+'-code" '+base+' data-f="code" value="'+esc(it.code)+'" aria-label="Code"></div><div data-label="Name"><input type="text" id="cf-businesses-'+i+'-name" '+base+' data-f="name" value="'+esc(it.name)+'" placeholder="Bakery" aria-label="Name"></div>'+VALUES.map(v=>numIn("cf-bv-"+i+"-"+v.k,base+' data-f="'+v.k+'"',v.label,it[v.k],d.defaults[v.k]==null?"":String(d.defaults[v.k]))).join("")+'<div class="act"><button class="ibtn del" type="button" data-del="businesses" data-i="'+i+'" title="'+(n?"Used "+n+" times":"Remove")+'" aria-label="Remove">✕</button></div>'});});
-  return'<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code, name or type" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter businesses"><span class="muted" style="font-size:12.5px">Legal front, type and recruits are in Config › Businesses.</span></div>'
-    +plainTable([{h:"Code",w:"minmax(96px,120px)"},{h:"Name",w:"minmax(150px,1.4fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(90px,1fr)"}))).concat([{h:"",w:"40px"}]),rows,(d.businesses||[]).length?"No business matches the filter.":"No businesses yet.")
-    +'<div class="row"><button class="btn sm" type="button" data-add="businesses">+ Add business</button></div>';
+  const f=(st.cfgFilter||"").trim().toLowerCase();const u=usage();const its=d.illegalTemplates||[];const lots=d.lots||[];
+  const rows=[];(d.businesses||[]).forEach((it,i)=>{if(f&&![it.code,it.name].some(v=>String(v||"").toLowerCase().indexOf(f)>=0))return;
+    const base='data-list="businesses" data-i="'+i+'"';const err=errs["businesses:"+i];const used=lots.filter(l=>(l.items||[]).some(x=>x.legal===it.code)).length;
+    const sel=(fld,lab,opts,cur)=>'<div data-label="'+lab+'"><select id="cf-businesses-'+i+"-"+fld+'" '+base+' data-f="'+fld+'" aria-label="'+lab+'">'+opts.map(([v,nm])=>'<option value="'+esc(v)+'"'+((cur||"")===v?" selected":"")+">"+esc(nm)+"</option>").join("")+"</select></div>";
+    const chk=(fld,lab,on)=>'<div data-label="'+lab+'"><label class="chk"><input type="checkbox" id="cf-businesses-'+i+"-"+fld+'" '+base+' data-f="'+fld+'"'+(on?" checked":"")+"></label></div>";
+    rows.push({err,html:'<div data-label="Code"><input type="text" class="c'+(err&&/code/i.test(err)?" bad":"")+'" id="cf-businesses-'+i+'-code" '+base+' data-f="code" value="'+esc(it.code)+'" aria-label="Code"></div><div data-label="Name"><input type="text" id="cf-businesses-'+i+'-name" '+base+' data-f="name" value="'+esc(it.name)+'" placeholder="Bakery" aria-label="Name"></div>'
+      +sel("it","Illegal data",[["","No illegal"]].concat(its.map(x=>[x.code,itName(x,d.operations)])),it.it)
+      +chk("canBuy","Can purchase",it.canBuy!==false)
+      +sel("legal","Legal front",[["","Not set"]].concat((d.legal||[]).map(x=>[x.code,x.name||x.code])),it.legal)
+      +VALUES.map(v=>numIn("cf-bv-"+i+"-"+v.k,base+' data-f="'+v.k+'"',v.label,it[v.k],d.defaults[v.k]==null?"":String(d.defaults[v.k]))).join("")
+      +'<div data-label="Used"><span class="used'+(used?" on":"")+'" title="Used in '+used+' lot data">'+(used||"–")+'</span></div><div class="act"><button class="ibtn" type="button" data-dup="'+i+'" data-dl="businesses" title="Duplicate" aria-label="Duplicate">⧉</button><button class="ibtn del" type="button" data-del="businesses" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>'});});
+  return'<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code or name" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter legal data"></div>'
+    +plainTable([{h:"Code",w:"minmax(90px,110px)"},{h:"Name",w:"minmax(140px,1.3fr)"},{h:"Illegal data",w:"minmax(150px,1.3fr)"},{h:"Can purchase",w:"76px"},{h:"Legal front",w:"minmax(120px,1fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(82px,1fr)"}))).concat([{h:"Used",w:"48px"},{h:"",w:"64px"}]),rows,(d.businesses||[]).length?"Nothing matches the filter.":"No legal data yet.")
+    +'<div class="row"><button class="btn sm" type="button" data-add="businesses">+ Add legal data</button></div>';
 }
 function nbDataTab(d,errs){
   const sel=(i,f,lab,opts,v)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o]||o)+"</option>").join("")+"</select></div>";
@@ -1202,9 +1218,40 @@ function matrixTab(d){
 function illegalSlots(code){let n=0;for(const b of computeBlocks().blocks){const ns=blockNbs(b);if(ns.length===1&&ns[0]===code){const bd=blockData(b);if(bd)n+=normBlock(bd.data).ill||0;}}return n;}
 function itUsage(){const u={};for(const v of Object.values(st.d.blocks)){if(!isObj(v))continue;for(const p of(Array.isArray(v.pairs)?v.pairs:[]))if(p&&p.it)u[p.it]=(u[p.it]||0)+1;}return u;}
 function illegalTemplatesTab(d){
-  const ops=d.operations||[];const u=itUsage();const L=d.illegalTemplates||[];
-  const rows=L.map((it,i)=>({html:'<div class="ro"><b>'+esc(it.code)+"</b>"+esc(itName(it,ops))+'</div><div class="chips">'+it.ops.map(c=>'<button type="button" class="chip2" aria-pressed="true" data-itop="'+esc(c)+'" data-iti="'+i+'" title="Remove">'+esc(((ops.find(o=>o.code===c)||{}).name)||c)+" ✕</button>").join("")+(it.ops.length<ops.length?'<select class="addop" data-itaddop="'+i+'" aria-label="Add an operation"><option value="">+ operation</option>'+ops.filter(o=>it.ops.indexOf(o.code)<0).map(o=>'<option value="'+esc(o.code)+'">'+esc(o.name||o.code)+"</option>").join("")+"</select>":"")+'</div><div><span class="used'+(u[it.code]?" on":"")+'">'+(u[it.code]||"–")+'</span></div><div class="act"><button class="ibtn del" type="button" data-itdel="'+i+'" title="Remove" aria-label="Remove">✕</button></div>'}));
-  return plainTable([{h:"Template",w:"minmax(200px,1.2fr)"},{h:"Illegal operations it can run",w:"minmax(260px,2fr)"},{h:"Used",w:"56px"},{h:"",w:"48px"}],rows,"No illegal templates yet.")+'<div class="row"><button class="btn sm" type="button" data-itadd>+ Add illegal template</button></div>';
+  const ops=d.operations||[];const L=d.illegalTemplates||[];const biz=d.businesses||[];
+  const rows=L.map((it,i)=>{const used=biz.filter(b=>b.it===it.code).length;return{html:'<div data-label="Code"><span class="mono" style="font-weight:600">'+esc(it.code)+'</span></div><div data-label="Name"><input type="text" id="cf-it-'+i+'-name" data-itf="name" data-iti2="'+i+'" value="'+esc(it.name||"")+'" placeholder="'+esc(itName({ops:it.ops},ops))+'" aria-label="Name"></div><div class="chips" data-label="Illegal operations">'+it.ops.map(c=>'<button type="button" class="chip2" aria-pressed="true" data-itop="'+esc(c)+'" data-iti="'+i+'" title="Remove">'+esc(((ops.find(o=>o.code===c)||{}).name)||c)+" ✕</button>").join("")+(it.ops.length<ops.length?'<select class="addop" data-itaddop="'+i+'" aria-label="Add an operation"><option value="">+ operation</option>'+ops.filter(o=>it.ops.indexOf(o.code)<0).map(o=>'<option value="'+esc(o.code)+'">'+esc(o.name||o.code)+"</option>").join("")+"</select>":"")+"</div>"
+    +numIn("cf-it-"+i+"-install",'data-itf="install" data-iti2="'+i+'"',"Install cost",it.install,"")+numIn("cf-it-"+i+"-cost",'data-itf="cost" data-iti2="'+i+'"',"Running cost per day",it.cost,"")
+    +'<div data-label="Used"><span class="used'+(used?" on":"")+'" title="Used in '+used+' legal data">'+(used||"–")+'</span></div><div class="act"><button class="ibtn del" type="button" data-itdel="'+i+'" title="Remove" aria-label="Remove">✕</button></div>'};});
+  return plainTable([{h:"Code",w:"64px"},{h:"Name",w:"minmax(150px,1.1fr)"},{h:"Illegal operations",w:"minmax(240px,2fr)"},{h:"Install cost",w:"minmax(90px,110px)"},{h:"Running cost per day",w:"minmax(100px,120px)"},{h:"Used",w:"48px"},{h:"",w:"40px"}],rows,"No illegal data yet.")+'<div class="row"><button class="btn sm" type="button" data-itadd>+ Add illegal data</button></div>';
+}
+function lotDataTab(d){
+  const L=d.lots||[];const legal=d.businesses||[];const its=d.illegalTemplates||[];
+  const usedBy={};for(const v of Object.values(st.d.blocks)){if(isObj(v)&&v.lot)usedBy[v.lot]=(usedBy[v.lot]||0)+1;}
+  const cards=L.map((lot,i)=>{
+    let li=0,lo=0;for(const x of lot.items||[]){const lg=legal.find(y=>y.code===x.legal);if(!lg)continue;const n=Math.max(1,+x.n||1);if(lg.it)li+=n;else lo+=n;}
+    const warn=li>MAX_LI?"More than "+MAX_LI+" with illegal.":lo>MAX_LO?"More than "+MAX_LO+" legal only.":"";
+    const step=(attrs,v)=>'<div class="stepper sm"><button type="button" '+attrs+' data-act="dec" aria-label="One less">−</button><input type="number" min="0" value="'+esc(v)+'" '+attrs+' data-act="set" aria-label="How many"><button type="button" '+attrs+' data-act="inc" aria-label="One more">+</button></div>';
+    let h='<div class="card"><div class="card-head"><div class="lothead"><span class="mono">'+esc(lot.code)+'</span><input type="text" data-lx="name" data-li="'+i+'" value="'+esc(lot.name||"")+'" placeholder="Name this lot data" aria-label="Name"></div><span class="muted">Used on '+(usedBy[lot.code]||0)+' blocks</span><button class="ibtn del" type="button" data-lx="del" data-li="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
+    h+=(lot.items||[]).map((x,j)=>{const lg=legal.find(y=>y.code===x.legal);const il=lg&&its.find(y=>y.code===lg.it);return'<div class="site lotitem">'+step('data-lx="n" data-li="'+i+'" data-lj="'+j+'"',Math.max(1,+x.n||1))+'<select data-lx="legal" data-li="'+i+'" data-lj="'+j+'" aria-label="Legal data"><option value="">Pick legal data…</option>'+legal.map(y=>'<option value="'+esc(y.code)+'"'+(y.code===x.legal?" selected":"")+">"+esc((y.name||y.code)+(y.it?" + "+itName(its.find(z=>z.code===y.it)||{},d.operations):""))+"</option>").join("")+'</select><button class="ibtn del" type="button" data-lx="idel" data-li="'+i+'" data-lj="'+j+'" title="Remove" aria-label="Remove">✕</button>'+(il?'<div class="slot-warn" style="color:var(--boundary)">with illegal: '+esc(itName(il,d.operations))+"</div>":"")+"</div>";}).join("");
+    h+='<div class="row"><button class="btn sm" type="button" data-lx="iadd" data-li="'+i+'">+ Add legal data</button></div>';
+    h+='<div class="site lotitem">'+step('data-lx="other" data-li="'+i+'"',Math.max(0,+lot.other||0))+'<span class="muted">Other buildings, not playable</span></div>';
+    h+='<p class="'+(warn?"warnc":"muted")+'" style="font-size:12.5px;margin:2px 0 0">'+esc(warn||(li+" with illegal · "+lo+" legal only · "+(+lot.other||0)+" other"))+"</p></div>";
+    return h;});
+  return(L.length?'<div class="cards">'+cards.join("")+"</div>":'<p class="note">No lot data yet. A lot data says what a block holds: how many of each legal data, and how many other buildings.</p>')+'<div class="row"><button class="btn primary" type="button" data-lx="add">+ Add lot data</button></div>';
+}
+function lotAdd(){const L=st.draft.lots;let n=L.length+1,code;do{code="LOT"+String(n++).padStart(2,"0");}while(L.some(x=>x.code===code));L.push({code,name:"",items:[],other:0});markDirty();rerenderConfig();}
+function lotAction(t){
+  const act=t.dataset.lx;if(act==="add"){lotAdd();return;}
+  const lot=st.draft.lots[+t.dataset.li];if(!lot)return;const items=lot.items||(lot.items=[]);const j=+t.dataset.lj;const it=items[j];const a2=t.dataset.act;
+  if(act==="del"){const used=Object.values(st.d.blocks).filter(v=>isObj(v)&&v.lot===lot.code).length;if(used&&!confirm("This lot data is used on "+used+" blocks. Remove it anyway?"))return;st.draft.lots.splice(+t.dataset.li,1);}
+  else if(act==="name")lot.name=t.value;
+  else if(act==="iadd")items.push({legal:"",n:1});
+  else if(act==="idel")items.splice(j,1);
+  else if(act==="legal"&&it)it.legal=t.value;
+  else if(act==="n"&&it)it.n=a2==="inc"?(+it.n||1)+1:a2==="dec"?Math.max(1,(+it.n||1)-1):Math.max(1,parseInt(t.value,10)||1);
+  else if(act==="other")lot.other=a2==="inc"?(+lot.other||0)+1:a2==="dec"?Math.max(0,(+lot.other||0)-1):Math.max(0,parseInt(t.value,10)||0);
+  else return;
+  markDirty();rerenderConfig();
 }
 function resourcesTab(d){
   const cards=(d.neighborhoods||[]).map((n,i)=>{
@@ -1276,7 +1323,8 @@ function renderConfig(){
   const root=$("#cfg-root");
   if(!st.cfgOpen){root.innerHTML="";return;}
   const d=ensureDraft();const errs=draftErrors();const u=usage();
-  const tabs=CFG_TABS.filter(x=>(x.area||"config")===(st.cfgMode||"config"));
+  const VORDER=["lotdata","bizvalues","itpl","values","matrix","demand","nbdata","resources"];
+  const tabs=CFG_TABS.filter(x=>(x.area||"config")===(st.cfgMode||"config")).sort((a,b)=>st.cfgMode==="values"?VORDER.indexOf(a.id)-VORDER.indexOf(b.id):0);
   const tab=tabs.find(x=>x.id===st.cfgTab)||tabs[0];
   let nav="";let g=null;
   for(const tb of tabs){
@@ -1295,6 +1343,7 @@ function renderConfig(){
   else if(tab.id==="matrix")main+=matrixTab(d);
   else if(tab.id==="sites")main+=sitesTab(d);
   else if(tab.id==="itpl")main+=illegalTemplatesTab(d);
+  else if(tab.id==="lotdata")main+=lotDataTab(d);
   else if(tab.id==="resources")main+=resourcesTab(d);
   else for(const k of tab.lists)main+=cfgTable(k,errs,u);
   const nErr=Object.keys(errs).length;
@@ -1340,14 +1389,14 @@ function economyExport(){
   const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"].concat(DEMAND.map(p=>p.k));
   return{legal:list("legal").map(l=>({code:l.code,name:l.name||l.code,illegal:Object.keys(isObj(l.ill)?l.ill:{}).map(k=>({key:k,level:FIT_LABEL[l.ill[k]]||"Average"}))})),defaults:pairs(st.d.cfg.defaults),
     businesses:list("businesses").map(b=>({code:b.code,values:pairs(pick(b,vk))})).filter(b=>b.values.length),
-    neighborhoods:list("neighborhoods").map(n=>({code:n.code,type:n.nbType||"",wealth:n.wealth||"",numbers:pairs(pick(n,nk)),resources:(Array.isArray(n.res)?n.res:[]).map(r=>({resource:r.r,quality:r.q||"",count:+r.n||1}))})).filter(n=>n.type||n.wealth||n.numbers.length||n.resources.length),illegalTemplates:itList().map(it=>({code:it.code,name:itName(it),ops:it.ops.slice()}))};
+    neighborhoods:list("neighborhoods").map(n=>({code:n.code,type:n.nbType||"",wealth:n.wealth||"",numbers:pairs(pick(n,nk)),resources:(Array.isArray(n.res)?n.res:[]).map(r=>({resource:r.r,quality:r.q||"",count:+r.n||1}))})).filter(n=>n.type||n.wealth||n.numbers.length||n.resources.length),illegalTemplates:itList().map(it=>({code:it.code,name:itName(it),ops:it.ops.slice(),install:it.install==null?-1:+it.install,cost:it.cost==null?-1:+it.cost})),lots:lotList().map(l=>({code:l.code,name:l.name||l.code,items:(l.items||[]).filter(x=>x.legal).map(x=>({legal:x.legal,count:Math.max(1,+x.n||1)})),other:Math.max(0,+l.other||0)}))};
 }
 function buildExport(){
   const W=gw(),H=gh();const cells=[];
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=cellAt(x,y);cells.push({cell:cellName(x,y),x,y,ground:terrainAt(x,y),lot:isLot(x,y),building:c.b||null,marker:c.m||null,neighborhood:c.n||null,owner:c.o||null});}
   const edges=Object.keys(st.d.edges).map(k=>{const p=k.split("_");return{dir:p[0],x:+p[1],y:+p[2],street:st.d.edges[k],between:edgeLabel(k)};});
   const blocks=computeBlocks().blocks.map(b=>{const bd=blockData(b);const d=normBlock(bd?bd.data:null);const ns=blockNbs(b);const nb=ns.length===1?ns[0]:null;const it=nb&&st.idx.neighborhoods.get(nb);
-    return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,template:d.tpl,legal:d.legal,illegalCount:d.ill,notPlayable:d.nonPlay,buildings:blockTotal(d),purchasable:d.legal,illegal:d.illegal,robbery:d.robbery,otherRobbery:d.other,notes:d.notes,requiredIllegal:d.reqIll,requiredPurchase:d.reqBuy,random:d.buys.filter(x=>!x).length,pairs:d.pairs.map(p=>({business:p.biz||"",template:p.it||""})),values:d.vals,valueList:pairs(d.vals)};});
+    return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,template:d.tpl,lot:d.lot,legal:d.legal,illegalCount:d.ill,notPlayable:d.nonPlay,buildings:blockTotal(d),purchasable:d.legal,illegal:d.illegal,robbery:d.robbery,otherRobbery:d.other,notes:d.notes,requiredIllegal:d.reqIll,requiredPurchase:d.reqBuy,random:d.buys.filter(x=>!x).length,pairs:d.pairs.map(p=>({business:p.biz||"",template:p.it||""})),values:d.vals,valueList:pairs(d.vals)};});
   return{format:"philly-map-planner",version:1,exportedAt:new Date().toISOString(),source:st.d.source||null,grid:{width:W,height:H,cellMeters:+st.d.cfg.cellMeters||25,roadWidth:+st.d.cfg.roadWidth||14,sidewalk:+st.d.cfg.sidewalk||3,origin:"A1 is the top-left cell; x grows right, y grows down"},config:st.d.cfg,economy:economyExport(),cells,edges,blocks,review:st.d.review||[],issues:issues().map(i=>({severity:i.sev,cell:i.at,text:i.text}))};
 }
 function growGrid(side,n){
@@ -1389,12 +1438,13 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
-  const t=e.target.closest("[data-slotadd],[data-slotdel],[data-itadd],[data-itdel],[data-itop],button[data-sx],[data-mx],#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("button[data-lx],[data-slotadd],[data-slotdel],[data-itadd],[data-itdel],[data-itop],button[data-sx],[data-mx],#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
   if(t.dataset.bump){const el=document.getElementById(t.dataset.bump);if(!el)return;el.value=Math.max(0,(parseInt(el.value,10)||0)+(+t.dataset.d));el.dispatchEvent(new Event("change",{bubbles:true}));return;}
   if(t.id==="sel-btn"){st.selMode=!st.selMode;st.pasting=false;renderToolbar();renderHover();toast(st.selMode?"Drag over the map to select an area, then Copy.":"Select is off.");return;}
   if(t.id==="copy-btn"){copyArea();return;}
   if(t.id==="fill-btn"){fillArea();return;}
+  if(t.dataset.lx){lotAction(t);return;}
   if(t.dataset.slotadd){editBlock(d=>{if(d.slots.length<MAX_LI+MAX_LO)d.slots.push({biz:"",it:""});});return;}
   if(t.dataset.slotdel){const i=+t.dataset.i;editBlock(d=>{d.slots.splice(i,1);});return;}
   if(t.dataset.itadd!==undefined){const L=st.draft.illegalTemplates;let n=L.length+1,code;do{code="IT"+String(n++).padStart(2,"0");}while(L.some(x=>x.code===code));L.push({code,ops:[]});markDirty();rerenderConfig();return;}
@@ -1431,7 +1481,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();renderToolbar();return;}
   if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
-  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:(()=>{const L2=st.draft.businesses;let n=L2.length+1,c;do{c="BIZ"+String(n++).padStart(2,"0");}while(L2.some(x=>x.code===c));return c;})(),name:"",type:"",legal:"",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-"+(t.dataset.add==="businesses"?"name":"code"));if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
+  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{canBuy:true,it:"",code:(()=>{const L2=st.draft.businesses;let n=L2.length+1,c;do{c="BIZ"+String(n++).padStart(2,"0");}while(L2.some(x=>x.code===c));return c;})(),name:"",type:"",legal:"",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-"+(t.dataset.add==="businesses"?"name":"code"));if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
   if(t.dataset.del){const k=t.dataset.del,i=+t.dataset.i,it=st.draft[k][i];const n=it&&it._o?(usage()[k][it._o]||0):0;
     if(n&&!confirm('"'+(it.code||"")+'" is used '+n+" times on the map. Remove it anyway? Those places lose it."))return;
     st.draft[k].splice(i,1);markDirty();renderConfig();return;}
@@ -1471,6 +1521,8 @@ document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="step-select"){setStep(t.value);return;}
   if(t.id==="import-file"){readImport(t);return;}
+  if(t.dataset&&t.dataset.lx){lotAction(t);return;}
+  if(t.dataset&&t.dataset.itf){const it=st.draft.illegalTemplates[+t.dataset.iti2];if(it){const f=t.dataset.itf;if(f==="name")it.name=t.value;else if(t.value==="")delete it[f];else it[f]=Number(t.value);}markDirty();rerenderConfig();return;}
   if(t.dataset&&t.dataset.slot&&t.value==="__new"){renderPanel();openConfig("bizvalues");const add=document.querySelector('[data-add="businesses"]');if(add)add.click();toast("Name the new business, then Save values. It shows up in every block.");return;}
   if(t.dataset&&t.dataset.slot){const i=+t.dataset.i,f=t.dataset.f,v=t.value;editBlock(d=>{if(d.slots[i])d.slots[i][f]=v;});return;}
   if(t.dataset&&t.dataset.itaddop!==undefined){const it=st.draft.illegalTemplates[+t.dataset.itaddop];if(it&&t.value&&it.ops.indexOf(t.value)<0)it.ops.push(t.value);markDirty();rerenderConfig();return;}
