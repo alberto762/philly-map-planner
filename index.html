@@ -256,6 +256,15 @@ body{font-size:14px;line-height:1.45}
 .cfg.values .trow{gap:8px;padding:7px 10px}
 .cfg.values .trow input[type="number"],.cfg.values .trow input[type="text"],.cfg.values .trow select{padding:6px 7px;font-size:13px}
 .cfg.values .cfg-sub{margin-top:6px}
+.tblwrap.compact .trow{gap:6px;padding:6px 8px}
+.tblwrap.compact .trow input[type="number"]{padding:5px 4px;text-align:center}
+.tblwrap.compact .trow select{padding:5px 4px}
+.tblwrap.compact .trow.head > div{text-align:center}
+.tblwrap.compact .trow.head > div:first-child{text-align:left}
+.hicon{font-size:15px;line-height:1.1;display:inline-flex;flex-direction:column;align-items:center;cursor:help}
+.hicon small{font-size:10.5px;color:var(--label);font-family:var(--font-mono)}
+.iconlegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);margin:2px 0 4px}
+.iconlegend small{font-family:var(--font-mono);color:var(--label)}
 .vhead{position:sticky;top:-18px;z-index:2;background:var(--bg);padding:8px 0}
 .slot.one{grid-template-columns:1fr}
 .illpick{display:grid;grid-template-columns:1fr 100px;gap:6px}
@@ -423,7 +432,7 @@ const VALUES=[{k:"income",short:"Income/day",label:"Income per day",help:"Money 
 const NB_TYPES=["Residential","Commercial","Industrial"];
 const NB_WEALTH=["VeryPoor","Poor","Average","Rich","VeryRich"];
 const NB_WEALTH_LABEL={VeryPoor:"1 · Very poor",Poor:"2 · Poor",Average:"3 · Average",Rich:"4 · Rich",VeryRich:"5 · Very rich"};
-const DEMAND=[{k:"demandBudBags",pk:"priceBudBags",label:"Bud bags",price:""},{k:"demandJointPacks",pk:"priceJointPacks",label:"Joint packs",price:"18"},{k:"demandMethBags",pk:"priceMethBags",label:"Meth bags",price:"38"},{k:"demandCrystalMethBags",pk:"priceCrystalMethBags",label:"Crystal meth bags",price:"60"}];
+const DEMAND=[{k:"demandBudBags",pk:"priceBudBags",label:"Bud bags",icon:"🌿",price:""},{k:"demandJointPacks",pk:"priceJointPacks",label:"Joint packs",icon:"🚬",price:"18"},{k:"demandMethBags",pk:"priceMethBags",label:"Meth bags",icon:"🧪",price:"38"},{k:"demandCrystalMethBags",pk:"priceCrystalMethBags",label:"Crystal meth bags",icon:"💎",price:"60"}];
 const MARTIN_DEMAND="Fairview\t3\t40\t40\t20\t40\nCramer Hill\t4\t20\t60\t0\t60\nPennrose\t4\t0\t40\t0\t20\nCooper Crossing\t2\t80\t20\t100\t0\nBellview\t5\t0\t60\t0\t60\nGrant Terrace\t2\t80\t20\t100\t0\nParkside\t3\t40\t40\t20\t20\nWaterfront South\t2\t80\t20\t100\t0\nLinnwood\t1\t100\t20\t100\t0";
 const LEGAL_SEED=[{code:"GALLERY",name:"Art Gallery",ill:{}},{code:"AUTOSHOP",name:"Auto Shop",ill:{DRYING_RACK:"average"}},{code:"BAR",name:"Bar",ill:{SALES:"good"}},{code:"OFFICE",name:"Office Building",ill:{}},{code:"CASINO",name:"Casino",ill:{}},{code:"CHURCH",name:"Church",ill:{HYDROPONICS:"good"}},{code:"CLUB",name:"Club",ill:{}},{code:"DRUGSTORE",name:"Drug Store",ill:{}},{code:"GROCERY",name:"Grocery Store",ill:{HYDROPONICS:"good"}},{code:"HOUSING",name:"Habitation",ill:{HYDROPONICS:"poor"}},{code:"PAPER",name:"Paper Company",ill:{STASH:"poor"}},{code:"POLICE",name:"Police Department",ill:{}}];
 const FITS=["good","average","poor"];
@@ -1013,23 +1022,19 @@ function sheetHead(k,placeholder){return'<div class="row vhead"><input type="sea
 function vcol(fld){return fld==="code"?"minmax(104px,116px)":fld==="name"?"minmax(120px,1.3fr)":fld==="illegalText"?"minmax(200px,2.4fr)":fld==="type"||fld==="nbType"||fld==="wealth"?"minmax(124px,1fr)":"minmax(60px,1fr)";}
 function matchesFilter(it){const f=(st.cfgFilter||"").trim().toLowerCase();return!f||[it.code,it.name].some(v=>String(v||"").toLowerCase().indexOf(f)>=0);}
 function nbDataTab(d,errs){
-  const sel=(i,f,lab,opts,v,labels)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc((labels&&labels[o])||o)+"</option>").join("")+"</select></div>";
-  const nb=(i,f,lab,v,ph)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'"',lab,v,ph||"");
-  const name=n=>'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>";
+  const sel=(i,f,lab,opts,v,labels)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'" title="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc((labels&&labels[o])||o)+"</option>").join("")+"</select></div>";
+  const nb=(i,f,lab,v,ph)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" title="'+esc(lab)+'"',lab,v,ph||"");
+  const PEOPLE_ICON={population:"👥",mixPoor:"Poor%",mixAverage:"Avg%",mixRich:"Rich%",mixWorker:"Work%",candidates:"🤝",intel:"👁",installLevel:"⭐"};
   const L=(d.neighborhoods||[]).map((n,i)=>({n,i})).filter(x=>matchesFilter(x.n));
-  const demandCols=[{h:"Neighborhood",w:vcol("name")},{h:"Wealth",w:vcol("wealth")},{h:"Type",w:vcol("nbType")}].concat(DEMAND.flatMap(p=>[{h:p.label+" a day",w:vcol("")},{h:p.label+" price",w:vcol("")}]));
-  const demandRows=L.map(({n,i})=>({html:name(n)+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth,NB_WEALTH_LABEL)+sel(i,"nbType","Type",NB_TYPES,n.nbType)+DEMAND.map(p=>nb(i,p.k,p.label+" a day",n[p.k])+nb(i,p.pk,p.label+" price",n[p.pk],p.price)).join("")}));
-  const peopleCols=[{h:"Neighborhood",w:vcol("name")}].concat(NB_PEOPLE.map(([,lab])=>({h:lab,w:vcol("")})));
-  const peopleRows=L.map(({n,i})=>({err:errs["nbdata:"+i],html:name(n)+NB_PEOPLE.map(([f,lab])=>nb(i,f,lab,n[f])).join("")}));
-  const empty=(d.neighborhoods||[]).length?"Nothing matches the filter.":"Add neighborhoods first, in Config.";
-  return sheetHead("neighborhoods","Filter by code or name")+'<div class="cfg-sub"><h4>Wealth, demand and price</h4><p>Per day and the price a citizen pays.</p></div><div class="tblwrap">'+plainTable(demandCols,demandRows,empty)+'</div><div class="cfg-sub"><h4>People</h4><p>Citizen mix is in percent and adds up to 100, or leave all four empty.</p></div><div class="tblwrap">'+plainTable(peopleCols,peopleRows,empty)+"</div>";
-}
-async function downloadSheet(k){
-  try{const X=await xlsxLib();const d=ensureDraft();const S=SHEETS[k];const cols=S.cols();const ops=d.operations||[];
-    const val=(it,f)=>f==="illegalText"?illText(it,ops):f==="wealth"?(NB_WEALTH.indexOf(it.wealth)>=0?NB_WEALTH.indexOf(it.wealth)+1:""):(it[f]==null?"":it[f]);
-    const rows=(d[k]||[]).map(it=>cols.map(([f])=>val(it,f)));
-    const ws=X.utils.aoa_to_sheet([cols.map(c=>c[1])].concat(rows));const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,S.sheet);X.writeFile(wb,S.file+".xlsx");}
-  catch(e){toast("Could not make the Excel file: "+e.message);}
+  const num="minmax(44px,1fr)";
+  const cols=[{h:"Neighborhood",w:"minmax(108px,1.4fr)"},{h:"Wealth",w:"minmax(98px,1fr)"},{h:"Type",w:"minmax(94px,1fr)"}]
+    .concat(DEMAND.flatMap(p=>[{h:p.label+" a day",t:p.label+" a day",icon:p.icon+"<small>/day</small>",w:num},{h:p.label+" price",t:p.label+" price",icon:p.icon+"<small>$</small>",w:num}]))
+    .concat(NB_PEOPLE.map(([f,lab])=>({h:lab,t:lab,icon:PEOPLE_ICON[f].length>2?"<small>"+PEOPLE_ICON[f]+"</small>":PEOPLE_ICON[f],w:num})));
+  const rows=L.map(({n,i})=>({err:errs["nbdata:"+i],html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth,NB_WEALTH_LABEL)+sel(i,"nbType","Type",NB_TYPES,n.nbType)
+    +DEMAND.map(p=>nb(i,p.k,p.label+" a day",n[p.k])+nb(i,p.pk,p.label+" price",n[p.pk],p.price)).join("")
+    +NB_PEOPLE.map(([f,lab])=>nb(i,f,lab,n[f])).join("")}));
+  const legend='<div class="iconlegend">'+DEMAND.map(p=>"<span>"+p.icon+" "+esc(p.label)+"</span>").join("")+'<span>👥 Citizens on the street</span><span>🤝 Recruits available</span><span>👁 Starting intel</span><span>⭐ Level for Stash or HQ</span><span><small>/day</small> per day · <small>$</small> price</span></div>';
+  return sheetHead("neighborhoods","Filter by code or name")+legend+'<div class="tblwrap compact">'+plainTable(cols,rows,(d.neighborhoods||[]).length?"Nothing matches the filter.":"Add neighborhoods first, in Config.")+"</div>";
 }
 function uploadSheet(k){st.xlsTarget=k;const inp=$("#xls-file");inp.value="";inp.click();}
 async function readSheet(file){
@@ -1384,7 +1389,7 @@ function cfgTable(k,errs,u){
 }
 function plainTable(cols,rows,empty){
   const style=' style="--cols:'+cols.map(c=>c.w).join(" ")+'"';
-  return'<div class="tbl"><div class="trow head"'+style+">"+cols.map(c=>"<div>"+esc(c.h)+"</div>").join("")+"</div>"+(rows.length?rows.map(r=>'<div class="trow'+(r.err?" bad":"")+'"'+style+">"+r.html+(r.err?'<div class="err">'+esc(r.err)+"</div>":"")+"</div>").join(""):'<div class="empty">'+esc(empty)+"</div>")+"</div>";
+  return'<div class="tbl"><div class="trow head"'+style+">"+cols.map(c=>"<div"+(c.t?' title="'+esc(c.t)+'"':"")+">"+(c.icon?'<span class="hicon">'+c.icon+"</span>":esc(c.h))+"</div>").join("")+"</div>"+(rows.length?rows.map(r=>'<div class="trow'+(r.err?" bad":"")+'"'+style+">"+r.html+(r.err?'<div class="err">'+esc(r.err)+"</div>":"")+"</div>").join(""):'<div class="empty">'+esc(empty)+"</div>")+"</div>";
 }
 function numIn(idv,attrs,lab,v,ph){return'<div data-label="'+esc(lab)+'"><input type="number" min="0" id="'+idv+'" '+attrs+' value="'+esc(v==null?"":v)+'" aria-label="'+esc(lab)+'"'+(ph?' placeholder="'+esc(ph)+'"':"")+"></div>";}
 function valuesTab(d){
