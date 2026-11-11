@@ -111,6 +111,13 @@ button,input,select,textarea{font:inherit;color:inherit}
 .sev.warn{background:var(--warn-soft);color:var(--warn)}
 .issue .at{font-family:var(--font-mono);font-weight:600}
 .sec{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tb-tools{display:inline-flex;gap:4px}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.trow .ro{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .ro b{display:block;font-family:var(--font-mono);font-size:12px}
+.trow .ro{white-space:normal;line-height:1.3}
 .cfg-row{display:grid;grid-template-columns:84px 1fr auto auto;gap:4px;align-items:center}
 .cfg-row.nb{grid-template-columns:60px 1fr 70px auto auto}
 .cfg-row.ops{grid-template-columns:110px 1fr auto}
@@ -176,7 +183,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .trow{display:grid;grid-template-columns:var(--cols);gap:10px;align-items:center;padding:7px 12px;border-top:1px solid var(--line)}
 .trow.head{border-top:0;background:var(--surface-2);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--label);padding:9px 12px}
 .trow.bad{background:linear-gradient(90deg,var(--danger-soft),transparent 60%)}
-.trow input[type="text"],.trow select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 8px;width:100%;min-width:0;font-size:13px}
+.trow input[type="text"],.trow input[type="number"],.trow select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 8px;width:100%;min-width:0;font-size:13px}
 .trow input.c{font-family:var(--font-mono);font-weight:600}
 .trow input.bad{border-color:var(--danger)}
 .trow input[type="color"]{width:36px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer}
@@ -223,6 +230,57 @@ button,input,select,textarea{font:inherit;color:inherit}
   .panel{border-left:0;border-top:1px solid var(--line)}
   .sheet{min-height:420px}
 }
+body{font-size:15px;line-height:1.5}
+:root{--muted:#b3bacb;--label:#a9b1c4}
+.btn{min-height:38px;padding:8px 14px}
+.btn.sm{min-height:34px;padding:6px 11px;font-size:14px}
+.btn.icon{min-width:auto}
+.step .lbl{font-size:15px}
+.step .meta{font-size:13px}
+.side .group,.cfg-tabs .group{font-size:13px}
+.toolbar .hint{font-size:14px}
+.zoom button{padding:6px 12px;font-size:15px}
+.zoom span{font-size:13px}
+.caption{font-size:14px}
+.panel{gap:16px}
+.panel p{font-size:15px}
+.panel h3{font-size:15px;color:var(--ink);letter-spacing:.06em}
+.note{font-size:14px;padding:10px 12px}
+.field label,.field .lab{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.field input[type="number"],.field select,.field textarea,.field input[type="text"],.field input[type="email"],.field input[type="password"]{padding:9px 10px;font-size:15px}
+.checks{gap:7px 12px}
+.checks label{font-size:14px}
+.checks input{width:18px;height:18px}
+.stat b{font-size:19px}
+.stat span{font-size:12.5px;text-transform:none;letter-spacing:0}
+.sw{padding:8px 9px;grid-template-columns:22px 76px 1fr auto}
+.code{font-size:13px}
+.nm{font-size:14px}
+.sw .cnt{font-size:12.5px}
+.toast{font-size:15px;padding:11px 18px}
+.kv{font-size:14px}
+.kv dd{font-size:13.5px}
+.seg button{padding:9px 10px;font-size:14.5px}
+.cfg-tab{font-size:15px;padding:10px 12px}
+.cfg-head p{font-size:15px}
+.cfg-sub p{font-size:14px}
+.trow.head{font-size:12.5px;text-transform:none;letter-spacing:0;line-height:1.25}
+.trow input[type="text"],.trow input[type="number"],.trow select{font-size:14px;padding:7px 9px}
+.issue{font-size:14px;padding:9px 11px}
+.sev{font-size:11.5px}
+.count-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.count-row label{cursor:pointer}
+.count-row b{display:block;font-size:15px}
+.count-row small{display:block;color:var(--muted);font-size:13px;line-height:1.3}
+.stepper{display:inline-grid;grid-template-columns:42px 60px 42px;border:1px solid var(--line);border-radius:8px;overflow:hidden;height:42px}
+.stepper button{border:0;background:var(--surface-2);font-size:21px;cursor:pointer;line-height:1}
+.stepper button:hover{background:var(--accent-soft)}
+.stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:17px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
+.stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#f-total{margin-top:2px}
+@media (max-width:1440px){.toolbar .hint{display:none}}
+@media (min-width:1181px){.app{grid-template-columns:240px minmax(0,1fr) 370px}}
+@media (min-width:961px) and (max-width:1180px){.app{grid-template-columns:214px minmax(0,1fr) 336px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -233,14 +291,15 @@ button,input,select,textarea{font:inherit;color:inherit}
     <div class="spacer"></div>
     <span class="saved" id="saved">Saved in this browser</span>
     <button class="cloud" type="button" id="cloud-btn" hidden></button>
-    <button class="btn icon" type="button" id="undo" title="Undo (Ctrl+Z)" aria-label="Undo">&#8630;</button>
-    <button class="btn icon" type="button" id="redo" title="Redo (Ctrl+Y)" aria-label="Redo">&#8631;</button>
+    <button class="btn" type="button" id="undo" title="Undo (Ctrl+Z)">&#8630; Undo</button>
+    <button class="btn" type="button" id="redo" title="Redo (Ctrl+Y)">&#8631; Redo</button>
     <button class="btn" type="button" data-step="file">Import</button>
     <button class="btn primary" type="button" id="export-btn">Export JSON</button>
   </header>
   <nav class="side" id="side" aria-label="Steps"></nav>
   <section class="stage">
     <div class="toolbar"><span class="title" id="tb-title"></span><span class="hint" id="tb-hint"></span><span class="spacer"></span>
+      <div class="tb-tools" role="group" aria-label="Copy and paste"><button class="btn sm" type="button" id="sel-btn" aria-pressed="false" title="Drag over the map to select an area. Shift+drag works too.">Select area</button><button class="btn sm" type="button" id="copy-btn" title="Copy the selected area (Ctrl+C)">Copy</button><button class="btn sm" type="button" id="paste-btn" aria-pressed="false" title="Paste, then click the top-left cell (Ctrl+V pastes where you point)">Paste</button></div>
       <div class="zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom out">&minus;</button><span id="zoom-val">100%</span><button type="button" data-zoom="1" aria-label="Zoom in">+</button><button type="button" data-zoom="0" title="Fit to screen">Fit</button></div>
     </div>
     <div class="sheet" id="sheet"><svg id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map grid"></svg></div>
@@ -259,6 +318,10 @@ const WEALTH=["Poor","Medium","Rich"];
 const OWNER_KINDS=["Player","Civilian","SpecialCivilian","ArmedCivilian","EnemyGang","Police","Empty"];
 const FIREBASE_CONFIG={apiKey:"AIzaSyANll17yqLSMopnyvAheDYm_ZwPiyJ30v8",authDomain:"micromapper-da9c8.firebaseapp.com",projectId:"micromapper-da9c8",storageBucket:"micromapper-da9c8.firebasestorage.app",messagingSenderId:"1076938578901",appId:"1:1076938578901:web:14f47913620fd254f5bb5c"};
 const MAP_ID="philly";
+const VALUES=[{k:"income",short:"Income/day",label:"Income per day",help:"Money the building makes each day."},{k:"purchase",short:"Purchase",label:"Purchase price",help:"What the player pays to buy it."},{k:"sell",short:"Sell",label:"Sell price",help:"What the player gets when selling it."},{k:"repair",short:"Repair",label:"Repair cost",help:"What it costs to fix after damage."},{k:"inventory",short:"Inventory",label:"Inventory capacity",help:"How much it can store."}];
+const NB_TYPES=["Residential","Commercial","Industrial"];
+const NB_WEALTH=["VeryPoor","Poor","Average","Rich","VeryRich"];
+const STARTER=[{code:"SMALL",name:"Small block",w:1,h:1,legal:2,ill:1,other:9,building:""},{code:"MEDIUM",name:"Medium block",w:2,h:1,legal:3,ill:1,other:14,building:""},{code:"LARGE",name:"Large block",w:2,h:2,legal:4,ill:2,other:24,building:""}];
 const BOOT_ADMIN="admin@762interactive.com";
 const FB="https://www.gstatic.com/firebasejs/10.12.2/";
 const cloud={role:null,team:null,secAuth:null,on:false,fb:null,user:null,ready:false,version:0,rev:0,pushedRev:0,saving:false,err:null,denied:false,conflict:null,first:null,savedAt:null,lastPushed:null,histAt:0,history:null,unsub:null,timer:null};
@@ -276,7 +339,7 @@ const LISTS=[
   {k:"terrain",title:"Ground types",color:true,lot:true},{k:"streets",title:"Street types",color:true},
   {k:"buildings",title:"Building types",color:true},{k:"markers",title:"Markers",color:true},
   {k:"owners",title:"Owners",color:true,own:true},{k:"districts",title:"Districts"},{k:"neighborhoods",title:"Neighborhoods",color:true,nb:true},
-  {k:"operations",title:"Illegal operations"},{k:"businesses",title:"Businesses",biz:true},{k:"robbery",title:"Robbery levels"}
+  {k:"operations",title:"Illegal operations"},{k:"businesses",title:"Businesses",biz:true},{k:"robbery",title:"Robbery levels"},{k:"templates",title:"Block templates",tpl:true}
 ];
 const $=s=>document.querySelector(s);
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -288,14 +351,16 @@ function lum(hex){const m=/^#?([0-9a-f]{6})$/i.exec(hex||"");if(!m)return 1;cons
 const key=(x,y)=>x+"_"+y;
 
 let seed=null;try{seed=JSON.parse($("#seed").textContent);}catch(_){}
-const st={d:null,step:"ground",brush:{},bmode:"buildings",sel:null,hover:null,zoom:0,draft:null,draftDirty:false,draftMsg:"",idx:{},bc:null,undo:[],redo:[],savedAt:null,saveErr:false,issuesShown:[]};
+const st={d:null,step:"ground",brush:{},bmode:"buildings",gmode:"select",tpl:null,area:null,clip:null,selMode:false,pasting:false,sel:null,hover:null,zoom:0,draft:null,draftDirty:false,draftMsg:"",idx:{},bc:null,undo:[],redo:[],savedAt:null,saveErr:false,issuesShown:[]};
 let stroke=null;
 
 function fromExport(x){
   const d={cfg:x.config?clone(x.config):null,cells:{},edges:{},blocks:{},source:x.source||null,review:Array.isArray(x.review)?x.review:[]};
   for(const c of x.cells||[]){if(!Number.isInteger(c.x)||!Number.isInteger(c.y))continue;const o={};if(c.ground)o.t=c.ground;if(c.building)o.b=c.building;if(c.marker)o.m=c.marker;if(c.neighborhood)o.n=c.neighborhood;if(c.owner)o.o=c.owner;if(Object.keys(o).length)d.cells[key(c.x,c.y)]=o;}
   for(const e of x.edges||[]){if((e.dir==="h"||e.dir==="v")&&Number.isInteger(e.x)&&Number.isInteger(e.y)&&e.street)d.edges[e.dir+"_"+e.x+"_"+e.y]=e.street;}
-  for(const b of x.blocks||[]){const p=parseCell(b.id);if(!p)continue;if(b.purchasable==null&&!(b.illegal||[]).length&&!b.robbery&&!b.otherRobbery&&!b.notes&&!b.requiredIllegal&&!(b.requiredPurchase||[]).length&&b.random==null)continue;d.blocks[key(p[0],p[1])]={purchasable:b.purchasable==null?null:b.purchasable,illegal:b.illegal||[],robbery:b.robbery||null,other:b.otherRobbery||null,notes:b.notes||"",reqIll:b.requiredIllegal||null,reqBuy:b.requiredPurchase||[],random:b.random==null?null:b.random};}
+  for(const b of x.blocks||[]){const p=parseCell(b.id);if(!p)continue;
+    const n=normBlock({legal:b.legal!=null?b.legal:b.purchasable,ill:b.illegalCount,nonPlay:b.notPlayable,tpl:b.template,illegal:b.illegal,robbery:b.robbery,other:b.otherRobbery,notes:b.notes,reqIll:b.requiredIllegal,reqBuy:b.requiredPurchase,vals:b.values});
+    if(JSON.stringify(n)===JSON.stringify(normBlock(null)))continue;d.blocks[key(p[0],p[1])]=n;}
   return d;
 }
 function parseCell(s){const m=/^([A-Z]+)(\d+)$/.exec(s||"");if(!m)return null;let x=0;for(const ch of m[1])x=x*26+(ch.charCodeAt(0)-64);return[x-1,+m[2]-1];}
@@ -347,6 +412,10 @@ function blockData(b){
   for(const [x,y] of b.cells){const k=key(x,y);const v=st.d.blocks[k];if(isObj(v)){legacy.push(k);if(!found)found={key:k,data:v};}}
   return found?{key:found.key,data:found.data,legacy}:null;
 }
+function normBlock(x){x=isObj(x)?x:{};const n=v=>v==null||v===""?null:Math.max(0,parseInt(v,10)||0);
+  return{legal:n(x.legal!=null?x.legal:x.purchasable),ill:n(x.ill),nonPlay:n(x.nonPlay),tpl:x.tpl||null,illegal:Array.isArray(x.illegal)?x.illegal:[],robbery:x.robbery||null,other:x.other||null,notes:x.notes||"",reqIll:x.reqIll||null,reqBuy:Array.isArray(x.reqBuy)?x.reqBuy:[],vals:isObj(x.vals)?x.vals:{}};}
+const blockTotal=n=>(n.legal||0)+(n.ill||0)+(n.nonPlay||0);
+const illBad=n=>!!(n.ill&&n.ill>=(n.legal||0));
 function blockNbs(b){const s=new Set();for(const [x,y] of b.cells){const n=cellAt(x,y).n;if(n)s.add(n);}return[...s];}
 
 function issues(){
@@ -370,18 +439,16 @@ function issues(){
   for(const b of computeBlocks().blocks){
     const ns=blockNbs(b);if(ns.length>1)add("error",b.ax,b.ay,"Block spans "+ns.length+" neighborhoods ("+ns.join(", ")+")");
     const bd=blockData(b);if(!bd){add("warn",b.ax,b.ay,"Block has no gameplay data");continue;}
-    const d=bd.data;
-    for(const o of (Array.isArray(d.illegal)?d.illegal:[]))if(!I.operations.has(o))add("error",b.ax,b.ay,'Unknown operation "'+o+'"');
+    const d=normBlock(bd.data);
+    for(const o of d.illegal)if(!I.operations.has(o))add("error",b.ax,b.ay,'Unknown operation "'+o+'"');
     if(d.robbery&&!I.robbery.has(d.robbery))add("error",b.ax,b.ay,'Unknown robbery level "'+d.robbery+'"');
     if(d.other&&!I.robbery.has(d.other))add("error",b.ax,b.ay,'Unknown robbery level "'+d.other+'"');
-    const p=+d.purchasable||0;
-    if((d.illegal||[]).length&&p<1)add("warn",b.ax,b.ay,"Illegal sites set but no purchasable sites");
-    if(p>b.cells.length)add("warn",b.ax,b.ay,"More purchasable sites ("+p+") than lots ("+b.cells.length+")");
-    const biz=[d.reqIll,...(Array.isArray(d.reqBuy)?d.reqBuy:[])].filter(Boolean);
-    for(const c of biz)if(!I.businesses.has(c))add("error",b.ax,b.ay,'Unknown business "'+c+'"');
-    if(d.reqIll){const it=I.businesses.get(d.reqIll);if(it&&!it.op)add("warn",b.ax,b.ay,'Business "'+d.reqIll+'" for the illegal operation allows none');}
-    const room=blockRoom(b),want=biz.length+(+d.random||0);
-    if(want>room)add("warn",b.ax,b.ay,"Block businesses need "+want+" buildings, it has about "+room);
+    if(d.legal==null&&d.ill==null&&d.nonPlay==null)add("warn",b.ax,b.ay,"Block has no building counts (legal, illegal, not playable)");
+    if(illBad(d))add("error",b.ax,b.ay,"Block has "+d.ill+" illegal buildings, it needs fewer than its "+(d.legal||0)+" legal ones");
+    if(d.illegal.length&&!d.ill)add("warn",b.ax,b.ay,"Illegal operations allowed but no illegal buildings");
+    for(const c of [d.reqIll,...d.reqBuy].filter(Boolean))if(!I.businesses.has(c))add("error",b.ax,b.ay,'Unknown business "'+c+'"');
+    if(d.reqIll){const it=I.businesses.get(d.reqIll);if(it&&!it.op)add("warn",b.ax,b.ay,'Business "'+d.reqIll+'" for the illegal operation allows none');if(!d.ill)add("warn",b.ax,b.ay,"Required illegal business but no illegal buildings");}
+    if(d.reqBuy.length>(d.legal||0))add("warn",b.ax,b.ay,d.reqBuy.length+" businesses required to be purchased, the block has "+(d.legal||0)+" legal buildings");
   }
   out.sort((a,b)=>(a.sev===b.sev?0:a.sev==="error"?-1:1)||(a.y-b.y)||(a.x-b.x));
   return out;
@@ -437,11 +504,49 @@ function applyEdge(k){
 }
 
 let toastTimer=null;
-function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},2600);}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},4500);}
 
+function areaRect(){const a=st.area;if(!a)return null;return{x0:Math.min(a.ax,a.bx),y0:Math.min(a.ay,a.by),x1:Math.max(a.ax,a.bx),y1:Math.max(a.ay,a.by)};}
+function copyArea(){
+  const r=areaRect();if(!r){toast("Select an area first: press Select and drag over the map.");return;}
+  const c={w:r.x1-r.x0+1,h:r.y1-r.y0+1,cells:{},edges:{},blocks:{}};
+  for(let y=r.y0;y<=r.y1;y++)for(let x=r.x0;x<=r.x1;x++){const k=key(x,y),k2=key(x-r.x0,y-r.y0);if(st.d.cells[k])c.cells[k2]=clone(st.d.cells[k]);if(isObj(st.d.blocks[k]))c.blocks[k2]=clone(st.d.blocks[k]);}
+  for(const k of Object.keys(st.d.edges)){const p=k.split("_"),x=+p[1],y=+p[2];
+    const inside=p[0]==="h"?(x>=r.x0&&x<=r.x1&&y>=r.y0&&y<=r.y1+1):(x>=r.x0&&x<=r.x1+1&&y>=r.y0&&y<=r.y1);
+    if(inside)c.edges[p[0]+"_"+(x-r.x0)+"_"+(y-r.y0)]=st.d.edges[k];}
+  st.clip=c;renderToolbar();toast("Copied "+c.w+"×"+c.h+" cells. Point at a cell and press Ctrl+V, or press Paste.");
+}
+function pasteAt(x,y){
+  const c=st.clip;if(!c)return;const W=gw(),H=gh();
+  pushUndo();
+  for(let dy=0;dy<c.h;dy++)for(let dx=0;dx<c.w;dx++){const tx=x+dx,ty=y+dy;if(tx>=W||ty>=H)continue;const k=key(tx,ty),k2=key(dx,dy);
+    if(c.cells[k2])st.d.cells[k]=clone(c.cells[k2]);else delete st.d.cells[k];
+    delete st.d.blocks[k];if(c.blocks[k2])st.d.blocks[k]=clone(c.blocks[k2]);
+    if(dy>0)delete st.d.edges["h_"+tx+"_"+ty];if(dx>0)delete st.d.edges["v_"+tx+"_"+ty];}
+  for(const k of Object.keys(c.edges)){const p=k.split("_");const nx=+p[1]+x,ny=+p[2]+y;if(p[0]==="h"?(nx<W&&ny<=H):(nx<=W&&ny<H))st.d.edges[p[0]+"_"+nx+"_"+ny]=c.edges[k];}
+  st.bc=null;st.pasting=false;st.area={ax:x,ay:y,bx:Math.min(W-1,x+c.w-1),by:Math.min(H-1,y+c.h-1)};save();render();toast("Pasted at "+cellName(x,y)+". Undo takes it back.");
+}
+function stampTemplate(x,y){
+  const t=st.idx.templates&&st.idx.templates.get(st.tpl);if(!t){toast("Pick a template first.");return;}
+  const w=num(t.w,1,1,20),h=num(t.h,1,1,20);
+  if(x+w>gw()||y+h>gh()){toast("It does not fit there. This template needs "+w+"×"+h+" cells.");return;}
+  const lot=list("terrain").find(i=>i.lot);if(!lot){toast('Tick "Buildable" on a ground type in Config first.');return;}
+  const street=(list("streets")[0]||{}).code;
+  pushUndo();
+  let nb=null;for(let cy=y;cy<y+h&&!nb;cy++)for(let cx=x;cx<x+w;cx++){const n=cellAt(cx,cy).n;if(n){nb=n;break;}}
+  for(let cy=y;cy<y+h;cy++)for(let cx=x;cx<x+w;cx++){const k=key(cx,cy);setCell(k,"t",lot.code);if(t.building)setCell(k,"b",t.building);if(nb&&!cellAt(cx,cy).n)setCell(k,"n",nb);delete st.d.blocks[k];
+    if(cx>x)setEdge("v_"+cx+"_"+cy,null);if(cy>y)setEdge("h_"+cx+"_"+cy,null);}
+  if(street){for(let cx=x;cx<x+w;cx++){for(const yy of [y,y+h])if(!edgeAt("h_"+cx+"_"+yy))setEdge("h_"+cx+"_"+yy,street);}
+    for(let cy=y;cy<y+h;cy++){for(const xx of [x,x+w])if(!edgeAt("v_"+xx+"_"+cy))setEdge("v_"+xx+"_"+cy,street);}}
+  st.d.blocks[key(x,y)]=Object.assign(normBlock(null),{legal:+t.legal||0,ill:+t.ill||0,nonPlay:+t.other||0,tpl:t.code});
+  st.sel=key(x,y);st.bc=null;save();render();toast((t.name||t.code)+" placed at "+cellName(x,y));
+}
 function onDown(e){
   if(e.button!==undefined&&e.button!==0)return;
   const p=svgPoint(e);
+  if(st.pasting){const c=cellFromPt(p);if(c)pasteAt(c.x,c.y);return;}
+  if(st.selMode||e.shiftKey){const c=cellFromPt(p);if(!c)return;try{$("#map").setPointerCapture(e.pointerId);}catch(_){}st.area={ax:c.x,ay:c.y,bx:c.x,by:c.y};stroke={area:true};e.preventDefault();renderHover();renderToolbar();return;}
+  if(st.step==="gameplay"&&st.gmode==="stamp"){const c=cellFromPt(p);if(c)stampTemplate(c.x,c.y);return;}
   if(!brushList()){
     const c=cellFromPt(p);if(!c)return;
     const B=computeBlocks();const bi=B.id[c.y*B.W+c.x];
@@ -455,7 +560,8 @@ function onDown(e){
 }
 function onMove(e){
   const p=svgPoint(e);
-  if(st.step==="streets"){const k=edgeFromPt(p);st.hover=k?{edge:k}:null;}else{const c=cellFromPt(p);st.hover=c?{cell:c}:null;}
+  if(st.step==="streets"&&!st.selMode&&!st.pasting&&!(stroke&&stroke.area)){const k=edgeFromPt(p);st.hover=k?{edge:k}:null;}else{const c=cellFromPt(p);st.hover=c?{cell:c}:null;}
+  if(stroke&&stroke.area){const c=st.hover&&st.hover.cell;if(c){st.area.bx=c.x;st.area.by=c.y;}renderHover();renderCaption();return;}
   if(stroke){
     let changed=false;
     if(stroke.edges){const k=st.hover&&st.hover.edge;if(k&&k!==stroke.last){stroke.last=k;changed=applyEdge(k);}}
@@ -464,7 +570,7 @@ function onMove(e){
   }else renderHover();
   renderCaption();
 }
-function onUp(){if(!stroke)return;const s=stroke;stroke=null;if(s.pushed){save();render();}}
+function onUp(){if(!stroke)return;const s=stroke;stroke=null;if(s.area){renderToolbar();return;}if(s.pushed){save();render();}}
 
 function stepMeta(id,C){
   if(!st.d.cfg)return"";
@@ -513,9 +619,9 @@ function renderMap(){
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
     const c=cellAt(x,y);const t=c.t||dt;const px=OFF+x*S,py=OFF+y*S;
     o.push('<rect x="'+px+'" y="'+py+'" width="'+S+'" height="'+S+'" fill="'+esc(t?color("terrain",t,"#9aa5ae"):"#c9d1d8")+'" stroke="rgba(0,0,0,.12)" stroke-width="1"/>');
-    if(owners&&c.o){const oc=color("owners",c.o,"#888");o.push('<rect x="'+(px+3)+'" y="'+(py+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="'+esc(oc)+'" fill-opacity=".8" rx="3"/><text x="'+(px+S/2)+'" y="'+(py+S/2+4)+'" font-size="9.5" font-weight="600" text-anchor="middle" fill="'+(lum(oc)>.6?"#15202a":"#ffffff")+'">'+esc(c.o)+"</text>");}
-    else if(areas&&c.n){const nc=color("neighborhoods",c.n,"#888");o.push('<rect x="'+(px+3)+'" y="'+(py+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="'+esc(nc)+'" fill-opacity=".72" rx="3"/><text x="'+(px+S/2)+'" y="'+(py+S/2+4)+'" font-size="9.5" text-anchor="middle" fill="'+(lum(nc)>.6?"#15202a":"#ffffff")+'">'+esc(c.n)+"</text>");}
-    else if(c.b){const bc=color("buildings",c.b,"#bbbbbb");o.push('<rect x="'+(px+6)+'" y="'+(py+6)+'" width="'+(S-12)+'" height="'+(S-12)+'" fill="'+esc(bc)+'" stroke="rgba(0,0,0,.45)" stroke-width="1" rx="2"/><text x="'+(px+S/2)+'" y="'+(py+S/2+3.5)+'" font-size="'+(c.b.length>4?7:9.5)+'" font-weight="600" text-anchor="middle" fill="'+(lum(bc)>.6?"#15202a":"#ffffff")+'">'+esc(c.b)+"</text>");}
+    if(owners&&c.o){const oc=color("owners",c.o,"#888");o.push('<rect x="'+(px+3)+'" y="'+(py+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="'+esc(oc)+'" fill-opacity=".8" rx="3"/><text x="'+(px+S/2)+'" y="'+(py+S/2+4)+'" font-size="9.5" font-weight="600" text-anchor="middle" fill="'+(lum(oc)>.6?"#15202a":"#ffffff")+'" style="font-size:'+(c.o.length>4?9:11)+'px">'+esc(c.o)+"</text>");}
+    else if(areas&&c.n){const nc=color("neighborhoods",c.n,"#888");o.push('<rect x="'+(px+3)+'" y="'+(py+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="'+esc(nc)+'" fill-opacity=".72" rx="3"/><text x="'+(px+S/2)+'" y="'+(py+S/2+4)+'" font-size="'+(c.n.length>4?9:11)+'" font-weight="600" text-anchor="middle" fill="'+(lum(nc)>.6?"#15202a":"#ffffff")+'">'+esc(c.n)+"</text>");}
+    else if(c.b){const bc=color("buildings",c.b,"#bbbbbb");o.push('<rect x="'+(px+6)+'" y="'+(py+6)+'" width="'+(S-12)+'" height="'+(S-12)+'" fill="'+esc(bc)+'" stroke="rgba(0,0,0,.45)" stroke-width="1" rx="2"/><text x="'+(px+S/2)+'" y="'+(py+S/2+3.5)+'" font-size="'+(c.b.length>4?8.5:12)+'" font-weight="600" text-anchor="middle" fill="'+(lum(bc)>.6?"#15202a":"#ffffff")+'">'+esc(c.b)+"</text>");}
     if(c.o&&!owners&&!areas){o.push('<rect x="'+(px+6)+'" y="'+(py+S-9)+'" width="'+(S-12)+'" height="4" fill="'+esc(color("owners",c.o,"#888"))+'" rx="1"/>');}
     if(c.m){const mc=color("markers",c.m,"#333");o.push('<circle cx="'+(px+S-9)+'" cy="'+(py+9)+'" r="8" fill="'+esc(mc)+'" stroke="#fff" stroke-width="1.5"/><text x="'+(px+S-9)+'" y="'+(py+11.5)+'" font-size="'+(c.m.length>2?5.5:7)+'" font-weight="600" text-anchor="middle" fill="'+(lum(mc)>.6?"#15202a":"#ffffff")+'">'+esc(c.m)+"</text>");}
   }
@@ -528,7 +634,8 @@ function renderMap(){
     o.push(p[0]==="h"?'<line x1="'+(OFF+x*S)+'" y1="'+(OFF+y*S)+'" x2="'+(OFF+(x+1)*S)+'" y2="'+(OFF+y*S)+'" stroke="'+sc+'" stroke-width="6" stroke-linecap="round"/>':'<line x1="'+(OFF+x*S)+'" y1="'+(OFF+y*S)+'" x2="'+(OFF+x*S)+'" y2="'+(OFF+(y+1)*S)+'" stroke="'+sc+'" stroke-width="6" stroke-linecap="round"/>');}
   if(st.step==="gameplay"){
     const B=computeBlocks();
-    for(const b of B.blocks)if(blockData(b))o.push('<circle cx="'+(OFF+b.ax*S+8)+'" cy="'+(OFF+b.ay*S+8)+'" r="4.5" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>');
+    for(const b of B.blocks){const bd=blockData(b);if(!bd)continue;const n=normBlock(bd.data);const tot=blockTotal(n);const cx=OFF+b.ax*S+13,cy=OFF+b.ay*S+13;
+      o.push('<circle cx="'+cx+'" cy="'+cy+'" r="'+(tot?11:5)+'" fill="'+(illBad(n)?"var(--danger)":"var(--accent)")+'" stroke="#fff" stroke-width="1.2"/>'+(tot?'<text x="'+cx+'" y="'+(cy+4)+'" font-size="'+(tot>99?8.5:11)+'" font-weight="700" text-anchor="middle" fill="#060d2c">'+tot+"</text>":""));}
     const sb=B.blocks.find(b=>b.anchor===st.sel);
     if(sb){const inB=new Set(sb.cells.map(([x,y])=>key(x,y)));
       for(const [x,y] of sb.cells){const px=OFF+x*S,py=OFF+y*S;o.push('<rect x="'+px+'" y="'+py+'" width="'+S+'" height="'+S+'" fill="var(--accent)" fill-opacity=".2"/>');
@@ -539,10 +646,17 @@ function renderMap(){
   svg.innerHTML=o.join("");applyZoom();renderHover();
 }
 function renderHover(){
-  const g=document.getElementById("hover-layer");if(!g)return;const h=st.hover;if(!h){g.innerHTML="";return;}
-  if(h.cell){g.innerHTML='<rect x="'+(OFF+h.cell.x*S+1)+'" y="'+(OFF+h.cell.y*S+1)+'" width="'+(S-2)+'" height="'+(S-2)+'" fill="none" stroke="var(--ink)" stroke-width="2" pointer-events="none"/>';return;}
-  const p=h.edge.split("_"),x=+p[1],y=+p[2];const L=p[0]==="h"?[OFF+x*S,OFF+y*S,OFF+(x+1)*S,OFF+y*S]:[OFF+x*S,OFF+y*S,OFF+x*S,OFF+(y+1)*S];
-  g.innerHTML='<line x1="'+L[0]+'" y1="'+L[1]+'" x2="'+L[2]+'" y2="'+L[3]+'" stroke="var(--accent)" stroke-width="8" stroke-opacity=".55" stroke-linecap="round" pointer-events="none"/>';
+  const g=document.getElementById("hover-layer");if(!g)return;const h=st.hover;const o=[];
+  const box=(x,y,w,hh,stroke,fill,dash)=>o.push('<rect x="'+(OFF+x*S+1)+'" y="'+(OFF+y*S+1)+'" width="'+(w*S-2)+'" height="'+(hh*S-2)+'" fill="'+(fill||"none")+'" fill-opacity=".18" stroke="'+stroke+'" stroke-width="2.5"'+(dash?' stroke-dasharray="6 4"':"")+' pointer-events="none"/>');
+  const r=areaRect();if(r)box(r.x0,r.y0,r.x1-r.x0+1,r.y1-r.y0+1,"var(--gold)","var(--gold)",true);
+  if(h&&h.cell){
+    const t=st.step==="gameplay"&&st.gmode==="stamp"&&st.idx.templates&&st.idx.templates.get(st.tpl);
+    if(st.pasting&&st.clip)box(h.cell.x,h.cell.y,st.clip.w,st.clip.h,"var(--accent)","var(--accent)");
+    else if(t&&!st.selMode)box(h.cell.x,h.cell.y,num(t.w,1,1,20),num(t.h,1,1,20),"var(--accent)","var(--accent)");
+    else box(h.cell.x,h.cell.y,1,1,"var(--ink)");
+  }else if(h&&h.edge){const p=h.edge.split("_"),x=+p[1],y=+p[2];const L=p[0]==="h"?[OFF+x*S,OFF+y*S,OFF+(x+1)*S,OFF+y*S]:[OFF+x*S,OFF+y*S,OFF+x*S,OFF+(y+1)*S];
+    o.push('<line x1="'+L[0]+'" y1="'+L[1]+'" x2="'+L[2]+'" y2="'+L[3]+'" stroke="var(--accent)" stroke-width="8" stroke-opacity=".55" stroke-linecap="round" pointer-events="none"/>');}
+  g.innerHTML=o.join("");
 }
 function nameOf(k,code){const it=st.idx[k]&&st.idx[k].get(code);return it?it.name||code:code;}
 function renderCaption(){
@@ -557,7 +671,7 @@ function renderCaption(){
   if(cl.o)parts.push("<span>Owner: "+esc(nameOf("owners",cl.o))+"</span>");
   c.innerHTML=parts.join("");
 }
-function renderToolbar(){const s=STEPS.find(x=>x.id===st.step)||TOOLS.find(x=>x.id===st.step);$("#tb-title").textContent=(s.n?s.n+". ":"")+s.label;$("#tb-hint").textContent=s.hint;$("#undo").disabled=!st.undo.length;$("#redo").disabled=!st.redo.length;}
+function renderToolbar(){const s=STEPS.find(x=>x.id===st.step)||TOOLS.find(x=>x.id===st.step);$("#tb-title").textContent=(s.n?s.n+". ":"")+s.label;$("#tb-hint").textContent=s.hint;$("#undo").disabled=!st.undo.length;$("#redo").disabled=!st.redo.length;$("#sel-btn").setAttribute("aria-pressed",String(!!st.selMode));$("#copy-btn").disabled=!st.area;$("#paste-btn").disabled=!st.clip;$("#paste-btn").setAttribute("aria-pressed",String(!!st.pasting));}
 
 function swatches(bl){
   const cur=currentBrush();const cnt={};
@@ -586,47 +700,64 @@ function renderPanel(){
   if(st.step==="gameplay"){p.innerHTML=gameplayPanel(C);return;}
   if(st.step==="check"){p.innerHTML=checkPanel();return;}
 }
-const SINGLE=new Set(["PI","MI","RI","PHARMA","CITYHALL","POLICE","TERMINAL","CHURCH"]);
-function blockRoom(b){let n=0;for(const [x,y] of b.cells){const c=cellAt(x,y);if(c.b)n+=SINGLE.has(c.b)?1:4;}return n;}
+function templatePicker(){
+  const T=list("templates");
+  if(!T.length)return'<p class="note">No templates yet. A template is a block size plus how many legal, illegal and not playable buildings it holds.</p><div class="row"><button class="btn primary" type="button" id="tpl-starter">Add 3 starter templates</button><button class="btn" type="button" data-cfgopen="templates">Open Config</button></div>';
+  if(!st.idx.templates.has(st.tpl))st.tpl=T[0].code;
+  return'<p class="note">Click the top-left cell where the block goes. Its cells become lots with streets around them. Undo takes it back.</p><div class="swatches">'+T.map(t=>'<button class="sw" type="button" data-tpl="'+esc(t.code)+'" aria-pressed="'+(t.code===st.tpl)+'"><span class="chip" style="background:'+esc(color("buildings",t.building,"#888888"))+'"></span><span class="code">'+esc(t.code)+'</span><span class="nm" title="'+esc(t.name||"")+'">'+esc((+t.legal||0)+" legal · "+(+t.ill||0)+" illegal · "+(+t.other||0)+" not playable")+'</span><span class="cnt">'+num(t.w,1,1,20)+"×"+num(t.h,1,1,20)+"</span></button>").join("")+'</div><div class="row"><button class="btn sm" type="button" data-cfgopen="templates">Edit templates</button></div>';
+}
 function gameplayPanel(C){
-  const B=computeBlocks();const b=B.blocks.find(x=>x.anchor===st.sel);
-  let h="<h2>6. Gameplay</h2><p>A block is a group of lots with no street between them. Click one on the map.</p>"+statRow([[C.filled+"/"+C.blocks,"filled"],[C.lots,"lots"],[list("operations").length,"operations"]]);
-  if(!b)return h+'<p class="note">No block selected. Blocks with a dot already have data.</p>';
-  const bd=blockData(b);const d=bd?bd.data:{};const ns=blockNbs(b);
+  const B=computeBlocks();const stamp=st.gmode==="stamp";
+  let h="<h2>6. Gameplay</h2><p>A block is a group of lots with no street between them. Pick one on the map, or place a ready-made template.</p>"+statRow([[C.filled+"/"+C.blocks,"filled"],[C.lots,"lots"],[list("templates").length,"templates"]]);
+  h+='<div class="seg" role="group" aria-label="Mode"><button type="button" data-gmode="select" aria-pressed="'+!stamp+'">Pick a block</button><button type="button" data-gmode="stamp" aria-pressed="'+stamp+'">Place a template</button></div>';
+  if(stamp)return h+templatePicker();
+  const b=B.blocks.find(x=>x.anchor===st.sel);
+  if(!b)return h+'<p class="note">No block selected. The number on a block is how many buildings it holds; red means more illegal than legal.</p>';
+  const bd=blockData(b);const d=normBlock(bd?bd.data:null);const ns=blockNbs(b);
   const types={};for(const [x,y] of b.cells){const t=cellAt(x,y).b;if(t)types[t]=(types[t]||0)+1;}
   const mk=[];for(const [x,y] of b.cells){const m=cellAt(x,y).m;if(m)mk.push(m+" "+cellName(x,y));}
-  const ro=list("robbery"),ops=list("operations"),ill=Array.isArray(d.illegal)?d.illegal:[];
+  const ro=list("robbery"),ops=list("operations");
   const opt=cur=>'<option value="">Not set</option>'+ro.map(r=>'<option value="'+esc(r.code)+'"'+(cur===r.code?" selected":"")+">"+esc(r.name||r.code)+"</option>").join("");
-  h+='<div class="sec"><h3>Block '+esc(cellName(b.ax,b.ay))+'</h3><dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Neighborhood</dt><dd>"+(ns.length?esc(ns.join(", ")):"none yet")+"</dd><dt>Buildings</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+(mk.length?"<dt>Markers</dt><dd>"+esc(mk.join(", "))+"</dd>":"")+"</dl></div>";
+  const tp=d.tpl&&st.idx.templates.get(d.tpl);
+  h+='<div class="sec"><h3>Block '+esc(cellName(b.ax,b.ay))+'</h3><dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Neighborhood</dt><dd>"+(ns.length?esc(ns.join(", ")):"none yet")+"</dd><dt>Building types</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+(mk.length?"<dt>Markers</dt><dd>"+esc(mk.join(", "))+"</dd>":"")+(d.tpl?"<dt>Template</dt><dd>"+esc(tp?(tp.name||tp.code):d.tpl)+"</dd>":"")+"</dl></div>";
   if(ns.length>1)h+='<p class="note warn">This block touches '+ns.length+" neighborhoods. Add a street between them or repaint in 2. Neighborhoods.</p>";
-  h+='<div class="field"><label for="f-purch">Sites that can be purchased</label><input type="number" id="f-purch" min="0" max="'+b.cells.length+'" value="'+esc(d.purchasable==null?"":d.purchasable)+'"></div>';
-  h+='<div class="field"><span class="lab">Illegal operations allowed</span><div class="checks">'+(ops.length?ops.map(o=>'<label><input type="checkbox" data-op="'+esc(o.code)+'"'+(ill.indexOf(o.code)>=0?" checked":"")+">"+esc(o.name||o.code)+"</label>").join(""):'<span class="muted">Add operations in Config.</span>')+"</div></div>";
-  h+='<div class="field"><label for="f-rob">Robbery, purchasable sites</label><select id="f-rob">'+opt(d.robbery||"")+"</select></div>";
-  h+='<div class="field"><label for="f-other">Robbery, other sites</label><select id="f-other">'+opt(d.other||"")+"</select></div>";
-  const bz=list("businesses"),buy=Array.isArray(d.reqBuy)?d.reqBuy:[];
+  const cnt=(id,lab,help,v)=>'<div class="count-row"><label for="'+id+'"><b>'+lab+"</b><small>"+help+'</small></label><div class="stepper"><button type="button" data-bump="'+id+'" data-d="-1" aria-label="One less '+lab.toLowerCase()+'">−</button><input type="number" id="'+id+'" min="0" max="999" inputmode="numeric" placeholder="0" value="'+esc(v==null?"":v)+'"><button type="button" data-bump="'+id+'" data-d="1" aria-label="One more '+lab.toLowerCase()+'">+</button></div></div>';
+  h+='<div class="sec"><h3>Buildings on this block</h3><div>'+cnt("f-legal","Legal","Businesses the player can buy",d.legal)+cnt("f-ill","Illegal","Places for an illegal operation",d.ill)+cnt("f-np","Not playable","Background buildings",d.nonPlay)+'</div><p id="f-total" style="font-size:12.5px" class="'+(illBad(d)?"note warn":"muted")+'">'+(illBad(d)?"Illegal has to be less than legal.":blockTotal(d)+" buildings in total. Illegal has to be less than legal.")+"</p></div>";
+  const bz=list("businesses");
   const bname=x=>esc((x.name||x.code)+(x.op?" · "+nameOf("operations",x.op):"")+(x.recruit?" · recruits":""));
-  h+='<div class="sec"><h3>Businesses on this block</h3><p class="muted" style="font-size:12px">About '+blockRoom(b)+' buildings. Pick from the Businesses list in Config. Buildings left over keep the default for their type.</p>';
+  h+='<div class="sec"><h3>Businesses on this block</h3>';
   if(!bz.length)h+='<p class="note">Add businesses in Config first.</p>';
   else{
-    h+='<div class="field"><label for="f-reqill">Required for an illegal operation (0 or 1)</label><select id="f-reqill"><option value="">None</option>'+bz.filter(x=>x.op).map(x=>'<option value="'+esc(x.code)+'"'+(d.reqIll===x.code?" selected":"")+">"+bname(x)+"</option>").join("")+"</select></div>";
-    h+='<div class="field"><span class="lab">Required to be purchased</span><div class="checks">'+bz.filter(x=>!x.op).map(x=>'<label><input type="checkbox" data-buy="'+esc(x.code)+'"'+(buy.indexOf(x.code)>=0?" checked":"")+">"+bname(x)+"</label>").join("")+"</div></div>";
-    h+='<div class="field"><label for="f-random">Random businesses</label><input type="number" id="f-random" min="0" max="'+blockRoom(b)+'" value="'+esc(d.random==null?"":d.random)+'"></div>';
+    h+='<div class="field"><label for="f-reqill">Required illegal business (0 or 1)</label><select id="f-reqill"><option value="">None</option>'+bz.filter(x=>x.op).map(x=>'<option value="'+esc(x.code)+'"'+(d.reqIll===x.code?" selected":"")+">"+bname(x)+"</option>").join("")+"</select></div>";
+    h+='<div class="field"><span class="lab">Required to be purchased</span><div class="checks">'+bz.filter(x=>!x.op).map(x=>'<label><input type="checkbox" data-buy="'+esc(x.code)+'"'+(d.reqBuy.indexOf(x.code)>=0?" checked":"")+">"+bname(x)+"</label>").join("")+"</div></div>";
+    h+='<p class="muted" style="font-size:12.5px">'+Math.max(0,(d.legal||0)-d.reqBuy.length)+" legal buildings get a random business of the same wealth.</p>";
   }
   h+="</div>";
-  h+='<div class="field"><label for="f-notes">Notes (not imported)</label><textarea id="f-notes">'+esc(d.notes||"")+"</textarea></div>";
+  h+='<div class="sec"><h3>Illegal operations and robbery</h3>';
+  h+='<div class="field"><span class="lab">Illegal operations this block allows</span><div class="checks">'+(ops.length?ops.map(o=>'<label><input type="checkbox" data-op="'+esc(o.code)+'"'+(d.illegal.indexOf(o.code)>=0?" checked":"")+">"+esc(o.name||o.code)+"</label>").join(""):'<span class="muted">Add operations in Config.</span>')+"</div></div>";
+  h+='<div class="field"><label for="f-rob">Robbery, legal buildings</label><select id="f-rob">'+opt(d.robbery||"")+"</select></div>";
+  h+='<div class="field"><label for="f-other">Robbery, other buildings</label><select id="f-other">'+opt(d.other||"")+"</select></div>";
+  h+="</div>";
+  const df=(st.d.cfg&&isObj(st.d.cfg.defaults))?st.d.cfg.defaults:{};
+  h+='<div class="sec"><h3>Values for this block</h3><p class="muted" style="font-size:12.5px">Empty uses the business value, then the default in Config.</p><div class="vgrid">'+VALUES.map(v=>'<div class="field"><label for="f-v-'+v.k+'">'+esc(v.label)+'</label><input type="number" min="0" id="f-v-'+v.k+'" value="'+esc(d.vals[v.k]==null?"":d.vals[v.k])+'" placeholder="'+esc(df[v.k]==null?"Not set":"Default "+df[v.k])+'"></div>').join("")+"</div></div>";
+  h+='<div class="field"><label for="f-notes">Notes (not imported)</label><textarea id="f-notes">'+esc(d.notes)+"</textarea></div>";
   if(bd&&bd.key!==b.anchor)h+='<p class="note">This data was saved when the block had another shape. The next edit moves it to '+esc(cellName(b.ax,b.ay))+".</p>";
   return h;
 }
 function saveBlock(){
   const B=computeBlocks();const b=B.blocks.find(x=>x.anchor===st.sel);if(!b)return;
-  const bd=blockData(b);const prev=bd?bd.data:{};const raw=$("#f-purch").value;
-  const rr=$("#f-random")?$("#f-random").value:"";const ri=$("#f-reqill");
-  const d={purchasable:raw===""?null:Math.max(0,parseInt(raw,10)||0),illegal:[...document.querySelectorAll("[data-op]")].filter(i=>i.checked).map(i=>i.dataset.op),robbery:$("#f-rob").value||null,other:$("#f-other").value||null,notes:$("#f-notes").value||"",reqIll:ri?ri.value||null:prev.reqIll||null,reqBuy:ri?[...document.querySelectorAll("[data-buy]")].filter(i=>i.checked).map(i=>i.dataset.buy):prev.reqBuy||[],random:ri?(rr===""?null:Math.max(0,parseInt(rr,10)||0)):prev.random==null?null:prev.random};
-  const was={purchasable:prev.purchasable==null?null:prev.purchasable,illegal:prev.illegal||[],robbery:prev.robbery||null,other:prev.other||null,notes:prev.notes||"",reqIll:prev.reqIll||null,reqBuy:prev.reqBuy||[],random:prev.random==null?null:prev.random};
+  const bd=blockData(b);const was=normBlock(bd?bd.data:null);const d=clone(was);
+  const n=id=>{const el=$("#"+id);if(!el)return undefined;return el.value===""?null:Math.max(0,parseInt(el.value,10)||0);};
+  const set=(f,v)=>{if(v!==undefined)d[f]=v;};
+  set("legal",n("f-legal"));set("ill",n("f-ill"));set("nonPlay",n("f-np"));
+  if($("#f-rob")){d.illegal=[...document.querySelectorAll("[data-op]")].filter(i=>i.checked).map(i=>i.dataset.op);d.robbery=$("#f-rob").value||null;d.other=$("#f-other").value||null;d.notes=$("#f-notes").value||"";}
+  const ri=$("#f-reqill");if(ri){d.reqIll=ri.value||null;d.reqBuy=[...document.querySelectorAll("[data-buy]")].filter(i=>i.checked).map(i=>i.dataset.buy);}
+  const vals={};let any=false;for(const v of VALUES){const el=$("#f-v-"+v.k);if(!el)continue;any=true;if(el.value!=="")vals[v.k]=Math.max(0,Number(el.value)||0);}if(any)d.vals=vals;
   if(JSON.stringify(d)===JSON.stringify(was))return;
   pushUndo();
   if(bd){for(const k of bd.legacy)delete st.d.blocks[k];delete st.d.blocks[bd.key];}
   st.d.blocks[b.anchor]=d;save();renderMap();renderSide();renderToolbar();
+  const tot=$("#f-total");if(tot){tot.className=illBad(d)?"note warn":"muted";tot.textContent=illBad(d)?"Illegal has to be less than legal.":blockTotal(d)+" buildings in total. Illegal has to be less than legal.";}
 }
 function checkPanel(){
   if(!st.d.cfg)return"<h2>Check</h2><p>Set up the lists in Config first.</p>";
@@ -800,19 +931,24 @@ const CFG_TABS=[
   {id:"terrain",group:"Map",label:"Ground",lists:["terrain"],title:"Ground types",text:"What each cell is made of. Buildable lots are where buildings go; the first row fills empty cells."},
   {id:"streets",group:"Map",label:"Streets",lists:["streets"],title:"Street types",text:"Streets run on the lines between cells."},
   {id:"buildings",group:"Map",label:"Buildings",lists:["buildings"],title:"Building types",text:"The type of building on each lot. Unity picks the 3D models for each code."},
+  {id:"templates",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Legal, illegal and not playable say how many buildings Unity puts on it; illegal has to be less than legal."},
   {id:"markers",group:"Map",label:"Markers",lists:["markers"],title:"Markers",text:"Special spots on a lot: HQs and recruitment sites. PLY, G1, G2, G3 and REC are read by Unity, keep those codes."},
   {id:"areas",group:"People and places",label:"Neighborhoods",lists:["neighborhoods","districts"],title:"Neighborhoods and districts",text:"Each neighborhood becomes its own scene in Unity, named after it."},
   {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
   {id:"businesses",group:"Gameplay",label:"Businesses",lists:["businesses"],title:"Businesses",text:"Every business the map can place. Make one row per variant, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics); the same Type groups them. Price and income are set in Unity."},
-  {id:"rules",group:"Gameplay",label:"Operations and robbery",lists:["operations","robbery"],title:"Operations and robbery",text:"The lists used by businesses and by 6. Gameplay."}
+  {id:"rules",group:"Gameplay",label:"Operations and robbery",lists:["operations","robbery"],title:"Operations and robbery",text:"The lists used by businesses and by 6. Gameplay."},
+  {id:"values",group:"Values",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
+  {id:"bizvalues",group:"Values",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
+  {id:"nbdata",group:"Values",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
 ];
-const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business"};
+const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business",templates:"template"};
 const LIST_TEXT={districts:"Groups of neighborhoods.",robbery:"How much a robbery on the block is worth.",operations:"Illegal operations a building can run."};
-function cfgDefaults(){return{gridW:21,gridH:21,cellMeters:25,roadWidth:14,sidewalk:3,terrain:[],streets:[],buildings:[],markers:[],districts:[],neighborhoods:[],owners:[],operations:[],robbery:[],businesses:[]};}
+function cfgDefaults(){return{gridW:21,gridH:21,cellMeters:25,roadWidth:14,sidewalk:3,terrain:[],streets:[],buildings:[],markers:[],districts:[],neighborhoods:[],owners:[],operations:[],robbery:[],businesses:[],templates:[],defaults:{}};}
 function ensureDraft(){
   if(st.draft)return st.draft;
   st.draft=clone(st.d.cfg||cfgDefaults());
   for(const L of LISTS){if(!Array.isArray(st.draft[L.k]))st.draft[L.k]=[];for(const it of st.draft[L.k])it._o=it.code;}
+  if(!isObj(st.draft.defaults))st.draft.defaults={};
   return st.draft;
 }
 function openConfig(tab){ensureDraft();st.cfgOpen=true;if(tab)st.cfgTab=tab;if(!st.cfgTab)st.cfgTab=st.d.cfg?"terrain":"map";renderConfig();renderSide();const m=$(".cfg-main");if(m)m.scrollTop=0;}
@@ -825,7 +961,8 @@ function usage(){
   const inc=(k,c)=>{if(c)u[k][c]=(u[k][c]||0)+1;};
   for(const c of Object.values(st.d.cells)){inc("terrain",c.t);inc("buildings",c.b);inc("markers",c.m);inc("neighborhoods",c.n);inc("owners",c.o);}
   for(const v of Object.values(st.d.edges))inc("streets",v);
-  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;(b.illegal||[]).forEach(o=>inc("operations",o));inc("robbery",b.robbery);inc("robbery",b.other);inc("businesses",b.reqIll);(b.reqBuy||[]).forEach(x=>inc("businesses",x));}
+  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;(b.illegal||[]).forEach(o=>inc("operations",o));inc("robbery",b.robbery);inc("robbery",b.other);inc("businesses",b.reqIll);(b.reqBuy||[]).forEach(x=>inc("businesses",x));inc("templates",b.tpl);}
+  for(const t of list("templates"))inc("buildings",t.building);
   for(const n of list("neighborhoods"))inc("districts",n.district);
   for(const b of list("businesses"))inc("operations",b.op);
   return u;
@@ -838,16 +975,19 @@ function draftErrors(){
     if(c&&seen[c]==null)seen[c]=i;
     if(!m&&L.k==="businesses"&&it.op&&!(d.operations||[]).some(o=>o.code===it.op))m="Its illegal operation is not in the list anymore.";
     if(!m&&L.k==="neighborhoods"&&it.district&&!(d.districts||[]).some(o=>o.code===it.district))m="Its district is not in the list anymore.";
+    if(!m&&L.k==="templates"){const w=+it.w,h=+it.h;if(!(w>=1&&w<=20&&h>=1&&h<=20))m="Width and height go from 1 to 20 cells.";else if(+it.ill>0&&+it.ill>=(+it.legal||0))m="Illegal has to be less than legal.";else if(it.building&&!(d.buildings||[]).some(o=>o.code===it.building))m="Its building type is not in the list anymore.";}
     if(m)e[L.k+":"+i]=m;});}
+  (d.neighborhoods||[]).forEach((n,i)=>{const mix=["mixPoor","mixAverage","mixRich","mixWorker"].map(f=>n[f]);if(mix.some(v=>v!=null)){const s=mix.reduce((a,v)=>a+(+v||0),0);if(s!==100)e["nbdata:"+i]="Citizen mix adds up to "+s+", it needs 100.";}});
   if((d.terrain||[]).length&&!d.terrain.some(x=>x.lot))e["terrain:lot"]='Tick "Buildable" on at least one ground type.';
   return e;
 }
-function tabOf(k){const tb=CFG_TABS.find(x=>x.lists.indexOf(k)>=0);return tb?tb.id:"map";}
+function tabOf(k){if(CFG_TABS.some(x=>x.id===k))return k;const tb=CFG_TABS.find(x=>x.lists.indexOf(k)>=0);return tb?tb.id:"map";}
 function cfgCols(k){
   const code={h:"Code",w:"minmax(96px,130px)"},name={h:"Name",w:"minmax(140px,1.6fr)"},color={h:"Color",w:"56px"},used={h:"Used",w:"56px"},act={h:"",w:"72px"};
   if(k==="terrain")return[code,name,color,{h:"Buildable",w:"96px"},used,act];
   if(k==="neighborhoods")return[code,name,{h:"District",w:"minmax(120px,1fr)"},color,used,act];
   if(k==="owners")return[code,name,{h:"Kind in the game",w:"minmax(140px,1fr)"},color,used,act];
+  if(k==="templates")return[code,name,{h:"Width",w:"72px"},{h:"Height",w:"72px"},{h:"Legal",w:"72px"},{h:"Illegal",w:"72px"},{h:"Not playable",w:"80px"},{h:"Building type (optional)",w:"minmax(150px,1fr)"},used,act];
   if(k==="businesses")return[code,name,{h:"Type",w:"minmax(100px,1fr)"},{h:"Wealth",w:"110px"},{h:"Illegal operation",w:"minmax(150px,1.3fr)"},{h:"Recruits",w:"84px"},used,act];
   if(LISTS.find(l=>l.k===k).color)return[code,name,color,used,act];
   return[code,name,used,act];
@@ -868,21 +1008,44 @@ function cfgTable(k,errs,u){
     const txt=(f2,lab,cls,ph)=>'<div data-label="'+lab+'"><input type="text" '+id(f2)+" "+base+' data-f="'+f2+'" value="'+esc(it[f2])+'" aria-label="'+lab+'"'+(cls?' class="'+cls+'"':"")+(ph?' placeholder="'+ph+'"':"")+"></div>";
     const sel=(f2,lab,opts)=>'<div data-label="'+lab+'"><select '+id(f2)+" "+base+' data-f="'+f2+'" aria-label="'+lab+'">'+opts.map(([v,nm])=>'<option value="'+esc(v)+'"'+((it[f2]||"")===v?" selected":"")+">"+esc(nm)+"</option>").join("")+"</select></div>";
     const chk=(f2,lab,txt2)=>'<div data-label="'+lab+'"><label class="chk"><input type="checkbox" '+id(f2)+" "+base+' data-f="'+f2+'"'+(it[f2]?" checked":"")+">"+esc(txt2)+"</label></div>";
+    const nmb=(f2,lab)=>'<div data-label="'+lab+'"><input type="number" min="0" '+id(f2)+" "+base+' data-f="'+f2+'" value="'+esc(it[f2])+'" aria-label="'+lab+'"></div>';
     const clr='<div data-label="Color"><input type="color" '+id("color")+" "+base+' data-f="color" value="'+esc(it.color||"#888888")+'" aria-label="Color"></div>';
     let cells=txt("code","Code","c"+(err&&/code/i.test(err)?" bad":""))+txt("name","Name","",k==="businesses"?"Bakery 02":"");
     if(k==="terrain")cells+=clr+chk("lot","Buildable","Lot");
     else if(k==="neighborhoods")cells+=sel("district","District",[["","No district"]].concat((d.districts||[]).map(x=>[x.code,(x.name||x.code)])))+clr;
+    else if(k==="templates")cells+=nmb("w","Width")+nmb("h","Height")+nmb("legal","Legal")+nmb("ill","Illegal")+nmb("other","Not playable")+sel("building","Building type",[["","Keep what is painted"]].concat((d.buildings||[]).map(x=>[x.code,x.code+" · "+(x.name||"")])));
     else if(k==="owners")cells+=sel("kind","Kind in the game",OWNER_KINDS.map(x=>[x,x]))+clr;
     else if(k==="businesses")cells+=txt("type","Type","","Bakery")+sel("wealth","Wealth",WEALTH.map(x=>[x,x]))+sel("op","Illegal operation",[["","None"]].concat((d.operations||[]).map(o=>[o.code,o.name||o.code])))+chk("recruit","Recruits","Recruits");
     else if(L.color)cells+=clr;
     cells+='<div data-label="Used"><span class="used'+(n?" on":"")+'" title="'+(n?"Used "+n+" times on the map":"Not used on the map")+'">'+(n||"–")+"</span></div>";
-    cells+='<div class="act">'+(k==="businesses"?'<button class="ibtn" type="button" data-dup="'+i+'" title="Duplicate as the next variant" aria-label="Duplicate">⧉</button>':"")+'<button class="ibtn del" type="button" data-del="'+k+'" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
+    cells+='<div class="act">'+(k==="businesses"||k==="templates"?'<button class="ibtn" type="button" data-dup="'+i+'" data-dl="'+k+'" title="Duplicate" aria-label="Duplicate">⧉</button>':"")+'<button class="ibtn del" type="button" data-del="'+k+'" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
     h+='<div class="trow'+(err?" bad":"")+'"'+style+">"+cells+(err?'<div class="err">'+esc(err)+"</div>":"")+"</div>";
   });
   if(!items.length)h+='<div class="empty">Nothing here yet.</div>';else if(!shown)h+='<div class="empty">No row matches the filter.</div>';
   h+='<div class="tfoot"><button class="btn sm" type="button" data-add="'+k+'">+ Add '+esc(ADD_LABEL[k]||"row")+'</button><span class="spacer"></span><span class="muted">'+items.length+(items.length===1?" row":" rows")+"</span></div></div>";
   if(errs[k+":lot"])h+='<p class="note warn">'+esc(errs[k+":lot"])+"</p>";
   return h;
+}
+function plainTable(cols,rows,empty){
+  const style=' style="--cols:'+cols.map(c=>c.w).join(" ")+'"';
+  return'<div class="tbl"><div class="trow head"'+style+">"+cols.map(c=>"<div>"+esc(c.h)+"</div>").join("")+"</div>"+(rows.length?rows.map(r=>'<div class="trow'+(r.err?" bad":"")+'"'+style+">"+r.html+(r.err?'<div class="err">'+esc(r.err)+"</div>":"")+"</div>").join(""):'<div class="empty">'+esc(empty)+"</div>")+"</div>";
+}
+function numIn(idv,attrs,lab,v,ph){return'<div data-label="'+esc(lab)+'"><input type="number" min="0" id="'+idv+'" '+attrs+' value="'+esc(v==null?"":v)+'" aria-label="'+esc(lab)+'"'+(ph?' placeholder="'+esc(ph)+'"':"")+"></div>";}
+function valuesTab(d){
+  return plainTable([{h:"Value",w:"minmax(180px,1.2fr)"},{h:"Default",w:"160px"},{h:"What it is",w:"minmax(200px,2fr)"}],VALUES.map(v=>({html:'<div class="ro">'+esc(v.label)+"</div>"+numIn("cf-def-"+v.k,'data-def="'+v.k+'"',v.label,d.defaults[v.k],"Not set")+'<div class="muted" style="font-size:12.5px">'+esc(v.help)+"</div>"})),"");
+}
+function bizValuesTab(d){
+  const f=(st.cfgFilter||"").trim().toLowerCase();
+  const rows=[];(d.businesses||[]).forEach((it,i)=>{if(f&&![it.code,it.name,it.type].some(v=>String(v||"").toLowerCase().indexOf(f)>=0))return;
+    rows.push({html:'<div class="ro" title="'+esc(it.name||"")+'"><b>'+esc(it.code)+"</b>"+esc(it.name||"")+"</div>"+VALUES.map(v=>numIn("cf-bv-"+i+"-"+v.k,'data-list="businesses" data-i="'+i+'" data-f="'+v.k+'"',v.label,it[v.k],d.defaults[v.k]==null?"":String(d.defaults[v.k]))).join("")});});
+  return'<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code, name or type" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter businesses"></div>'+plainTable([{h:"Business",w:"minmax(170px,1.6fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(96px,1fr)"}))),rows,(d.businesses||[]).length?"No business matches the filter.":"Add businesses first, in the Businesses tab.");
+}
+function nbDataTab(d,errs){
+  const sel=(i,f,lab,opts,v)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+o+"</option>").join("")+"</select></div>";
+  const nb=(i,f,lab,v)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'"',lab,v,"");
+  const cols=[{h:"Neighborhood",w:"minmax(150px,1.5fr)"},{h:"Type",w:"minmax(116px,1fr)"},{h:"Wealth",w:"minmax(104px,1fr)"},{h:"Citizens on the street",w:"88px"},{h:"Poor %",w:"72px"},{h:"Average %",w:"72px"},{h:"Rich %",w:"72px"},{h:"Worker %",w:"72px"},{h:"Recruits available",w:"88px"},{h:"Starting intel",w:"76px"},{h:"Level for Stash or HQ",w:"88px"}];
+  const rows=(d.neighborhoods||[]).map((n,i)=>({err:errs["nbdata:"+i],html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+sel(i,"nbType","Type",NB_TYPES,n.nbType)+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth)+nb(i,"population","Citizens on the street",n.population)+nb(i,"mixPoor","Poor %",n.mixPoor)+nb(i,"mixAverage","Average %",n.mixAverage)+nb(i,"mixRich","Rich %",n.mixRich)+nb(i,"mixWorker","Worker %",n.mixWorker)+nb(i,"candidates","Recruits available",n.candidates)+nb(i,"intel","Starting intel",n.intel)+nb(i,"installLevel","Level for Stash or HQ",n.installLevel)}));
+  return plainTable(cols,rows,"Add neighborhoods first, in the Neighborhoods tab.");
 }
 function renderConfig(){
   const root=$("#cfg-root");
@@ -892,14 +1055,17 @@ function renderConfig(){
   let nav="";let g=null;
   for(const tb of CFG_TABS){
     if(tb.group!==g){g=tb.group;nav+='<div class="group">'+esc(g)+"</div>";}
-    const n=tb.lists.reduce((s,k)=>s+(d[k]||[]).length,0);const bad=tb.lists.some(k=>Object.keys(errs).some(e=>e.indexOf(k+":")===0));
+    const n=tb.lists.reduce((s,k)=>s+(d[k]||[]).length,0);const bad=tb.lists.concat([tb.id]).some(k=>Object.keys(errs).some(e=>e.indexOf(k+":")===0));
     nav+='<button class="cfg-tab" type="button" role="tab" data-cfgtab="'+tb.id+'" aria-selected="'+(tb.id===tab.id)+'">'+(bad?'<span class="dot" title="Has problems"></span>':"")+esc(tb.label)+(tb.lists.length?'<span class="n">'+n+"</span>":"")+"</button>";
   }
   let main='<div class="cfg-head"><h3>'+esc(tab.title)+"</h3><p>"+esc(tab.text)+"</p></div>";
   if(tab.id==="map"){
     const val=(id,label,v,min,max,help)=>'<div class="field"><label for="cfg-'+id+'">'+label+'</label><input type="number" id="cfg-'+id+'" data-val="'+id+'" min="'+min+'" max="'+max+'" value="'+esc(v)+'"><small>'+help+"</small></div>";
     main+='<div class="vals">'+val("gridW","Columns",d.gridW,4,60,"Cells across, 4 to 60.")+val("gridH","Rows",d.gridH,4,60,"Cells down, 4 to 60.")+val("cellMeters","Meters per cell",d.cellMeters,1,500,"Size of one cell in the game.")+val("roadWidth","Road width (m)",d.roadWidth,1,100,"Asphalt only.")+val("sidewalk","Sidewalk (m)",d.sidewalk,0,50,"On each side of the road.")+"</div>";
-  }else for(const k of tab.lists)main+=cfgTable(k,errs,u);
+  }else if(tab.id==="values")main+=valuesTab(d);
+  else if(tab.id==="bizvalues")main+=bizValuesTab(d);
+  else if(tab.id==="nbdata")main+=nbDataTab(d,errs);
+  else for(const k of tab.lists)main+=cfgTable(k,errs,u);
   const nErr=Object.keys(errs).length;
   const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving":st.draftDirty?"Unsaved changes":"All changes saved";
   const cls=st.draftMsg==="Saved"?"ok":nErr?"bad":st.draftDirty?"dirty":"";
@@ -919,9 +1085,10 @@ function remap(ren,d){
   const m=(k,v)=>v&&ren[k][v]!==undefined?ren[k][v]:v;
   for(const c of Object.values(st.d.cells)){if(c.t)c.t=m("terrain",c.t);if(c.b)c.b=m("buildings",c.b);if(c.m)c.m=m("markers",c.m);if(c.n)c.n=m("neighborhoods",c.n);if(c.o)c.o=m("owners",c.o);}
   for(const k of Object.keys(st.d.edges))st.d.edges[k]=m("streets",st.d.edges[k]);
-  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;if(Array.isArray(b.illegal))b.illegal=b.illegal.map(x=>m("operations",x));b.robbery=m("robbery",b.robbery);b.other=m("robbery",b.other);b.reqIll=m("businesses",b.reqIll);if(Array.isArray(b.reqBuy))b.reqBuy=b.reqBuy.map(x=>m("businesses",x));}
+  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;b.tpl=m("templates",b.tpl);if(Array.isArray(b.illegal))b.illegal=b.illegal.map(x=>m("operations",x));b.robbery=m("robbery",b.robbery);b.other=m("robbery",b.other);b.reqIll=m("businesses",b.reqIll);if(Array.isArray(b.reqBuy))b.reqBuy=b.reqBuy.map(x=>m("businesses",x));}
   for(const n of d.neighborhoods||[])n.district=m("districts",n.district);
   for(const b of d.businesses||[])b.op=m("operations",b.op);
+  for(const t of d.templates||[])t.building=m("buildings",t.building);
 }
 function saveConfig(){
   const d=ensureDraft();const errs=draftErrors();const keys=Object.keys(errs);
@@ -933,13 +1100,21 @@ function saveConfig(){
   st.d.cfg=out;rebuildIdx();st.bc=null;st.draft=null;st.draftDirty=false;save();ensureDraft();st.draftMsg="Saved";render();toast("Config saved");return true;
 }
 
+function pairs(o){return Object.keys(isObj(o)?o:{}).filter(k=>o[k]!=null&&o[k]!==""&&isFinite(+o[k])).map(k=>({key:k,value:+o[k]}));}
+function pick(o,keys){const r={};for(const k of keys)if(o[k]!=null&&o[k]!=="")r[k]=o[k];return r;}
+function economyExport(){
+  const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"];
+  return{defaults:pairs(st.d.cfg.defaults),
+    businesses:list("businesses").map(b=>({code:b.code,values:pairs(pick(b,vk))})).filter(b=>b.values.length),
+    neighborhoods:list("neighborhoods").map(n=>({code:n.code,type:n.nbType||"",wealth:n.wealth||"",numbers:pairs(pick(n,nk))})).filter(n=>n.type||n.wealth||n.numbers.length)};
+}
 function buildExport(){
   const W=gw(),H=gh();const cells=[];
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=cellAt(x,y);cells.push({cell:cellName(x,y),x,y,ground:terrainAt(x,y),lot:isLot(x,y),building:c.b||null,marker:c.m||null,neighborhood:c.n||null,owner:c.o||null});}
   const edges=Object.keys(st.d.edges).map(k=>{const p=k.split("_");return{dir:p[0],x:+p[1],y:+p[2],street:st.d.edges[k],between:edgeLabel(k)};});
-  const blocks=computeBlocks().blocks.map(b=>{const bd=blockData(b);const d=bd?bd.data:{};const ns=blockNbs(b);const nb=ns.length===1?ns[0]:null;const it=nb&&st.idx.neighborhoods.get(nb);
-    return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,purchasable:d.purchasable==null?null:+d.purchasable,illegal:Array.isArray(d.illegal)?d.illegal:[],robbery:d.robbery||null,otherRobbery:d.other||null,notes:d.notes||"",requiredIllegal:d.reqIll||null,requiredPurchase:Array.isArray(d.reqBuy)?d.reqBuy:[],random:d.random==null?null:+d.random};});
-  return{format:"philly-map-planner",version:1,exportedAt:new Date().toISOString(),source:st.d.source||null,grid:{width:W,height:H,cellMeters:+st.d.cfg.cellMeters||25,roadWidth:+st.d.cfg.roadWidth||14,sidewalk:+st.d.cfg.sidewalk||3,origin:"A1 is the top-left cell; x grows right, y grows down"},config:st.d.cfg,cells,edges,blocks,review:st.d.review||[],issues:issues().map(i=>({severity:i.sev,cell:i.at,text:i.text}))};
+  const blocks=computeBlocks().blocks.map(b=>{const bd=blockData(b);const d=normBlock(bd?bd.data:null);const ns=blockNbs(b);const nb=ns.length===1?ns[0]:null;const it=nb&&st.idx.neighborhoods.get(nb);
+    return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,template:d.tpl,legal:d.legal,illegalCount:d.ill,notPlayable:d.nonPlay,buildings:blockTotal(d),purchasable:d.legal,illegal:d.illegal,robbery:d.robbery,otherRobbery:d.other,notes:d.notes,requiredIllegal:d.reqIll,requiredPurchase:d.reqBuy,random:d.legal==null?null:Math.max(0,d.legal-d.reqBuy.length),values:d.vals,valueList:pairs(d.vals)};});
+  return{format:"philly-map-planner",version:1,exportedAt:new Date().toISOString(),source:st.d.source||null,grid:{width:W,height:H,cellMeters:+st.d.cfg.cellMeters||25,roadWidth:+st.d.cfg.roadWidth||14,sidewalk:+st.d.cfg.sidewalk||3,origin:"A1 is the top-left cell; x grows right, y grows down"},config:st.d.cfg,economy:economyExport(),cells,edges,blocks,review:st.d.review||[],issues:issues().map(i=>({severity:i.sev,cell:i.at,text:i.text}))};
 }
 function growGrid(side,n){
   if(!st.d.cfg)return;const W=gw(),H=gh();
@@ -980,8 +1155,16 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
-  const t=e.target.closest("#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
+  if(t.dataset.bump){const el=document.getElementById(t.dataset.bump);if(!el)return;el.value=Math.max(0,(parseInt(el.value,10)||0)+(+t.dataset.d));el.dispatchEvent(new Event("change",{bubbles:true}));return;}
+  if(t.id==="sel-btn"){st.selMode=!st.selMode;st.pasting=false;renderToolbar();renderHover();toast(st.selMode?"Drag over the map to select an area, then Copy.":"Select is off.");return;}
+  if(t.id==="copy-btn"){copyArea();return;}
+  if(t.id==="paste-btn"){st.pasting=!st.pasting&&!!st.clip;st.selMode=false;renderToolbar();renderHover();if(st.pasting)toast("Click the top-left cell where it goes. Esc cancels.");return;}
+  if(t.id==="tpl-starter"){if(!st.d.cfg){toast("Set up Config first.");return;}pushUndo();st.d.cfg=Object.assign({},st.d.cfg,{templates:clone(STARTER)});rebuildIdx();st.draft=null;save();render();toast("3 templates added. Edit them in Config.");return;}
+  if(t.dataset.gmode){st.gmode=t.dataset.gmode;renderPanel();renderHover();return;}
+  if(t.dataset.tpl){st.tpl=t.dataset.tpl;renderPanel();return;}
+  if(t.dataset.cfgopen){openConfig(t.dataset.cfgopen);return;}
   if(t.id==="cloud-btn"||t.id==="cloud-signin"){if(!cloud.user)openLogin();else setStep("file");return;}
   if(t.id==="lg-forgot"){const em=($("#lg-email")||{}).value||"";if(!em){const er=$("#lg-err");er.textContent="Type your email first.";er.hidden=false;return;}cloud.fb.sendPasswordResetEmail(cloud.fb.auth,em.trim()).then(()=>toast("If that email has an account, a reset link is on its way.")).catch(e=>toast(authMsg(e)));return;}
   if(t.dataset.unmember){const em=t.dataset.unmember;if(!confirm("Remove "+em+" from the team? They lose access to the shared map."))return;cloud.fb.deleteDoc(cloud.fb.doc(cloud.fb.db,"editors",em)).then(()=>{toast(em+" removed");loadTeam();}).catch(e=>toast(authMsg(e)));return;}
@@ -995,7 +1178,7 @@ document.addEventListener("click",e=>{
   if(t.id==="cloud-load-theirs"){const r=cloud.conflict;closeModal();if(r){cloud.conflict=null;applyRemote(r,true);cloud.version=r.version;toast("Loaded "+who(r.updatedBy)+"'s map. Undo brings yours back.");renderCloud();}return;}
   if(t.id==="cloud-keep-mine"){const r=cloud.conflict;closeModal();if(r){cloud.conflict=null;cloud.version=r.version;cloud.rev++;cloudPush();}return;}
   if(t.dataset.cfgtab){st.cfgTab=t.dataset.cfgtab;renderConfig();const m=$(".cfg-main");if(m)m.scrollTop=0;return;}
-  if(t.dataset.dup!==undefined){const items=st.draft.businesses;const i=+t.dataset.dup;items.splice(i+1,0,nextVariant(items[i],items));markDirty();renderConfig();const el=document.getElementById("cf-businesses-"+(i+1)+"-name");if(el){el.focus();el.select();}return;}
+  if(t.dataset.dup!==undefined){const dl=t.dataset.dl||"businesses";const items=st.draft[dl];const i=+t.dataset.dup;items.splice(i+1,0,nextVariant(items[i],items));markDirty();renderConfig();const el=document.getElementById("cf-"+dl+"-"+(i+1)+"-name");if(el){el.focus();el.select();}return;}
   if(t.id==="cfg-close"){closeConfig(false);return;}
   if(t.id==="cfg-close-save"){closeModal();if(saveConfig())closeConfig(true);return;}
   if(t.id==="cfg-close-discard"){closeModal();closeConfig(true);return;}
@@ -1004,7 +1187,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();return;}
   if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
-  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.biz?{code:"",name:"",type:"",wealth:"Medium",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
+  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:"",name:"",type:"",wealth:"Medium",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
   if(t.dataset.del){const k=t.dataset.del,i=+t.dataset.i,it=st.draft[k][i];const n=it&&it._o?(usage()[k][it._o]||0):0;
     if(n&&!confirm('"'+(it.code||"")+'" is used '+n+" times on the map. Remove it anyway? Those places lose it."))return;
     st.draft[k].splice(i,1);markDirty();renderConfig();return;}
@@ -1035,7 +1218,8 @@ document.addEventListener("submit",async e=>{
 });
 document.addEventListener("input",e=>{
   const t=e.target;if(!t.dataset)return;
-  if(t.dataset.list){const it=st.draft[t.dataset.list][+t.dataset.i];if(!it)return;it[t.dataset.f]=t.type==="checkbox"?t.checked:t.value;markDirty();return;}
+  if(t.dataset.list){const it=st.draft[t.dataset.list][+t.dataset.i];if(!it)return;const f=t.dataset.f;if(t.type==="checkbox")it[f]=t.checked;else if(t.type==="number"){if(t.value==="")delete it[f];else it[f]=Number(t.value);}else if(t.tagName==="SELECT"&&t.value===""&&(f==="nbType"||f==="wealth"))delete it[f];else it[f]=t.value;markDirty();return;}
+  if(t.dataset.def){const d=st.draft.defaults;if(t.value==="")delete d[t.dataset.def];else d[t.dataset.def]=Number(t.value);markDirty();return;}
   if(t.dataset.val){st.draft[t.dataset.val]=t.value===""?"":Number(t.value);markDirty();return;}
   if(t.id==="cfg-filter"){st.cfgFilter=t.value;const pos=t.selectionStart;renderConfig();const f=$("#cfg-filter");if(f){f.focus();try{f.setSelectionRange(pos,pos);}catch(_){}}return;}
 });
@@ -1043,14 +1227,17 @@ document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="step-select"){setStep(t.value);return;}
   if(t.id==="import-file"){readImport(t);return;}
-  if(t.dataset&&t.dataset.list){rerenderConfig();renderSide();return;}
-  if(t.id==="f-purch"||t.id==="f-rob"||t.id==="f-other"||t.id==="f-notes"||t.id==="f-reqill"||t.id==="f-random"||(t.dataset&&(t.dataset.op||t.dataset.buy)))saveBlock();
+  if(t.dataset&&(t.dataset.list||t.dataset.def)){rerenderConfig();renderSide();return;}
+  if((t.id&&/^f-/.test(t.id))||(t.dataset&&(t.dataset.op||t.dataset.buy)))saveBlock();
 });
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&$("#modal-root").innerHTML){if(!cloud.first&&!cloud.conflict)closeModal();return;}
+  if(e.key==="Escape"&&!st.cfgOpen&&(st.pasting||st.area||st.selMode)){st.pasting=false;st.area=null;st.selMode=false;renderToolbar();renderHover();return;}
   if(st.cfgOpen){if(e.key==="Escape"){closeConfig(false);return;}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveConfig();}return;}
   const typing=/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
-  if((e.ctrlKey||e.metaKey)&&!typing){const k=e.key.toLowerCase();if(k==="z"&&!e.shiftKey){e.preventDefault();undo();return;}if(k==="y"||(k==="z"&&e.shiftKey)){e.preventDefault();redo();return;}}
+  if((e.ctrlKey||e.metaKey)&&!typing){const k=e.key.toLowerCase();
+    if(k==="c"&&st.area){e.preventDefault();copyArea();return;}
+    if(k==="v"&&st.clip){e.preventDefault();const c=st.hover&&st.hover.cell;if(c)pasteAt(c.x,c.y);else{st.pasting=true;renderToolbar();toast("Click the top-left cell where it goes.");}return;}if(k==="z"&&!e.shiftKey){e.preventDefault();undo();return;}if(k==="y"||(k==="z"&&e.shiftKey)){e.preventDefault();redo();return;}}
   if(!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&/^[1-6]$/.test(e.key)){setStep(STEPS[+e.key-1].id);}
 });
 window.addEventListener("resize",()=>{if(!st.zoom)applyZoom();});
