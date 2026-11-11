@@ -251,6 +251,24 @@ body{font-size:14px;line-height:1.45}
 .stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:15px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #f-total{margin-top:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:7px}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
+.card-head b{font-family:var(--font-display);font-size:17px;letter-spacing:.04em;font-weight:600;color:var(--gold)}
+.card-head .muted,.card-head .warnc{font-size:12.5px}
+.warnc{color:var(--warn)}
+.card-sub{font-family:var(--font-display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--label);margin-top:4px}
+.site{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.site select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:5px 7px;font-size:13px}
+.site.res{grid-template-columns:auto 1fr 1fr auto}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip2{border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:999px;padding:3px 9px;font-size:12px;cursor:pointer}
+.addop{width:auto;max-width:140px;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:2px 8px;font-size:12px;cursor:pointer}
+.chips{align-items:center}
+.chip2[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);font-weight:600}
+.stepper.sm{grid-template-columns:28px 40px 28px;height:30px}
+.stepper.sm button{font-size:15px}
+.stepper.sm input{font-size:13px}
 .fit{display:inline-flex;align-items:center;justify-content:center;min-width:64px;width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 6px;font-size:12.5px;font-weight:600;cursor:pointer;background:var(--surface-2);color:var(--muted)}
 .fitlegend .fit{width:auto;cursor:default;padding:3px 10px}
 .fit.good{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
@@ -367,10 +385,13 @@ const DEMAND=[{k:"demandBudBags",label:"Bud bags"},{k:"demandJointPacks",label:"
 const MARTIN_DEMAND="Fairview\t3\t40\t40\t20\t40\nCramer Hill\t4\t20\t60\t0\t60\nPennrose\t4\t0\t40\t0\t20\nCooper Crossing\t2\t80\t20\t100\t0\nBellview\t5\t0\t60\t0\t60\nGrant Terrace\t2\t80\t20\t100\t0\nParkside\t3\t40\t40\t20\t20\nWaterfront South\t2\t80\t20\t100\t0\nLinnwood\t1\t100\t20\t100\t0";
 const LEGAL_SEED=[{code:"GALLERY",name:"Art Gallery",ill:{}},{code:"AUTOSHOP",name:"Auto Shop",ill:{DRYING_RACK:"average"}},{code:"BAR",name:"Bar",ill:{SALES:"good"}},{code:"OFFICE",name:"Office Building",ill:{}},{code:"CASINO",name:"Casino",ill:{}},{code:"CHURCH",name:"Church",ill:{HYDROPONICS:"good"}},{code:"CLUB",name:"Club",ill:{}},{code:"DRUGSTORE",name:"Drug Store",ill:{}},{code:"GROCERY",name:"Grocery Store",ill:{HYDROPONICS:"good"}},{code:"HOUSING",name:"Habitation",ill:{HYDROPONICS:"poor"}},{code:"PAPER",name:"Paper Company",ill:{STASH:"poor"}},{code:"POLICE",name:"Police Department",ill:{}}];
 const FITS=["good","average","poor"];
+const MIRO_SITES={"Fairview":{sites:[{ops:["HYDROPONICS","DRYING_RACK"],n:1},{ops:["HYDROPONICS","LAUNDERING"],n:1},{ops:["STASH","DRYING_RACK"],n:1},{ops:["STASH"],n:1},{ops:["SALES","LAUNDERING"],n:1},{ops:["SALES","PACKAGING"],n:1},{ops:["SALES","PROCESSING"],n:1},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]},"Cramer Hill":{sites:[{ops:["SALES","HYDROPONICS"],n:1},{ops:["LAUNDERING"],n:1},{ops:["LAUNDERING","SALES"],n:1},{ops:["SALES","STASH"],n:1},{ops:["STASH"],n:1}],res:[{r:"Hydroponics",q:"",n:1}]},"Pennrose":{sites:[{ops:["STASH"],n:1},{ops:["REFINERY","STASH"],n:1},{ops:["SALES","STASH"],n:1},{ops:["SALES","LAUNDERING"],n:1}],res:[{r:"P2P",q:"High",n:1},{r:"P2P",q:"Medium",n:1},{r:"Acid",q:"High",n:1},{r:"Acid",q:"Medium",n:1},{r:"Acid",q:"Low",n:1}]},"Cooper Crossing":{sites:[{ops:["HYDROPONICS"],n:1},{ops:["HYDROPONICS","STASH"],n:1},{ops:["HYDROPONICS","PACKAGING"],n:1},{ops:["STASH","DRYING_RACK"],n:1},{ops:["STASH","PROCESSING"],n:1},{ops:["STASH","PACKAGING"],n:1},{ops:["PROCESSING"],n:1},{ops:["PACKAGING"],n:1},{ops:["SALES","STASH"],n:1},{ops:["SALES","DRYING_RACK"],n:1},{ops:["SALES","LAUNDERING"],n:1},{ops:["LAUNDERING"],n:2}],res:[{r:"Hydroponics",q:"",n:3}]},"Bellview":{sites:[{ops:["SALES"],n:3},{ops:["LAUNDERING"],n:3},{ops:["STASH"],n:2},{ops:["STASH","SALES"],n:1}],res:[]},"Grant Terrace":{sites:[{ops:["HYDROPONICS","PACKAGING"],n:1},{ops:["HYDROPONICS","PROCESSING"],n:1},{ops:["DRYING_RACK","PACKAGING"],n:1},{ops:["DRYING_RACK","PROCESSING"],n:1},{ops:["STASH"],n:1},{ops:["SALES"],n:3},{ops:["SALES","LAUNDERING"],n:1},{ops:["LAUNDERING"],n:2},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]},"Parkside":{sites:[{ops:["HYDROPONICS","PACKAGING","STASH"],n:1},{ops:["SALES","HYDROPONICS"],n:1},{ops:["PROCESSING","LAUNDERING"],n:1},{ops:["SALES","STASH","PROCESSING"],n:1},{ops:["DRYING_RACK","PACKAGING","PROCESSING"],n:1},{ops:["SALES","DRYING_RACK"],n:1},{ops:["PACKAGING","LAUNDERING"],n:1},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]},"Waterfront South":{sites:[{ops:["HYDROPONICS"],n:1},{ops:["SALES"],n:1},{ops:["STASH"],n:1},{ops:["DRYING_RACK"],n:1},{ops:["PACKAGING"],n:1},{ops:["LAUNDERING"],n:1},{ops:["HQ"],n:1}],res:[{r:"Hydroponics",q:"",n:1}]},"Linwood":{sites:[{ops:["HYDROPONICS","PACKAGING"],n:1},{ops:["HYDROPONICS","REFINERY"],n:1},{ops:["CHEM_LAB","PACKAGING"],n:1},{ops:["CHEM_LAB","PROCESSING"],n:1},{ops:["DRYING_RACK","PACKAGING"],n:1},{ops:["DRYING_RACK","PROCESSING"],n:1},{ops:["STASH"],n:1},{ops:["PROCESSING"],n:1},{ops:["LAUNDERING"],n:1},{ops:["SALES"],n:1}],res:[{r:"Hydroponics",q:"",n:2}]}};
+const RESOURCES=["Hydroponics","P2P","Acid"];
+const QUALITIES=["High","Medium","Low"];
 const FIT_LABEL={good:"Good",average:"Average",poor:"Poor"};
 function seedLegal(){if(st.d.cfg&&!Array.isArray(st.d.cfg.legal))st.d.cfg.legal=clone(LEGAL_SEED);}
 function legalAllows(legalCode,opCode,cfg){const l=((cfg||st.d.cfg||{}).legal||[]).find(x=>x.code===legalCode);return!!(l&&isObj(l.ill)&&l.ill[opCode]);}
-const STARTER=[{code:"SMALL",name:"Small block",w:1,h:1,legal:2,ill:1,other:9,building:""},{code:"MEDIUM",name:"Medium block",w:2,h:1,legal:3,ill:1,other:14,building:""},{code:"LARGE",name:"Large block",w:2,h:2,legal:4,ill:2,other:24,building:""}];
+const STARTER=[{code:"SMALL",name:"Small block",w:1,h:1,legal:2,ill:1,other:9,building:""},{code:"MEDIUM",name:"Medium block",w:2,h:1,legal:3,ill:1,other:14,building:""},{code:"LARGE",name:"Large block",w:2,h:2,legal:3,ill:2,other:25,building:""}];
 const BOOT_ADMIN="admin@762interactive.com";
 const FB="https://www.gstatic.com/firebasejs/10.12.2/";
 const cloud={role:null,team:null,secAuth:null,on:false,fb:null,user:null,ready:false,version:0,rev:0,pushedRev:0,saving:false,err:null,denied:false,conflict:null,first:null,savedAt:null,lastPushed:null,histAt:0,history:null,unsub:null,timer:null};
@@ -464,7 +485,9 @@ function blockData(b){
 function normBlock(x){x=isObj(x)?x:{};const n=v=>v==null||v===""?null:Math.max(0,parseInt(v,10)||0);
   return{legal:n(x.legal!=null?x.legal:x.purchasable),ill:n(x.ill),nonPlay:n(x.nonPlay),tpl:x.tpl||null,illegal:Array.isArray(x.illegal)?x.illegal:[],robbery:x.robbery||null,other:x.other||null,notes:x.notes||"",reqIll:x.reqIll||null,reqBuy:Array.isArray(x.reqBuy)?x.reqBuy:[],vals:isObj(x.vals)?x.vals:{}};}
 const blockTotal=n=>(n.legal||0)+(n.ill||0)+(n.nonPlay||0);
-const illBad=n=>!!(n.ill&&n.ill>(n.legal||0));
+const MAX_LI=2,MAX_LO=3;
+const illBad=n=>(n.ill||0)>MAX_LI||(n.legal||0)>MAX_LO;
+const countsNote=n=>(n.ill||0)>MAX_LI?"Legal + illegal goes from 0 to "+MAX_LI+".":(n.legal||0)>MAX_LO?"Legal only goes from 0 to "+MAX_LO+".":blockTotal(n)+" buildings in total.";
 function blockNbs(b){const s=new Set();for(const [x,y] of b.cells){const n=cellAt(x,y).n;if(n)s.add(n);}return[...s];}
 
 function issues(){
@@ -492,8 +515,8 @@ function issues(){
     for(const o of d.illegal)if(!I.operations.has(o))add("error",b.ax,b.ay,'Unknown operation "'+o+'"');
     if(d.robbery&&!I.robbery.has(d.robbery))add("error",b.ax,b.ay,'Unknown robbery level "'+d.robbery+'"');
     if(d.other&&!I.robbery.has(d.other))add("error",b.ax,b.ay,'Unknown robbery level "'+d.other+'"');
-    if(d.legal==null&&d.ill==null&&d.nonPlay==null)add("warn",b.ax,b.ay,"Block has no building counts (legal, illegal, not playable)");
-    if(illBad(d))add("error",b.ax,b.ay,"Block has "+d.ill+" illegal buildings, more than its "+(d.legal||0)+" legal ones");
+    if(d.legal==null&&d.ill==null&&d.nonPlay==null)add("warn",b.ax,b.ay,"Block has no building counts (legal + illegal, legal only, other)");
+    if((d.ill||0)>MAX_LI)add("warn",b.ax,b.ay,"Block has "+d.ill+" legal + illegal buildings, the rule is 0 to "+MAX_LI);if((d.legal||0)>MAX_LO)add("warn",b.ax,b.ay,"Block has "+d.legal+" legal only buildings, the rule is 0 to "+MAX_LO);
     if(d.illegal.length&&!d.ill)add("warn",b.ax,b.ay,"Illegal operations allowed but no illegal buildings");
     for(const c of [d.reqIll,...d.reqBuy].filter(Boolean))if(!I.businesses.has(c))add("error",b.ax,b.ay,'Unknown business "'+c+'"');
     if(d.reqIll){const it=I.businesses.get(d.reqIll);if(it&&!it.op)add("warn",b.ax,b.ay,'Business "'+d.reqIll+'" for the illegal operation allows none');if(!d.ill)add("warn",b.ax,b.ay,"Required illegal business but no illegal buildings");}
@@ -767,9 +790,9 @@ function renderPanelBody(){
 }
 function templatePicker(){
   const T=list("templates");
-  if(!T.length)return'<p class="note">No templates yet. A template is a block size plus how many legal, illegal and not playable buildings it holds.</p><div class="row"><button class="btn primary" type="button" id="tpl-starter">Add 3 starter templates</button><button class="btn" type="button" data-cfgopen="templates">Open Config</button></div>';
+  if(!T.length)return'<p class="note">No templates yet. A template is a block size plus how many legal + illegal, legal only and other buildings it holds.</p><div class="row"><button class="btn primary" type="button" id="tpl-starter">Add 3 starter templates</button><button class="btn" type="button" data-cfgopen="templates">Open Config</button></div>';
   if(!st.idx.templates.has(st.tpl))st.tpl=T[0].code;
-  return'<p class="note">Click the top-left cell where the block goes. Its cells become lots with streets around them. Undo takes it back.</p><div class="swatches">'+T.map(t=>'<button class="sw" type="button" data-tpl="'+esc(t.code)+'" aria-pressed="'+(t.code===st.tpl)+'"><span class="chip" style="background:'+esc(color("buildings",t.building,"#888888"))+'"></span><span class="code">'+esc(t.code)+'</span><span class="nm" title="'+esc(t.name||"")+'">'+esc((+t.legal||0)+" legal · "+(+t.ill||0)+" illegal · "+(+t.other||0)+" not playable")+'</span><span class="cnt">'+num(t.w,1,1,20)+"×"+num(t.h,1,1,20)+"</span></button>").join("")+'</div><div class="row"><button class="btn sm" type="button" data-cfgopen="templates">Edit templates</button></div>';
+  return'<p class="note">Click the top-left cell where the block goes. Its cells become lots with streets around them. Undo takes it back.</p><div class="swatches">'+T.map(t=>'<button class="sw" type="button" data-tpl="'+esc(t.code)+'" aria-pressed="'+(t.code===st.tpl)+'"><span class="chip" style="background:'+esc(color("buildings",t.building,"#888888"))+'"></span><span class="code">'+esc(t.code)+'</span><span class="nm" title="'+esc(t.name||"")+'">'+esc((+t.ill||0)+" legal + illegal · "+(+t.legal||0)+" legal only · "+(+t.other||0)+" other")+'</span><span class="cnt">'+num(t.w,1,1,20)+"×"+num(t.h,1,1,20)+"</span></button>").join("")+'</div><div class="row"><button class="btn sm" type="button" data-cfgopen="templates">Edit templates</button></div>';
 }
 function gameplayPanel(C){
   const B=computeBlocks();const stamp=st.gmode==="stamp";
@@ -777,7 +800,7 @@ function gameplayPanel(C){
   h+='<div class="seg" role="group" aria-label="Mode"><button type="button" data-gmode="select" aria-pressed="'+!stamp+'">Pick a block</button><button type="button" data-gmode="stamp" aria-pressed="'+stamp+'">Place a template</button></div>';
   if(stamp)return h+templatePicker();
   const b=B.blocks.find(x=>x.anchor===st.sel);
-  if(!b)return h+'<p class="note">No block selected. The number on a block is how many buildings it holds; red means more illegal than legal.</p>';
+  if(!b)return h+'<p class="note">No block selected. The number on a block is how many buildings it holds; red means a count is over the rule.</p>';
   const bd=blockData(b);const d=normBlock(bd?bd.data:null);const ns=blockNbs(b);
   const types={};for(const [x,y] of b.cells){const t=cellAt(x,y).b;if(t)types[t]=(types[t]||0)+1;}
   const mk=[];for(const [x,y] of b.cells){const m=cellAt(x,y).m;if(m)mk.push(m+" "+cellName(x,y));}
@@ -787,7 +810,7 @@ function gameplayPanel(C){
   h+='<div class="sec"><h3>Block '+esc(cellName(b.ax,b.ay))+'</h3><dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Neighborhood</dt><dd>"+(ns.length?esc(ns.join(", ")):"none yet")+"</dd><dt>Building types</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+(mk.length?"<dt>Markers</dt><dd>"+esc(mk.join(", "))+"</dd>":"")+(d.tpl?"<dt>Template</dt><dd>"+esc(tp?(tp.name||tp.code):d.tpl)+"</dd>":"")+"</dl></div>";
   if(ns.length>1)h+='<p class="note warn">This block touches '+ns.length+" neighborhoods. Add a street between them or repaint in 2. Neighborhoods.</p>";
   const cnt=(id,lab,help,v)=>'<div class="count-row"><label for="'+id+'"><b>'+lab+"</b><small>"+help+'</small></label><div class="stepper"><button type="button" data-bump="'+id+'" data-d="-1" aria-label="One less '+lab.toLowerCase()+'">−</button><input type="number" id="'+id+'" min="0" max="999" inputmode="numeric" placeholder="0" value="'+esc(v==null?"":v)+'"><button type="button" data-bump="'+id+'" data-d="1" aria-label="One more '+lab.toLowerCase()+'">+</button></div></div>';
-  h+='<div class="sec"><h3>Buildings on this block</h3><div>'+cnt("f-legal","Legal","Businesses the player can buy",d.legal)+cnt("f-ill","Illegal","Places for an illegal operation",d.ill)+cnt("f-np","Not playable","Background buildings",d.nonPlay)+'</div><p id="f-total" style="font-size:12.5px" class="'+(illBad(d)?"note warn":"muted")+'">'+(illBad(d)?"Illegal can't be more than legal.":blockTotal(d)+" buildings in total. Illegal can't be more than legal.")+"</p></div>";
+  h+='<div class="sec"><h3>Buildings on this block</h3><div>'+cnt("f-ill","Legal + illegal","A front that also runs illegal operations, 0 to "+MAX_LI,d.ill)+cnt("f-legal","Legal only","A business the player can buy, 0 to "+MAX_LO,d.legal)+cnt("f-np","Other","Background buildings, not playable",d.nonPlay)+'</div><p id="f-total" style="font-size:12.5px" class="'+(illBad(d)?"note warn":"muted")+'">'+esc(countsNote(d))+"</p></div>";
   const bz=list("businesses");
   const bname=x=>esc((x.name||x.code)+(x.op?" · "+nameOf("operations",x.op):"")+(x.recruit?" · recruits":""));
   h+='<div class="sec"><h3>Businesses on this block</h3>';
@@ -822,7 +845,7 @@ function saveBlock(){
   pushUndo();
   if(bd){for(const k of bd.legacy)delete st.d.blocks[k];delete st.d.blocks[bd.key];}
   st.d.blocks[b.anchor]=d;save();renderMap();renderSide();renderToolbar();
-  const tot=$("#f-total");if(tot){tot.className=illBad(d)?"note warn":"muted";tot.textContent=illBad(d)?"Illegal can't be more than legal.":blockTotal(d)+" buildings in total. Illegal can't be more than legal.";}
+  const tot=$("#f-total");if(tot){tot.className=illBad(d)?"note warn":"muted";tot.textContent=countsNote(d);}
 }
 function checkPanel(){
   if(!st.d.cfg)return"<h2>Check</h2><p>Set up the lists in Config first.</p>";
@@ -996,7 +1019,7 @@ const CFG_TABS=[
   {id:"terrain",group:"Map",label:"Ground",lists:["terrain"],title:"Ground types",text:"What each cell is made of. Buildable lots are where buildings go; the first row fills empty cells."},
   {id:"streets",group:"Map",label:"Streets",lists:["streets"],title:"Street types",text:"Streets run on the lines between cells."},
   {id:"buildings",group:"Map",label:"Buildings",lists:["buildings"],title:"Building types",text:"The type of building on each lot. Unity picks the 3D models for each code."},
-  {id:"templates",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Legal, illegal and not playable say how many buildings Unity puts on it; illegal can't be more than legal."},
+  {id:"templates",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Each block has 0 to 2 legal + illegal buildings, 0 to 3 legal only (can be bought), and the rest are other buildings."},
   {id:"markers",group:"Map",label:"Markers",lists:["markers"],title:"Markers",text:"Special spots on a lot: HQs and recruitment sites. PLY, G1, G2, G3 and REC are read by Unity, keep those codes."},
   {id:"areas",group:"People and places",label:"Neighborhoods",lists:["neighborhoods","districts"],title:"Neighborhoods and districts",text:"Each neighborhood becomes its own scene in Unity, named after it."},
   {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
@@ -1006,6 +1029,7 @@ const CFG_TABS=[
   {id:"values",area:"values",group:"Buildings",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
   {id:"bizvalues",area:"values",group:"Buildings",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
   {id:"matrix",area:"values",group:"Businesses",label:"Legal and illegal",lists:[],title:"Legal and illegal",text:"Which illegal operation can run behind which legal front, and how well it fits. Good, Average and Poor change how the operation does in the game. Empty means it can't go there."},
+  {id:"sites",area:"values",group:"Neighborhoods",label:"Illegal sites",lists:[],title:"Illegal sites and resources",text:"The illegal buildings each neighborhood has and which operations each one can run, plus its drug resources. In Unity the illegal sites become the illegal buildings of the neighborhood's blocks."},
   {id:"demand",area:"values",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
   {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
 ];
@@ -1045,7 +1069,7 @@ function draftErrors(){
     if(!m&&L.k==="businesses"&&it.legal&&!(d.legal||[]).some(o=>o.code===it.legal))m="Its legal operation is not in the list anymore.";
     if(!m&&L.k==="businesses"&&it.op&&!(d.operations||[]).some(o=>o.code===it.op))m="Its illegal operation is not in the list anymore.";
     if(!m&&L.k==="neighborhoods"&&it.district&&!(d.districts||[]).some(o=>o.code===it.district))m="Its district is not in the list anymore.";
-    if(!m&&L.k==="templates"){const w=+it.w,h=+it.h;if(!(w>=1&&w<=20&&h>=1&&h<=20))m="Width and height go from 1 to 20 cells.";else if(+it.ill>(+it.legal||0))m="Illegal can't be more than legal.";else if(it.building&&!(d.buildings||[]).some(o=>o.code===it.building))m="Its building type is not in the list anymore.";}
+    if(!m&&L.k==="templates"){const w=+it.w,h=+it.h;if(!(w>=1&&w<=20&&h>=1&&h<=20))m="Width and height go from 1 to 20 cells.";else if(it.building&&!(d.buildings||[]).some(o=>o.code===it.building))m="Its building type is not in the list anymore.";}
     if(m)e[L.k+":"+i]=m;});}
   (d.neighborhoods||[]).forEach((n,i)=>{const mix=["mixPoor","mixAverage","mixRich","mixWorker"].map(f=>n[f]);if(mix.some(v=>v!=null)){const s=mix.reduce((a,v)=>a+(+v||0),0);if(s!==100)e["nbdata:"+i]="Citizen mix adds up to "+s+", it needs 100.";}});
   if((d.terrain||[]).length&&!d.terrain.some(x=>x.lot))e["terrain:lot"]='Tick "Buildable" on at least one ground type.';
@@ -1057,7 +1081,7 @@ function cfgCols(k){
   if(k==="terrain")return[code,name,color,{h:"Buildable",w:"96px"},used,act];
   if(k==="neighborhoods")return[code,name,{h:"District",w:"minmax(120px,1fr)"},color,used,act];
   if(k==="owners")return[code,name,{h:"Kind in the game",w:"minmax(140px,1fr)"},color,used,act];
-  if(k==="templates")return[code,name,{h:"Width",w:"72px"},{h:"Height",w:"72px"},{h:"Legal",w:"72px"},{h:"Illegal",w:"72px"},{h:"Not playable",w:"80px"},{h:"Building type (optional)",w:"minmax(150px,1fr)"},used,act];
+  if(k==="templates")return[code,name,{h:"Width",w:"72px"},{h:"Height",w:"72px"},{h:"Legal + illegal",w:"80px"},{h:"Legal only",w:"80px"},{h:"Other",w:"72px"},{h:"Building type (optional)",w:"minmax(150px,1fr)"},used,act];
   if(k==="businesses")return[code,name,{h:"Type",w:"minmax(100px,1fr)"},{h:"Legal operation",w:"minmax(130px,1fr)"},{h:"Illegal operation",w:"minmax(150px,1.3fr)"},{h:"Recruits",w:"84px"},used,act];
   if(LISTS.find(l=>l.k===k).color)return[code,name,color,used,act];
   return[code,name,used,act];
@@ -1083,13 +1107,13 @@ function cfgTable(k,errs,u){
     let cells=txt("code","Code","c"+(err&&/code/i.test(err)?" bad":""))+txt("name","Name","",k==="businesses"?"Bakery 02":"");
     if(k==="terrain")cells+=clr+chk("lot","Buildable","Lot");
     else if(k==="neighborhoods")cells+=sel("district","District",[["","No district"]].concat((d.districts||[]).map(x=>[x.code,(x.name||x.code)])))+clr;
-    else if(k==="templates")cells+=nmb("w","Width")+nmb("h","Height")+nmb("legal","Legal")+nmb("ill","Illegal")+nmb("other","Not playable")+sel("building","Building type",[["","Keep what is painted"]].concat((d.buildings||[]).map(x=>[x.code,x.code+" · "+(x.name||"")])));
+    else if(k==="templates")cells+=nmb("w","Width")+nmb("h","Height")+nmb("ill","Legal + illegal")+nmb("legal","Legal only")+nmb("other","Other")+sel("building","Building type",[["","Keep what is painted"]].concat((d.buildings||[]).map(x=>[x.code,x.code+" · "+(x.name||"")])));
     else if(k==="owners")cells+=sel("kind","Kind in the game",OWNER_KINDS.map(x=>[x,x]))+clr;
     else if(k==="businesses")cells+=txt("type","Type","","Bakery")+sel("legal","Legal operation",[["","Not set"]].concat((d.legal||[]).map(x=>[x.code,x.name||x.code])))+sel("op","Illegal operation",[["","None"]].concat((d.operations||[]).map(o=>[o.code,o.name||o.code])))+chk("recruit","Recruits","Recruits");
     else if(L.color)cells+=clr;
     cells+='<div data-label="Used"><span class="used'+(n?" on":"")+'" title="'+(n?"Used "+n+" times on the map":"Not used on the map")+'">'+(n||"–")+"</span></div>";
     cells+='<div class="act">'+(k==="businesses"||k==="templates"?'<button class="ibtn" type="button" data-dup="'+i+'" data-dl="'+k+'" title="Duplicate" aria-label="Duplicate">⧉</button>':"")+'<button class="ibtn del" type="button" data-del="'+k+'" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
-    const soft=!err&&k==="businesses"&&it.legal&&it.op&&!legalAllows(it.legal,it.op,d)?(((d.legal||[]).find(x=>x.code===it.legal)||{}).name||it.legal)+" does not take "+(((d.operations||[]).find(x=>x.code===it.op)||{}).name||it.op)+" yet. Set it in Values > Legal and illegal.":"";
+    const soft=!err&&k==="templates"&&(+it.ill>MAX_LI||+it.legal>MAX_LO)?"The rule is 0 to "+MAX_LI+" legal + illegal and 0 to "+MAX_LO+" legal only.":!err&&k==="businesses"&&it.legal&&it.op&&!legalAllows(it.legal,it.op,d)?(((d.legal||[]).find(x=>x.code===it.legal)||{}).name||it.legal)+" does not take "+(((d.operations||[]).find(x=>x.code===it.op)||{}).name||it.op)+" yet. Set it in Values > Legal and illegal.":"";
     h+='<div class="trow'+(err?" bad":"")+'"'+style+">"+cells+(err?'<div class="err">'+esc(err)+"</div>":soft?'<div class="err" style="color:var(--warn)">'+esc(soft)+"</div>":"")+"</div>";
   });
   if(!items.length)h+='<div class="empty">Nothing here yet.</div>';else if(!shown)h+='<div class="empty">No row matches the filter.</div>';
@@ -1124,6 +1148,47 @@ function matrixTab(d){
   const cols=[{h:"Legal front",w:"minmax(150px,1.3fr)"}].concat(ops.map(o=>({h:o.name||o.code,w:"minmax(78px,1fr)"})));
   const rows=legal.map((l,i)=>{const ill=isObj(l.ill)?l.ill:{};return{html:'<div class="ro"><b>'+esc(l.code)+"</b>"+esc(l.name||"")+"</div>"+ops.map(o=>{const v=ill[o.code]||"";return'<div data-label="'+esc(o.name||o.code)+'"><button type="button" class="fit '+(v||"none")+'" data-mx="'+i+'" data-op2="'+esc(o.code)+'" title="'+esc((l.name||l.code)+" + "+(o.name||o.code))+'">'+(v?FIT_LABEL[v]:"–")+"</button></div>";}).join("")};});
   return'<div class="row fitlegend"><span class="fit good">Good</span><span class="fit average">Average</span><span class="fit poor">Poor</span><span class="fit none">–</span><span class="muted" style="font-size:12.5px">Click a cell to change it: Good, Average, Poor, then empty.</span></div>'+plainTable(cols,rows,"");
+}
+function illegalSlots(code){let n=0;for(const b of computeBlocks().blocks){const ns=blockNbs(b);if(ns.length===1&&ns[0]===code){const bd=blockData(b);if(bd)n+=normBlock(bd.data).ill||0;}}return n;}
+function sitesTab(d){
+  const ops=(d.operations||[]).concat([{code:"HQ",name:"HQ"}]);
+  const opName=c=>((ops.find(o=>o.code===c)||{}).name||c);
+  const cards=(d.neighborhoods||[]).map((n,i)=>{
+    const sites=Array.isArray(n.sites)?n.sites:[],res=Array.isArray(n.res)?n.res:[];
+    const total=sites.reduce((a,s)=>a+(s.ops.indexOf("HQ")>=0?0:(+s.n||0)),0);const slots=illegalSlots(n.code);
+    const step=(kind,j,v)=>'<div class="stepper sm"><button type="button" data-sx="'+kind+'" data-ni="'+i+'" data-j="'+j+'" data-act="dec" aria-label="One less">−</button><input type="number" min="1" value="'+esc(v)+'" data-sx="'+kind+'" data-ni="'+i+'" data-j="'+j+'" data-act="set" aria-label="How many"><button type="button" data-sx="'+kind+'" data-ni="'+i+'" data-j="'+j+'" data-act="inc" aria-label="One more">+</button></div>';
+    let h='<div class="card"><div class="card-head"><div><b>'+esc(n.name||n.code)+'</b><span class="muted"> '+esc(n.code)+'</span></div><span class="'+(slots&&total!==slots?"warnc":"muted")+'">'+total+" illegal sites · "+slots+" illegal slots in its blocks</span></div>";
+    h+='<div class="card-sub">Illegal sites</div>';
+    h+=sites.length?sites.map((s,j)=>'<div class="site">'+step("site",j,s.n||1)+'<div class="chips">'+s.ops.map(c=>'<button type="button" class="chip2" aria-pressed="true" data-sx="site" data-ni="'+i+'" data-j="'+j+'" data-act="op" data-op3="'+esc(c)+'" title="Remove">'+esc(opName(c))+' ✕</button>').join("")+(s.ops.length<ops.length?'<select class="addop" data-sx="site" data-ni="'+i+'" data-j="'+j+'" data-act="addop" aria-label="Add an operation"><option value="">+ operation</option>'+ops.filter(o=>s.ops.indexOf(o.code)<0).map(o=>'<option value="'+esc(o.code)+'">'+esc(o.name||o.code)+"</option>").join("")+"</select>":"")+'</div><button type="button" class="ibtn del" data-sx="site" data-ni="'+i+'" data-j="'+j+'" data-act="del" title="Remove" aria-label="Remove">✕</button></div>').join(""):'<p class="muted" style="font-size:12.5px;margin:4px 0">No illegal sites yet.</p>';
+    h+='<button class="btn sm" type="button" data-sx="site" data-ni="'+i+'" data-act="add">+ Add a site</button>';
+    h+='<div class="card-sub">Resources</div>';
+    h+=res.length?res.map((r,j)=>'<div class="site res">'+step("res",j,r.n||1)+'<select data-sx="res" data-ni="'+i+'" data-j="'+j+'" data-act="r" aria-label="Resource">'+RESOURCES.map(x=>'<option'+(r.r===x?" selected":"")+">"+x+"</option>").join("")+'</select><select data-sx="res" data-ni="'+i+'" data-j="'+j+'" data-act="q" aria-label="Quality"><option value="">Any quality</option>'+QUALITIES.map(x=>'<option'+(r.q===x?" selected":"")+">"+x+"</option>").join("")+'</select><button type="button" class="ibtn del" data-sx="res" data-ni="'+i+'" data-j="'+j+'" data-act="del" title="Remove" aria-label="Remove">✕</button></div>').join(""):'<p class="muted" style="font-size:12.5px;margin:4px 0">No resources.</p>';
+    h+='<button class="btn sm" type="button" data-sx="res" data-ni="'+i+'" data-act="add">+ Add a resource</button></div>';
+    return h;});
+  return'<div class="row"><button class="btn" type="button" id="sites-miro">Fill from Martin\'s Miro</button><span class="muted" style="font-size:12.5px">Each site is one illegal building. Pick every operation it can run; HQ marks a gang HQ site.</span></div><div class="cards">'+cards.join("")+"</div>";
+}
+function sitesAction(t){
+  const n=st.draft.neighborhoods[+t.dataset.ni];if(!n)return;const kind=t.dataset.sx,act=t.dataset.act,j=+t.dataset.j;
+  const listK=kind==="site"?"sites":"res";if(!Array.isArray(n[listK]))n[listK]=[];const arr=n[listK];const it=arr[j];
+  if(act==="add")arr.push(kind==="site"?{ops:[],n:1}:{r:RESOURCES[0],q:"",n:1});
+  else if(!it)return;
+  else if(act==="del")arr.splice(j,1);
+  else if(act==="inc")it.n=(+it.n||1)+1;
+  else if(act==="dec")it.n=Math.max(1,(+it.n||1)-1);
+  else if(act==="set")it.n=Math.max(1,parseInt(t.value,10)||1);
+  else if(act==="op"){const k=it.ops.indexOf(t.dataset.op3);if(k>=0)it.ops.splice(k,1);else it.ops.push(t.dataset.op3);}
+  else if(act==="addop"){if(t.value&&it.ops.indexOf(t.value)<0)it.ops.push(t.value);}
+  else if(act==="r")it.r=t.value;
+  else if(act==="q")it.q=t.value;
+  markDirty();rerenderConfig();
+}
+function fillSitesFromMiro(){
+  const d=ensureDraft();const byName={};(d.neighborhoods||[]).forEach(n=>{byName[nameKey(n.name)]=n;});
+  const has=(d.neighborhoods||[]).some(n=>(n.sites||[]).length||(n.res||[]).length);
+  if(has&&!confirm("Replace the illegal sites and resources you already have with Martin's Miro list?"))return;
+  let filled=0;const missing=[];
+  for(const name of Object.keys(MIRO_SITES)){const n=byName[nameKey(name)];if(!n){missing.push(name);continue;}n.sites=clone(MIRO_SITES[name].sites);n.res=clone(MIRO_SITES[name].res);filled++;}
+  markDirty();renderConfig();toast(filled+" neighborhoods filled from Miro. Press Save values to keep it."+(missing.length?" Not found: "+missing.join(", ")+".":""));
 }
 function demandTab(d){
   const wsel=(i,v)=>'<div data-label="Wealth"><select id="cf-dm-'+i+'-wealth" data-list="neighborhoods" data-i="'+i+'" data-f="wealth" aria-label="Wealth"><option value="">Keep</option>'+NB_WEALTH.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o])+"</option>").join("")+"</select></div>";
@@ -1171,9 +1236,12 @@ function renderConfig(){
   else if(tab.id==="nbdata")main+=nbDataTab(d,errs);
   else if(tab.id==="demand")main+=demandTab(d);
   else if(tab.id==="matrix")main+=matrixTab(d);
+  else if(tab.id==="sites")main+=sitesTab(d);
   else for(const k of tab.lists)main+=cfgTable(k,errs,u);
   const nErr=Object.keys(errs).length;
-  const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving":st.draftDirty?"Unsaved changes":"All changes saved";
+  const firstTab=nErr?CFG_TABS.find(x=>x.id===tabOf(Object.keys(errs)[0].split(":")[0])):null;
+  const where=firstTab&&modeOf(firstTab.id)!==(st.cfgMode||"config")?" in "+(modeOf(firstTab.id)==="values"?"Values":"Config")+" › "+firstTab.label:"";
+  const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving"+where:st.draftDirty?"Unsaved changes":"All changes saved";
   const cls=st.draftMsg==="Saved"?"ok":nErr?"bad":st.draftDirty?"dirty":"";
   root.innerHTML='<div class="cfg" role="dialog" aria-modal="true" aria-labelledby="cfg-title"><header class="cfg-top"><h2 id="cfg-title">'+(st.cfgMode==="values"?"Values":"Config")+'</h2><span class="sub">'+(st.cfgMode==="values"?"What each building and neighborhood is worth in the game.":"Codes are what Unity reads. Rename freely: the map follows.")+'</span><span class="spacer"></span><button class="btn icon" type="button" id="cfg-close" title="Close (Esc)" aria-label="Close">✕</button></header><div class="cfg-body"><nav class="cfg-tabs" role="tablist" aria-label="Config sections">'+nav+'</nav><section class="cfg-main" role="tabpanel"><div class="inner">'+main+'</div></section></div><footer class="cfg-foot"><span class="state '+cls+'" id="cfg-state">'+esc(state)+'</span><span class="spacer"></span><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard changes</button><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>'+(st.cfgMode==="values"?"Save values":"Save config")+'</button></footer></div>';
   const cur=root.querySelector('.cfg-tab[aria-selected="true"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest",inline:"nearest"});
@@ -1213,7 +1281,7 @@ function economyExport(){
   const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"].concat(DEMAND.map(p=>p.k));
   return{legal:list("legal").map(l=>({code:l.code,name:l.name||l.code,illegal:Object.keys(isObj(l.ill)?l.ill:{}).map(k=>({key:k,level:FIT_LABEL[l.ill[k]]||"Average"}))})),defaults:pairs(st.d.cfg.defaults),
     businesses:list("businesses").map(b=>({code:b.code,values:pairs(pick(b,vk))})).filter(b=>b.values.length),
-    neighborhoods:list("neighborhoods").map(n=>({code:n.code,type:n.nbType||"",wealth:n.wealth||"",numbers:pairs(pick(n,nk))})).filter(n=>n.type||n.wealth||n.numbers.length)};
+    neighborhoods:list("neighborhoods").map(n=>({code:n.code,type:n.nbType||"",wealth:n.wealth||"",numbers:pairs(pick(n,nk)),sites:(Array.isArray(n.sites)?n.sites:[]).filter(s=>s.ops.length).map(s=>({ops:s.ops.slice(),count:+s.n||1})),resources:(Array.isArray(n.res)?n.res:[]).map(r=>({resource:r.r,quality:r.q||"",count:+r.n||1}))})).filter(n=>n.type||n.wealth||n.numbers.length||n.sites.length||n.resources.length)};
 }
 function buildExport(){
   const W=gw(),H=gh();const cells=[];
@@ -1262,12 +1330,14 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
-  const t=e.target.closest("[data-mx],#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("button[data-sx],#sites-miro,[data-mx],#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
   if(t.dataset.bump){const el=document.getElementById(t.dataset.bump);if(!el)return;el.value=Math.max(0,(parseInt(el.value,10)||0)+(+t.dataset.d));el.dispatchEvent(new Event("change",{bubbles:true}));return;}
   if(t.id==="sel-btn"){st.selMode=!st.selMode;st.pasting=false;renderToolbar();renderHover();toast(st.selMode?"Drag over the map to select an area, then Copy.":"Select is off.");return;}
   if(t.id==="copy-btn"){copyArea();return;}
   if(t.id==="fill-btn"){fillArea();return;}
+  if(t.dataset.sx){sitesAction(t);return;}
+  if(t.id==="sites-miro"){fillSitesFromMiro();return;}
   if(t.dataset.mx!==undefined){const l=st.draft.legal[+t.dataset.mx];if(!l)return;if(!isObj(l.ill))l.ill={};const cur=l.ill[t.dataset.op2]||"";const next=cur?FITS[FITS.indexOf(cur)+1]||"":FITS[0];if(next)l.ill[t.dataset.op2]=next;else delete l.ill[t.dataset.op2];markDirty();rerenderConfig();renderSide();return;}
   if(t.id==="demand-paste"){openDemandPaste();return;}
   if(t.id==="demand-apply"){applyDemandPaste();return;}
@@ -1338,6 +1408,7 @@ document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="step-select"){setStep(t.value);return;}
   if(t.id==="import-file"){readImport(t);return;}
+  if(t.dataset&&t.dataset.sx){sitesAction(t);return;}
   if(t.dataset&&(t.dataset.list||t.dataset.def)){rerenderConfig();renderSide();return;}
   if((t.id&&/^f-/.test(t.id))||(t.dataset&&(t.dataset.op||t.dataset.buy)))saveBlock();
 });
