@@ -423,7 +423,7 @@ const FITS=["good","average","poor"];
 const RESOURCES=["Hydroponics","P2P","Acid"];
 const QUALITIES=["High","Medium","Low"];
 const FIT_LABEL={good:"Good",average:"Average",poor:"Poor"};
-function seedLegal(){if(st.d.cfg&&!Array.isArray(st.d.cfg.legal))st.d.cfg.legal=clone(LEGAL_SEED);}
+function seedLegal(){if(st.d.cfg&&!st.d.cfg.gameOpsSeeded&&!Array.isArray(st.d.cfg.legal))st.d.cfg.legal=clone(LEGAL_SEED);}
 function legalAllows(legalCode,opCode,cfg){const l=((cfg||st.d.cfg||{}).legal||[]).find(x=>x.code===legalCode);return!!(l&&isObj(l.ill)&&l.ill[opCode]);}
 const STARTER=[{code:"SMALL",name:"Small block",w:1,h:1,legal:2,ill:1,other:9,building:""},{code:"MEDIUM",name:"Medium block",w:2,h:1,legal:3,ill:1,other:14,building:""},{code:"LARGE",name:"Large block",w:2,h:2,legal:3,ill:2,other:25,building:""}];
 const BOOT_ADMIN="admin@762interactive.com";
@@ -536,7 +536,7 @@ function lotList(){return(st.d&&st.d.cfg&&Array.isArray(st.d.cfg.lots))?st.d.cfg
 function itList(){return(st.d&&st.d.cfg&&Array.isArray(st.d.cfg.illegalTemplates))?st.d.cfg.illegalTemplates:[];}
 function itName(it,ops){if(it&&it.name)return it.name;return(it&&it.ops&&it.ops.length)?it.ops.map(c=>((ops||list("operations")).find(o=>o.code===c)||{}).name||c).join(" + "):"Empty template";}
 function seedIllegalTemplates(){
-  if(!st.d.cfg||Array.isArray(st.d.cfg.illegalTemplates))return;
+  if(!st.d.cfg||Array.isArray(st.d.cfg.illegalTemplates))return;st.d.cfg.illegalTemplates=[];return;
   const seen={},out=[];
   for(const n of list("neighborhoods"))for(const s of(Array.isArray(n.sites)?n.sites:[])){const ops=(s.ops||[]).filter(o=>o!=="HQ").slice().sort();const k=ops.join("+");if(!ops.length||seen[k])continue;seen[k]=1;out.push({code:"IT"+String(out.length+1).padStart(2,"0"),ops});}
   st.d.cfg.illegalTemplates=out;
@@ -879,7 +879,7 @@ const OP_TYPES=["StashHouse","SalesPoint","MoneyLaundering","RawMaterial","Proce
 const LEGAL_COLS=[["code","Code"],["name","Name"],["illegalText","Illegal"],["income","Income per day"],["purchase","Purchase price"],["sell","Sell price"],["repair","Repair cost"],["opCost","Running cost per day"],["inventory","Inventory capacity"]];
 const ILLEGAL_COLS=[["code","Code"],["name","Name"],["type","Type"],["install","Install cost"],["costMonth","Running cost"],["inventory","Inventory capacity"],["workers","Worker slots"],["upgrades","Upgrade slots"],["heatInstall","Heat when installed"],["heatCycle","Heat per day"],["heatCar","Heat per car on route"],["fog","Fog reveal radius"]];
 function seedGameOps(){
-  const c=st.d&&st.d.cfg;if(!c)return;
+  const c=st.d&&st.d.cfg;if(!c||c.gameOpsSeeded)return;c.gameOpsSeeded=true;
   if(!Array.isArray(c.legal))c.legal=[];
   for(const g of LEGAL_GAME){let it=c.legal.find(x=>x.code===g.code);if(!it){it={code:g.code,name:g.name,ill:{}};c.legal.push(it);}for(const k of Object.keys(g))if(it[k]==null)it[k]=g[k];if(!isObj(it.ill))it.ill={};}
   if(!Array.isArray(c.operations))c.operations=[];
