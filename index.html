@@ -555,7 +555,7 @@ function normBlock(x){x=isObj(x)?x:{};const n=v=>v==null||v===""?null:Math.max(0
     buys0.forEach(b=>slots.push({biz:b,it:""}));
   }
   let lotOther=null;
-  if(x.bt){const bt=btList().find(q=>q.code===x.bt);if(bt){slots=(bt.slots||[]).map(s=>slotOf(s.legal));lotOther=Math.max(0,(+bt.total||0)-slots.length);}}
+  if(x.bt){const bt=btList().find(q=>q.code===x.bt);if(bt){slots=(bt.slots||[]).map(s=>slotOf(slotKey(s)));lotOther=Math.max(0,(+bt.total||0)-slots.length);}}
   const pairs=slots.filter(s=>s.it),buys=slots.filter(s=>!s.it).map(s=>s.biz);
   const hasCounts=!!x.bt||!!x.lot||Array.isArray(x.slots)||Array.isArray(x.pairs)||Array.isArray(x.buys)||x.ill!=null||x.legal!=null||x.purchasable!=null;
   return{bt:x.bt||null,lot:x.lot||null,legal:hasCounts?buys.length:null,ill:hasCounts?pairs.length:null,nonPlay:lotOther!=null?lotOther:n(x.nonPlay),slots,pairs,buys,tpl:x.tpl||null,illegal:Array.isArray(x.illegal)?x.illegal:[],robbery:x.robbery||null,other:x.other||null,notes:x.notes||"",reqIll:null,reqBuy:buys.filter(Boolean),vals:isObj(x.vals)?x.vals:{}};}
@@ -915,8 +915,9 @@ function seedGameOps(){
 }
 function btList(){return(st.d&&st.d.cfg&&Array.isArray(st.d.cfg.blockTypes))?st.d.cfg.blockTypes:[];}
 function legalIll(code){const l=list("legal").find(x=>x.code===code);return l&&isObj(l.ill)&&Object.keys(l.ill).length?"*":"";}
+function slotKey(s){return s&&s.legal==="*"&&s.ill?"*I":(s&&s.legal)||"*L";}
 function slotOf(v){v=v||"*L";if(v==="*I")return{biz:"*",it:"*"};if(v==="*L"||v==="*")return{biz:"*",it:""};return{biz:v,it:legalIll(v)};}
-function btSummary(t){const slots=(t.slots||[]).map(s=>slotOf(s.legal));const legal=slots.length,ill=slots.filter(s=>s.it).length,other=Math.max(0,(+t.total||0)-legal);return{legal,ill,only:legal-ill,other,total:+t.total||0};}
+function btSummary(t){const slots=(t.slots||[]).map(s=>slotOf(slotKey(s)));const legal=slots.length,ill=slots.filter(s=>s.it).length,other=Math.max(0,(+t.total||0)-legal);return{legal,ill,only:legal-ill,other,total:+t.total||0};}
 function btRule(t){const s=btSummary(t);if(s.ill>MAX_LI)return"More than "+MAX_LI+" with illegal.";if(s.only>MAX_LO)return"More than "+MAX_LO+" legal only.";if(s.legal>s.total)return"More legal buildings than buildings in total.";return"";}
 function illText(it,ops){return Object.keys(isObj(it.ill)?it.ill:{}).map(k=>((ops.find(o=>o.code===k)||{}).name||k)).join(", ");}
 function blocksPanel(C){
@@ -970,7 +971,7 @@ function blockTypesTab(d){
     let h='<div class="card"><div class="card-head"><div class="lothead"><span class="mono">'+esc(t.code)+'</span><input type="text" data-bxf="name" data-bi="'+i+'" value="'+esc(t.name||"")+'" placeholder="Name this block" aria-label="Name"></div><span class="muted">On '+(used[t.code]||0)+' blocks</span><button class="ibtn" type="button" data-bx="dup" data-bi="'+i+'" title="Duplicate" aria-label="Duplicate">⧉</button><button class="ibtn del" type="button" data-bx="del" data-bi="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
     h+=step("total",s.total,"Buildings in total","Every building on the block");
     h+=step("legal",s.legal,"Legal","Playable, up to "+(MAX_LI+MAX_LO)+". The illegal comes from each legal.");
-    h+=(t.slots||[]).map((sl,j)=>{const v=sl.legal||"*L";const sv=slotOf(v);return'<div class="slot one"><select data-bxs="'+j+'" data-bxk="legal" data-bi="'+i+'"'+(sv.it?' class="ill"':"")+' aria-label="Legal '+(j+1)+'"><option value="*I"'+(v==="*I"?" selected":"")+'>Random, with illegal</option><option value="*L"'+(v==="*L"||v==="*"?" selected":"")+">Random, legal only</option>"+legal.map(l=>'<option value="'+esc(l.code)+'"'+(v===l.code?" selected":"")+">"+esc(legalLabel(l))+"</option>").join("")+"</select></div>";}).join("");
+    h+=(t.slots||[]).map((sl,j)=>{const v=slotKey(sl);const sv=slotOf(v);return'<div class="slot one"><select data-bxs="'+j+'" data-bxk="legal" data-bi="'+i+'"'+(sv.it?' class="ill"':"")+' aria-label="Legal '+(j+1)+'"><option value="*I"'+(v==="*I"?" selected":"")+'>Random, with illegal</option><option value="*L"'+(v==="*L"||v==="*"?" selected":"")+">Random, legal only</option>"+legal.map(l=>'<option value="'+esc(l.code)+'"'+(v===l.code?" selected":"")+">"+esc(legalLabel(l))+"</option>").join("")+"</select></div>";}).join("");
     h+='<p class="'+(rule?"warnc":"muted")+'" style="font-size:12.5px;margin:2px 0 0">'+esc(rule||(s.ill+" with illegal · "+s.only+" legal only · "+s.other+" other"))+"</p></div>";
     return h;});
   return(T.length?'<div class="cards">'+cards.join("")+"</div>":'<p class="note">No block types yet.</p>')+'<div class="row"><button class="btn primary" type="button" data-bx="new">+ New block type</button><span class="muted" style="font-size:12.5px">The illegals of each legal are set in Values › Legal; with more than one, the block gets one of them at random.</span></div>';
@@ -1011,7 +1012,7 @@ function gameplayPanel(C){
   if(ns.length>1)h+='<p class="note warn">This block touches '+ns.length+" neighborhoods. Add a street between them.</p>";
   h+='<div class="sec"><h3>Block type</h3><div class="slot"><select id="f-bt" aria-label="Block type"><option value="">None</option>'+T.map(x=>'<option value="'+esc(x.code)+'"'+(raw.bt===x.code?" selected":"")+">"+esc(x.name||x.code)+"</option>").join("")+'<option value="__new">+ New block type…</option></select>'+(t?'<button class="btn sm" type="button" data-btedit="'+esc(t.code)+'">Edit</button>':"")+"</div>";
   if(t){const legal=list("legal"),ops=list("operations");const s=btSummary(t);
-    h+='<div class="lotsum">'+(t.slots||[]).map((sl,i)=>{const sv=slotOf(sl.legal);const lg=legal.find(x=>x.code===sv.biz);const own=lg&&isObj(lg.ill)?Object.keys(lg.ill):[];const il=sv.it==="*"?(own.length?own.map(c=>(ops.find(o=>o.code===c)||{}).name||c).join(" / "):"Random illegal"):sv.it?((ops.find(o=>o.code===sv.it)||{}).name||sv.it):"";return'<div class="lotrow"><b>'+(i+1)+".</b><span>"+esc(lg?lg.name:(sv.it?"Random legal":"Random legal only"))+(il?' <em class="illtag">+ '+esc(il)+"</em>":"")+"</span></div>";}).join("")+'<div class="lotrow"><b>'+s.other+"×</b><span>Other buildings</span></div></div>";
+    h+='<div class="lotsum">'+(t.slots||[]).map((sl,i)=>{const sv=slotOf(slotKey(sl));const lg=legal.find(x=>x.code===sv.biz);const own=lg&&isObj(lg.ill)?Object.keys(lg.ill):[];const il=sv.it==="*"?(own.length?own.map(c=>(ops.find(o=>o.code===c)||{}).name||c).join(" / "):"Random illegal"):sv.it?((ops.find(o=>o.code===sv.it)||{}).name||sv.it):"";return'<div class="lotrow"><b>'+(i+1)+".</b><span>"+esc(lg?lg.name:(sv.it?"Random legal":"Random legal only"))+(il?' <em class="illtag">+ '+esc(il)+"</em>":"")+"</span></div>";}).join("")+'<div class="lotrow"><b>'+s.other+"×</b><span>Other buildings</span></div></div>";
     h+='<p class="muted" style="font-size:12.5px">'+esc(s.total+" buildings in total.")+"</p>";}
   else h+='<p class="slot-none">Pick a block type. Make them in Values › Blocks.</p>';
   h+="</div>";
