@@ -7,14 +7,15 @@
 <title>Philly Map Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Hanken+Grotesk:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  --bg:#05081a;--surface:#0b1230;--surface-2:#111a3d;--ink:#e9eef7;--muted:#9fa3ad;--line:#22305c;
-  --accent:#71b0d2;--accent-ink:#060d2c;--accent-soft:#16304a;--gold:#e9cd79;--boundary:#e04b55;
-  --danger:#ff7b72;--danger-soft:#3a1518;--warn:#e9cd79;--warn-soft:#332b12;--ok:#7fd4a0;--ok-soft:#12301f;
-  --sheet:#03050f;--label:#8b93a8;--focus:#e9cd79;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.45);
-  --font-display:"Hanken Grotesk","Arial Narrow",Arial,sans-serif;
+  --bg:#111110;--surface:#191917;--surface-2:#23221f;--ink:#efe8d6;--muted:#aba493;--line:#35322c;
+  --accent:#3d8a72;--accent-ink:#f3ecd8;--accent-soft:#1c3129;--gold:#d6ad55;--boundary:#e8742c;
+  --danger:#ef6a5b;--danger-soft:#3a1714;--warn:#e7b24a;--warn-soft:#352a12;--ok:#7cc49a;--ok-soft:#16301f;
+  --sheet:#0b0b0a;--label:#9d9686;--focus:#d6ad55;--shadow:0 1px 2px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.55);
+  --sign:#2f6e5c;--cream:#e2d7b3;
+  --font-display:"Oswald","Arial Narrow",Arial,sans-serif;
   --font-body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
   color-scheme:dark;
@@ -253,27 +254,89 @@ body{font-size:14px;line-height:1.45}
 @media (max-width:1440px){.toolbar .hint{display:none}}
 @media (min-width:1181px){.app{grid-template-columns:232px minmax(0,1fr) 350px}}
 @media (min-width:961px) and (max-width:1180px){.app{grid-template-columns:214px minmax(0,1fr) 336px}}
+.btn.primary{background:var(--gold);color:#17130a;border-color:var(--gold)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.toast{background:var(--cream);color:#17130a}
+.cloud.out{background:var(--gold);color:#17130a;border-color:var(--gold)}
+.plate{display:grid;place-items:center;background:var(--sign);border-radius:5px;padding:2px;flex:none}
+.plate span{display:block;border:1.5px solid var(--cream);border-radius:3px;padding:3px 8px 2px;font-family:var(--font-display);font-weight:600;font-size:12px;letter-spacing:.12em;color:var(--cream);line-height:1.1}
+.brand h1{font-family:var(--font-display);font-weight:600;font-size:21px;letter-spacing:.06em;color:var(--ink);text-transform:uppercase}
+.panel h2,.cfg-head h3,.cfg-top h2,.modal h2{font-family:var(--font-display);font-weight:600;letter-spacing:.05em}
+.panel h2{color:var(--gold);font-size:24px}
+.app2{height:100%;display:grid;grid-template-columns:84px minmax(0,1fr) 340px;grid-template-rows:auto auto minmax(0,1fr)}
+.app2 .top{grid-row:1;grid-column:1 / -1}
+.nav{grid-row:2;grid-column:1 / -1;display:flex;align-items:stretch;padding:0 10px;background:var(--surface);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:thin}
+.nstep{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:9px 9px 8px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;text-align:left;flex:none}
+.nstep:hover{color:var(--ink);background:var(--surface-2)}
+.nstep[aria-current="true"]{color:var(--ink);border-bottom-color:var(--gold);background:linear-gradient(transparent 60%,rgba(214,173,85,.08))}
+.nstep .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-mono);font-size:12px;font-weight:600;border:1.5px solid var(--line);flex:none}
+.nstep.done .n{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.nstep[aria-current="true"] .n{background:var(--gold);border-color:var(--gold);color:#17130a}
+.nstep.tool2 .n{border-radius:7px}
+.nstep .t{display:flex;flex-direction:column;line-height:1.2}
+.nstep .t b{font-weight:600;font-size:14px}
+.nstep .t small{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nav .chev{align-self:center;color:var(--line);font-size:18px;flex:none}
+.nav .sep{width:1px;background:var(--line);margin:10px 8px;flex:none}
+.nav .grow{flex:1;min-width:8px}
+.nav .grp{align-self:center;font-family:var(--font-display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--label);padding:0 6px 0 2px;flex:none}
+.rail{grid-row:3;grid-column:1;display:flex;flex-direction:column;gap:3px;padding:10px 7px;background:var(--surface);border-right:1px solid var(--line);overflow:auto}
+.app2 .stage{grid-row:3;grid-column:2}
+.app2 .panel{grid-row:3;grid-column:3}
+.tool{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid transparent;background:transparent;border-radius:8px;padding:8px 3px 7px;cursor:pointer;color:var(--ink);font-size:11.5px;line-height:1.15;text-align:center;width:100%}
+.tool svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tool:hover{background:var(--surface-2)}
+.tool[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.tool:disabled{opacity:.32;cursor:not-allowed;background:transparent}
+.tool .sub{font-family:var(--font-mono);font-size:10.5px;color:var(--gold)}
+.rail .rsep{height:1px;background:var(--line);margin:6px 4px;flex:none}
+.rail .rlab{font-family:var(--font-display);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--label);text-align:center;margin:4px 0 2px}
+.rail .zv{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-align:center}
+.rail .grow{flex:1}
+.nextbar{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.nextbar .muted{font-size:12.5px}
+@media (max-width:1180px){.app2{grid-template-columns:76px minmax(0,1fr) 300px}}
+@media (max-width:960px){
+  .app2{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(420px,1fr) auto;height:auto;min-height:100%}
+  .rail{grid-row:3;grid-column:1;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:6px 8px}
+  .tool{width:auto;min-width:64px;flex:none}
+  .rail .rsep{width:1px;height:auto;margin:4px 6px}
+  .rail .rlab,.rail .grow{display:none}
+  .app2 .stage{grid-row:4;grid-column:1}
+  .app2 .panel{grid-row:5;grid-column:1;border-left:0;border-top:1px solid var(--line)}
+  .sheet{min-height:420px}
+  .saved{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app2">
   <header class="top">
-    <div class="brand"><div class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h1>Philly Map Planner</h1></div>
+    <div class="brand"><div class="plate" aria-hidden="true"><span>UNION CITY</span></div><h1>Philly Map Planner</h1></div>
     <div class="spacer"></div>
     <span class="saved" id="saved">Saved in this browser</span>
     <button class="cloud" type="button" id="cloud-btn" hidden></button>
     <button class="btn" type="button" id="undo" title="Undo (Ctrl+Z)">&#8630; Undo</button>
     <button class="btn" type="button" id="redo" title="Redo (Ctrl+Y)">&#8631; Redo</button>
-    <button class="btn" type="button" data-step="file">Import</button>
     <button class="btn primary" type="button" id="export-btn">Export JSON</button>
   </header>
-  <nav class="side" id="side" aria-label="Steps"></nav>
+  <nav class="nav" id="nav" aria-label="Steps"></nav>
+  <aside class="rail" aria-label="Map tools">
+    <div class="rlab">Area</div>
+    <button class="tool" type="button" id="sel-btn" aria-pressed="false" title="Drag over the map to select an area. Shift+drag works too."><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1.5" stroke-dasharray="3 2.6"/></svg><span>Select</span></button>
+    <button class="tool" type="button" id="fill-btn" title="Paint the whole selected area with the current brush"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 11.5 11 5l7 7-6.5 6.5a2 2 0 0 1-2.8 0L4.5 14.3a2 2 0 0 1 0-2.8z"/><path d="M4.5 12.5h13"/><path d="M20 15.5s1.5 1.8 1.5 3a1.5 1.5 0 0 1-3 0c0-1.2 1.5-3 1.5-3z"/></svg><span>Fill</span><span class="sub" id="fill-sub"></span></button>
+    <button class="tool" type="button" id="copy-btn" title="Copy the selected area (Ctrl+C)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy</span></button>
+    <button class="tool" type="button" id="paste-btn" aria-pressed="false" title="Paste, then click the top-left cell (Ctrl+V pastes where you point)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M9 5V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 11h6M9 15h4"/></svg><span>Paste</span></button>
+    <div class="grow"></div>
+    <div class="rsep"></div>
+    <div class="rlab">Zoom</div>
+    <button class="tool" type="button" data-zoom="1" title="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3M11 8v6M8 11h6"/></svg><span>In</span></button>
+    <button class="tool" type="button" data-zoom="-1" title="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3M8 11h6"/></svg><span>Out</span></button>
+    <button class="tool" type="button" data-zoom="0" title="Fit the whole map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></svg><span>Fit</span></button>
+    <div class="zv" id="zoom-val">100%</div>
+  </aside>
   <section class="stage">
-    <div class="toolbar"><span class="title" id="tb-title"></span><span class="hint" id="tb-hint"></span><span class="spacer"></span>
-      <div class="tb-tools" role="group" aria-label="Copy and paste"><button class="btn sm" type="button" id="sel-btn" aria-pressed="false" title="Drag over the map to select an area. Shift+drag works too.">Select area</button><button class="btn sm" type="button" id="fill-btn" title="Paint every cell in the selected area with the current brush">Fill area</button><button class="btn sm" type="button" id="copy-btn" title="Copy the selected area (Ctrl+C)">Copy</button><button class="btn sm" type="button" id="paste-btn" aria-pressed="false" title="Paste, then click the top-left cell (Ctrl+V pastes where you point)">Paste</button></div>
-      <div class="zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom out">&minus;</button><span id="zoom-val">100%</span><button type="button" data-zoom="1" aria-label="Zoom in">+</button><button type="button" data-zoom="0" title="Fit to screen">Fit</button></div>
-    </div>
     <div class="sheet" id="sheet"><svg id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map grid"></svg></div>
     <div class="caption" id="caption"></div>
   </section>
@@ -306,7 +369,7 @@ const STEPS=[
   {id:"owners",n:"5",label:"Owners",hint:"Who owns each block"},
   {id:"gameplay",n:"6",label:"Gameplay",hint:"Click a block to fill its data"}
 ];
-const TOOLS=[{id:"check",label:"Check",hint:"Errors before the Unity import"},{id:"config",label:"Config",hint:"Codes, colors and sizes"},{id:"file",label:"Save and share",hint:"Export, import, Miro version"}];
+const TOOLS=[{id:"check",label:"Check",hint:"Errors before the Unity import"},{id:"values",label:"Values",hint:"Prices and neighborhood data"},{id:"config",label:"Config",hint:"Lists, codes and colors"},{id:"file",label:"Share",hint:"Save and share: team, export, import"}];
 const LISTS=[
   {k:"terrain",title:"Ground types",color:true,lot:true},{k:"streets",title:"Street types",color:true},
   {k:"buildings",title:"Building types",color:true},{k:"markers",title:"Markers",color:true},
@@ -558,12 +621,12 @@ function onUp(){if(!stroke)return;const s=stroke;stroke=null;if(s.area){renderTo
 
 function stepMeta(id,C){
   if(!st.d.cfg)return"";
-  if(id==="ground")return C.lots+" lots on a "+gw()+"×"+gh()+" grid";
-  if(id==="areas")return C.named+" of "+C.lots+" lots named";
-  if(id==="streets")return C.streets+" street lines, "+C.blocks+" blocks";
-  if(id==="buildings")return C.built+" of "+C.lots+" lots built";
-  if(id==="owners")return C.owned+" of "+C.lots+" blocks owned";
-  if(id==="gameplay")return C.filled+" of "+C.blocks+" blocks filled";
+  if(id==="ground")return C.lots+" lots";
+  if(id==="areas")return C.named+"/"+C.lots+" named";
+  if(id==="streets")return C.blocks+" blocks";
+  if(id==="buildings")return C.built+"/"+C.lots+" built";
+  if(id==="owners")return C.owned+"/"+C.lots+" owned";
+  if(id==="gameplay")return C.filled+"/"+C.blocks+" filled";
   return"";
 }
 function stepDone(id,C){
@@ -578,18 +641,21 @@ function stepDone(id,C){
 }
 function renderSide(){
   const C=counts();const iss=st.d.cfg?issues():[];const errs=iss.filter(i=>i.sev==="error").length,warns=iss.length-errs;
-  let h='<div class="group">Build the map</div><div class="steps">';
-  for(const s of STEPS){const done=stepDone(s.id,C);h+='<button class="step" type="button" data-step="'+s.id+'" aria-current="'+(st.step===s.id)+'"><span class="num'+(done&&st.step!==s.id?" done":"")+'">'+(done&&st.step!==s.id?"✓":s.n)+'</span><span><span class="lbl">'+esc(s.label)+'</span><span class="meta">'+esc(stepMeta(s.id,C))+"</span></span></button>";}
-  h+='</div><div class="group">Before the import</div>';
+  const cur=id=>id==="config"?(!!st.cfgOpen&&st.cfgMode!=="values"):id==="values"?(!!st.cfgOpen&&st.cfgMode==="values"):(!st.cfgOpen&&st.step===id);
+  let h='<span class="grp">Build</span>';
+  STEPS.forEach((s,i)=>{const done=stepDone(s.id,C);
+    if(i)h+='<span class="chev" aria-hidden="true">›</span>';
+    h+='<button class="nstep'+(done&&!cur(s.id)?" done":"")+'" type="button" data-step="'+s.id+'" aria-current="'+cur(s.id)+'" title="'+esc(s.hint)+'"><span class="n">'+(done&&!cur(s.id)?"✓":s.n)+'</span><span class="t"><b>'+esc(s.label)+"</b><small>"+esc(stepMeta(s.id,C))+"</small></span></button>";});
+  h+='<span class="grow"></span><span class="sep"></span><span class="grp">Finish</span>';
   for(const t of TOOLS){
-    let extra="";
-    if(t.id==="check"&&st.d.cfg)extra=errs?'<span class="badge err">'+errs+"</span>":warns?'<span class="badge warn">'+warns+"</span>":'<span class="badge ok">ok</span>';
-    if(t.id==="config"&&st.draftDirty)extra='<span class="badge warn">unsaved</span>';
-    const icon=t.id==="check"?"✓":t.id==="config"?"⚙":"⇅";
-    h+='<button class="step" type="button" data-step="'+t.id+'" aria-current="'+(t.id==="config"?!!st.cfgOpen:st.step===t.id)+'"><span class="num">'+icon+'</span><span><span class="lbl">'+esc(t.label)+extra+'</span><span class="meta">'+esc(t.hint)+"</span></span></button>";
+    let small="";
+    if(t.id==="check"&&st.d.cfg)small=errs?errs+(errs===1?" error":" errors"):warns?warns+(warns===1?" warning":" warnings"):"All good";
+    if((t.id==="config"||t.id==="values")&&st.cfgOpen&&st.draftDirty&&(t.id==="values")===(st.cfgMode==="values"))small="Not saved yet";
+    const icon=t.id==="check"?"✓":t.id==="config"?"⚙":t.id==="values"?"$":"⇅";
+    h+='<button class="nstep tool2" type="button" data-step="'+t.id+'" aria-current="'+cur(t.id)+'" title="'+esc(t.hint)+'"><span class="n"'+(t.id==="check"&&errs?' style="border-color:var(--danger);color:var(--danger)"':"")+">"+icon+'</span><span class="t"><b>'+esc(t.label)+"</b>"+(small?"<small>"+esc(small)+"</small>":"")+"</span></button>";
   }
-  h+='<select class="step-select" id="step-select" aria-label="Step">'+STEPS.map(s=>'<option value="'+s.id+'"'+(st.step===s.id?" selected":"")+">"+s.n+". "+esc(s.label)+"</option>").join("")+TOOLS.map(t=>'<option value="'+t.id+'"'+(st.step===t.id?" selected":"")+">"+esc(t.label)+"</option>").join("")+"</select>";
-  $("#side").innerHTML=h;
+  $("#nav").innerHTML=h;
+  const on=$("#nav").querySelector('[aria-current="true"]');if(on&&on.scrollIntoView)on.scrollIntoView({block:"nearest",inline:"nearest"});
 }
 function color(k,code,fb){const it=st.idx[k]&&st.idx[k].get(code);return it&&it.color?it.color:fb;}
 function fitScale(){const sh=$("#sheet");const W=gw(),H=gh();const vw=OFF+W*S+6,vh=OFF+H*S+6;const aw=sh.clientWidth-32,ah=sh.clientHeight-32;return Math.max(.3,Math.min(aw/vw,ah/vh,3));}
@@ -655,7 +721,7 @@ function renderCaption(){
   if(cl.o)parts.push("<span>Owner: "+esc(nameOf("owners",cl.o))+"</span>");
   c.innerHTML=parts.join("");
 }
-function renderToolbar(){const s=STEPS.find(x=>x.id===st.step)||TOOLS.find(x=>x.id===st.step);$("#tb-title").textContent=(s.n?s.n+". ":"")+s.label;$("#tb-hint").textContent=s.hint;$("#undo").disabled=!st.undo.length;$("#redo").disabled=!st.redo.length;$("#sel-btn").setAttribute("aria-pressed",String(!!st.selMode));const fb=brushList(),fv=currentBrush();const fok=!!(st.area&&fb&&fb.field&&fv!==undefined);$("#fill-btn").disabled=!fok;$("#fill-btn").textContent=fok?(fv?"Fill area: "+fv:"Clear area"):"Fill area";$("#copy-btn").disabled=!st.area;$("#paste-btn").disabled=!st.clip;$("#paste-btn").setAttribute("aria-pressed",String(!!st.pasting));}
+function renderToolbar(){$("#undo").disabled=!st.undo.length;$("#redo").disabled=!st.redo.length;$("#sel-btn").setAttribute("aria-pressed",String(!!st.selMode));const fb=brushList(),fv=currentBrush();const fok=!!(st.area&&fb&&fb.field&&fv!==undefined);$("#fill-btn").disabled=!fok;$("#fill-sub").textContent=fok?(fv||"erase"):"";$("#copy-btn").disabled=!st.area;$("#paste-btn").disabled=!st.clip;$("#paste-btn").setAttribute("aria-pressed",String(!!st.pasting));}
 
 function swatches(bl){
   const cur=currentBrush();const cnt={};
@@ -666,7 +732,8 @@ function swatches(bl){
   return items.length?'<div class="swatches">'+items.join("")+"</div>":'<p class="note">This list is empty. Add items in Config.</p>';
 }
 function statRow(a){return'<div class="stats">'+a.map(([v,l])=>'<div class="stat"><b>'+v+"</b><span>"+esc(l)+"</span></div>").join("")+"</div>";}
-function renderPanel(){
+function renderPanel(){renderPanelBody();const i=STEPS.findIndex(s=>s.id===st.step);const order=STEPS.map(s=>s.id).concat(["check","file"]);const k=order.indexOf(st.step);if(st.d.cfg&&k>=0&&k<order.length-1){const nx=order[k+1];const lab=(STEPS.find(s=>s.id===nx)||TOOLS.find(s=>s.id===nx)).label;$("#panel").insertAdjacentHTML("beforeend",'<div class="nextbar"><span class="muted">'+(i>=0?"Step "+(i+1)+" of 6":"Almost there")+'</span><span class="spacer"></span><button class="btn" type="button" data-step="'+nx+'">Next: '+esc(lab)+" →</button></div>");}}
+function renderPanelBody(){
   const p=$("#panel");const C=counts();
   if(st.step==="file"){p.innerHTML=filePanel();return;}
   if(!st.d.cfg&&st.step!=="check"){p.innerHTML='<h2>Set up first</h2><p>The lists of ground types, buildings, streets and neighborhoods live in Config.</p><button class="btn primary" type="button" data-step="config">Open Config</button>';return;}
@@ -675,8 +742,8 @@ function renderPanel(){
   if(st.step==="ground"){
     const ctl=(side,label)=>'<span class="side-l">'+label+'</span><span class="ctl"><button class="btn sm" type="button" data-grow="'+side+'" data-n="1">+ Add</button><button class="btn sm" type="button" data-grow="'+side+'" data-n="-1">− Remove</button></span>';
     p.innerHTML=head("1. Ground","Mark the blocks where buildings go and paint everything else as terrain. One cell is "+(st.d.cfg.cellMeters||25)+" m in the game.")+statRow([[gw()+"×"+gh(),"grid"],[C.lots,"blocks"],[C.blocks,"groups"]])
-      +'<div class="sec"><h3>Grid size</h3><p>Adds or removes a whole row or column on that side. What is painted stays where it is. Undo brings back anything removed.</p><div class="gridsize">'+ctl("top","Row on top")+ctl("bottom","Row at the bottom")+ctl("left","Column on the left")+ctl("right","Column on the right")+"</div></div>"
-      +"<h3>Brush</h3>"+swatches(brushList());return;}
+      +"<h3>Brush</h3>"+swatches(brushList())
+      +'<div class="sec"><h3>Grid size</h3><p>Adds or removes a whole row or column on that side. What is painted stays where it is. Undo brings back anything removed.</p><div class="gridsize">'+ctl("top","Row on top")+ctl("bottom","Row at the bottom")+ctl("left","Column on the left")+ctl("right","Column on the right")+"</div></div>";return;}
   if(st.step==="areas"){p.innerHTML=head("2. Neighborhoods","Every lot needs a neighborhood. Each neighborhood becomes its own scene in Unity.")+statRow([[C.named+"/"+C.lots,"lots named"],[list("neighborhoods").length,"neighborhoods"],[list("districts").length,"districts"]])+how+"<h3>Brush</h3>"+swatches(brushList());return;}
   if(st.step==="streets"){p.innerHTML=head("3. Streets","Streets run on the lines between cells. In the game every street gets "+(st.d.cfg.roadWidth||14)+" m of road and "+(st.d.cfg.sidewalk||3)+" m sidewalks.")+statRow([[C.streets,"lines"],[C.blocks,"blocks"],[C.lots,"lots"]])+'<p class="note">Click a line to add or remove a street, or drag along several lines.</p><h3>Brush</h3>'+swatches(brushList());return;}
   if(st.step==="buildings"){p.innerHTML=head("4. Buildings","Give each lot its building type. Markers place HQs and recruitment sites.")+statRow([[C.built+"/"+C.lots,"lots built"],[list("buildings").length,"types"],[list("markers").length,"markers"]])+'<div class="seg" role="group" aria-label="Brush kind"><button type="button" data-bmode="buildings" aria-pressed="'+(st.bmode==="buildings")+'">Buildings</button><button type="button" data-bmode="markers" aria-pressed="'+(st.bmode==="markers")+'">Markers</button></div>'+how+swatches(brushList());return;}
@@ -723,7 +790,7 @@ function gameplayPanel(C){
   h+='<div class="field"><label for="f-other">Robbery, other buildings</label><select id="f-other">'+opt(d.other||"")+"</select></div>";
   h+="</div>";
   const df=(st.d.cfg&&isObj(st.d.cfg.defaults))?st.d.cfg.defaults:{};
-  h+='<div class="sec"><h3>Values for this block</h3><p class="muted" style="font-size:12.5px">Empty uses the business value, then the default in Config.</p><div class="vgrid">'+VALUES.map(v=>'<div class="field"><label for="f-v-'+v.k+'">'+esc(v.label)+'</label><input type="number" min="0" id="f-v-'+v.k+'" value="'+esc(d.vals[v.k]==null?"":d.vals[v.k])+'" placeholder="'+esc(df[v.k]==null?"Not set":"Default "+df[v.k])+'"></div>').join("")+"</div></div>";
+  h+='<div class="sec"><h3>Values for this block</h3><p class="muted" style="font-size:12.5px">Empty uses the business value, then the default in Values.</p><div class="vgrid">'+VALUES.map(v=>'<div class="field"><label for="f-v-'+v.k+'">'+esc(v.label)+'</label><input type="number" min="0" id="f-v-'+v.k+'" value="'+esc(d.vals[v.k]==null?"":d.vals[v.k])+'" placeholder="'+esc(df[v.k]==null?"Not set":"Default "+df[v.k])+'"></div>').join("")+"</div></div>";
   h+='<div class="field"><label for="f-notes">Notes (not imported)</label><textarea id="f-notes">'+esc(d.notes)+"</textarea></div>";
   if(bd&&bd.key!==b.anchor)h+='<p class="note">This data was saved when the block had another shape. The next edit moves it to '+esc(cellName(b.ax,b.ay))+".</p>";
   return h;
@@ -921,9 +988,9 @@ const CFG_TABS=[
   {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
   {id:"businesses",group:"Gameplay",label:"Businesses",lists:["businesses"],title:"Businesses",text:"Every business the map can place. Make one row per variant, as in Bakery 01 (no illegal), Bakery 02 (Stash), Bakery 03 (Hydroponics); the same Type groups them. Price and income are set in Unity."},
   {id:"rules",group:"Gameplay",label:"Operations and robbery",lists:["operations","robbery"],title:"Operations and robbery",text:"The lists used by businesses and by 6. Gameplay."},
-  {id:"values",group:"Values",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
-  {id:"bizvalues",group:"Values",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
-  {id:"nbdata",group:"Values",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
+  {id:"values",area:"values",group:"Buildings",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
+  {id:"bizvalues",area:"values",group:"Buildings",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
+  {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
 ];
 const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business",templates:"template"};
 const LIST_TEXT={districts:"Groups of neighborhoods.",robbery:"How much a robbery on the block is worth.",operations:"Illegal operations a building can run."};
@@ -935,9 +1002,10 @@ function ensureDraft(){
   if(!isObj(st.draft.defaults))st.draft.defaults={};
   return st.draft;
 }
-function openConfig(tab){ensureDraft();st.cfgOpen=true;if(tab)st.cfgTab=tab;if(!st.cfgTab)st.cfgTab=st.d.cfg?"terrain":"map";renderConfig();renderSide();const m=$(".cfg-main");if(m)m.scrollTop=0;}
+const modeOf=id=>{const tb=CFG_TABS.find(x=>x.id===id);return tb&&tb.area==="values"?"values":"config";};
+function openConfig(tab){ensureDraft();st.cfgOpen=true;st.cfgMode=tab?modeOf(tab):"config";if(tab)st.cfgTab=tab;if(!st.cfgTab||modeOf(st.cfgTab)!==st.cfgMode)st.cfgTab=st.cfgMode==="values"?"values":st.d.cfg?"terrain":"map";renderConfig();renderSide();const m=$(".cfg-main");if(m)m.scrollTop=0;}
 function closeConfig(force){
-  if(st.draftDirty&&!force){openModal('<h2>Save your changes?</h2><p>Config has changes that are not saved yet.</p><div class="row"><button class="btn primary" type="button" id="cfg-close-save">Save</button><button class="btn" type="button" id="cfg-close-discard">Discard</button><button class="btn" type="button" data-modal-close>Keep editing</button></div>');return;}
+  if(st.draftDirty&&!force){openModal('<h2>Save your changes?</h2><p>There are changes that are not saved yet.</p><div class="row"><button class="btn primary" type="button" id="cfg-close-save">Save</button><button class="btn" type="button" id="cfg-close-discard">Discard</button><button class="btn" type="button" data-modal-close>Keep editing</button></div>');return;}
   st.cfgOpen=false;st.draft=null;st.draftDirty=false;st.draftMsg="";renderConfig();render();
 }
 function usage(){
@@ -1035,9 +1103,10 @@ function renderConfig(){
   const root=$("#cfg-root");
   if(!st.cfgOpen){root.innerHTML="";return;}
   const d=ensureDraft();const errs=draftErrors();const u=usage();
-  const tab=CFG_TABS.find(x=>x.id===st.cfgTab)||CFG_TABS[0];
+  const tabs=CFG_TABS.filter(x=>(x.area||"config")===(st.cfgMode||"config"));
+  const tab=tabs.find(x=>x.id===st.cfgTab)||tabs[0];
   let nav="";let g=null;
-  for(const tb of CFG_TABS){
+  for(const tb of tabs){
     if(tb.group!==g){g=tb.group;nav+='<div class="group">'+esc(g)+"</div>";}
     const n=tb.lists.reduce((s,k)=>s+(d[k]||[]).length,0);const bad=tb.lists.concat([tb.id]).some(k=>Object.keys(errs).some(e=>e.indexOf(k+":")===0));
     nav+='<button class="cfg-tab" type="button" role="tab" data-cfgtab="'+tb.id+'" aria-selected="'+(tb.id===tab.id)+'">'+(bad?'<span class="dot" title="Has problems"></span>':"")+esc(tb.label)+(tb.lists.length?'<span class="n">'+n+"</span>":"")+"</button>";
@@ -1053,7 +1122,7 @@ function renderConfig(){
   const nErr=Object.keys(errs).length;
   const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving":st.draftDirty?"Unsaved changes":"All changes saved";
   const cls=st.draftMsg==="Saved"?"ok":nErr?"bad":st.draftDirty?"dirty":"";
-  root.innerHTML='<div class="cfg" role="dialog" aria-modal="true" aria-labelledby="cfg-title"><header class="cfg-top"><h2 id="cfg-title">Config</h2><span class="sub">Codes are what Unity reads. Rename freely: the map follows.</span><span class="spacer"></span><button class="btn icon" type="button" id="cfg-close" title="Close (Esc)" aria-label="Close">✕</button></header><div class="cfg-body"><nav class="cfg-tabs" role="tablist" aria-label="Config sections">'+nav+'</nav><section class="cfg-main" role="tabpanel"><div class="inner">'+main+'</div></section></div><footer class="cfg-foot"><span class="state '+cls+'" id="cfg-state">'+esc(state)+'</span><span class="spacer"></span><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard changes</button><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>Save config</button></footer></div>';
+  root.innerHTML='<div class="cfg" role="dialog" aria-modal="true" aria-labelledby="cfg-title"><header class="cfg-top"><h2 id="cfg-title">'+(st.cfgMode==="values"?"Values":"Config")+'</h2><span class="sub">'+(st.cfgMode==="values"?"What each building and neighborhood is worth in the game.":"Codes are what Unity reads. Rename freely: the map follows.")+'</span><span class="spacer"></span><button class="btn icon" type="button" id="cfg-close" title="Close (Esc)" aria-label="Close">✕</button></header><div class="cfg-body"><nav class="cfg-tabs" role="tablist" aria-label="Config sections">'+nav+'</nav><section class="cfg-main" role="tabpanel"><div class="inner">'+main+'</div></section></div><footer class="cfg-foot"><span class="state '+cls+'" id="cfg-state">'+esc(state)+'</span><span class="spacer"></span><button class="btn" type="button" id="cfg-reset"'+(st.draftDirty?"":" disabled")+'>Discard changes</button><button class="btn primary" type="button" id="cfg-save"'+(st.draftDirty?"":" disabled")+'>'+(st.cfgMode==="values"?"Save values":"Save config")+'</button></footer></div>';
   const cur=root.querySelector('.cfg-tab[aria-selected="true"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest",inline:"nearest"});
 }
 function rerenderConfig(){setTimeout(()=>{const a=document.activeElement;const id=a&&a.id;const m=$(".cfg-main");const top=m?m.scrollTop:0;renderConfig();const m2=$(".cfg-main");if(m2)m2.scrollTop=top;if(id){const el=document.getElementById(id);if(el)el.focus();}},0);}
@@ -1076,12 +1145,12 @@ function remap(ren,d){
 }
 function saveConfig(){
   const d=ensureDraft();const errs=draftErrors();const keys=Object.keys(errs);
-  if(keys.length){st.cfgTab=tabOf(keys[0].split(":")[0]);st.draftMsg="";renderConfig();toast(keys.length+(keys.length===1?" problem":" problems")+" to fix first");return false;}
+  if(keys.length){st.cfgTab=tabOf(keys[0].split(":")[0]);st.cfgMode=modeOf(st.cfgTab);st.draftMsg="";renderConfig();toast(keys.length+(keys.length===1?" problem":" problems")+" to fix first");return false;}
   const ren={};for(const L of LISTS){ren[L.k]={};for(const it of d[L.k]||[]){it.code=it.code.trim();if(it._o&&it._o!==it.code)ren[L.k][it._o]=it.code;}}
   d.gridW=num(d.gridW,21,4,60);d.gridH=num(d.gridH,21,4,60);
   pushUndo();remap(ren,d);
   const out=clone(d);for(const L of LISTS)for(const it of out[L.k]||[])delete it._o;
-  st.d.cfg=out;rebuildIdx();st.bc=null;st.draft=null;st.draftDirty=false;save();ensureDraft();st.draftMsg="Saved";render();toast("Config saved");return true;
+  st.d.cfg=out;rebuildIdx();st.bc=null;st.draft=null;st.draftDirty=false;save();ensureDraft();st.draftMsg="Saved";render();toast(st.cfgMode==="values"?"Values saved":"Config saved");return true;
 }
 
 function pairs(o){return Object.keys(isObj(o)?o:{}).filter(k=>o[k]!=null&&o[k]!==""&&isFinite(+o[k])).map(k=>({key:k,value:+o[k]}));}
@@ -1134,7 +1203,7 @@ function replaceWith(x,msg){pushUndo();const d=fromExport(x);st.d.cfg=d.cfg||st.
 function openModal(html){$("#modal-root").innerHTML='<div class="modal-wrap" data-modal-bg><div class="modal" role="dialog" aria-modal="true">'+html+"</div></div>";}
 function closeModal(){$("#modal-root").innerHTML="";importData=null;}
 
-function setStep(id){if(id==="config"){openConfig();return;}st.step=id;st.hover=null;try{localStorage.setItem(STORE+".step",id);}catch(_){}render();}
+function setStep(id){if(st.cfgOpen&&id!=="config"&&id!=="values"){if(st.draftDirty){closeConfig(false);return;}st.cfgOpen=false;st.draft=null;}if(id==="config"){openConfig();return;}if(id==="values"){openConfig("values");return;}st.step=id;st.hover=null;try{localStorage.setItem(STORE+".step",id);}catch(_){}render();}
 function render(){renderSide();renderToolbar();renderMap();renderPanel();renderCaption();renderSaved();renderConfig();}
 
 document.addEventListener("click",e=>{
@@ -1232,7 +1301,7 @@ svg.addEventListener("pointerdown",onDown);svg.addEventListener("pointermove",on
 svg.addEventListener("pointerleave",()=>{if(!stroke){st.hover=null;renderHover();renderCaption();}});
 
 load();rebuildIdx();
-try{const s=localStorage.getItem(STORE+".step");if(s&&s!=="config"&&STEPS.concat(TOOLS).some(x=>x.id===s))st.step=s;}catch(_){}
+try{const s=localStorage.getItem(STORE+".step");if(s&&s!=="config"&&s!=="values"&&STEPS.concat(TOOLS).some(x=>x.id===s))st.step=s;}catch(_){}
 render();
 cloudInit();
 })();
