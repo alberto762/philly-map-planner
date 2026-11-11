@@ -846,7 +846,7 @@ function gameplayPanel(C){
   const nLI=d.slots.filter(s=>s.it).length,nLO=d.slots.length-nLI;
   h+='<div class="blockline"><b>Block '+esc(cellName(b.ax,b.ay))+"</b><span>"+esc(ns.map(c=>nameOf("neighborhoods",c)).join(", ")||"No neighborhood")+"</span></div>";
   if(ns.length>1)h+='<p class="note warn">This block touches '+ns.length+" neighborhoods. Add a street between them.</p>";
-  const bizOpts=cur=>'<option value="">Any business</option>'+bz.map(x=>'<option value="'+esc(x.code)+'"'+(cur===x.code?" selected":"")+">"+esc(x.name||x.code)+"</option>").join("");
+  const bizOpts=cur=>'<option value="">Any business</option>'+bz.map(x=>'<option value="'+esc(x.code)+'"'+(cur===x.code?" selected":"")+">"+esc(x.name||x.code)+"</option>").join("")+'<option value="__new">+ New business…</option>';
   const itOpts=cur=>'<option value="">No illegal</option><option value="*"'+(cur==="*"?" selected":"")+">Any illegal preset</option>"+its.map(x=>'<option value="'+esc(x.code)+'"'+(cur===x.code?" selected":"")+">"+esc(itName(x))+"</option>").join("");
   h+='<div class="sec"><h3>Playable buildings</h3><p class="muted" style="font-size:12.5px">Up to '+MAX_LO+" legal only and up to "+MAX_LI+" with illegal.</p>";
   h+=d.slots.length?d.slots.map((s,i)=>{const bzi=bz.find(x=>x.code===s.biz),it=its.find(x=>x.code===s.it);const bad=bzi&&bzi.legal&&it?it.ops.filter(o=>!legalAllows(bzi.legal,o)):[];
@@ -1176,11 +1176,14 @@ function numIn(idv,attrs,lab,v,ph){return'<div data-label="'+esc(lab)+'"><input 
 function valuesTab(d){
   return plainTable([{h:"Value",w:"minmax(180px,1.2fr)"},{h:"Default",w:"160px"},{h:"What it is",w:"minmax(200px,2fr)"}],VALUES.map(v=>({html:'<div class="ro">'+esc(v.label)+"</div>"+numIn("cf-def-"+v.k,'data-def="'+v.k+'"',v.label,d.defaults[v.k],"Not set")+'<div class="muted" style="font-size:12.5px">'+esc(v.help)+"</div>"})),"");
 }
-function bizValuesTab(d){
-  const f=(st.cfgFilter||"").trim().toLowerCase();
+function bizValuesTab(d,errs){
+  const f=(st.cfgFilter||"").trim().toLowerCase();const u=usage();
   const rows=[];(d.businesses||[]).forEach((it,i)=>{if(f&&![it.code,it.name,it.type].some(v=>String(v||"").toLowerCase().indexOf(f)>=0))return;
-    rows.push({html:'<div class="ro" title="'+esc(it.name||"")+'"><b>'+esc(it.code)+"</b>"+esc(it.name||"")+"</div>"+VALUES.map(v=>numIn("cf-bv-"+i+"-"+v.k,'data-list="businesses" data-i="'+i+'" data-f="'+v.k+'"',v.label,it[v.k],d.defaults[v.k]==null?"":String(d.defaults[v.k]))).join("")});});
-  return'<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code, name or type" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter businesses"></div>'+plainTable([{h:"Business",w:"minmax(170px,1.6fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(96px,1fr)"}))),rows,(d.businesses||[]).length?"No business matches the filter.":"Add businesses first, in the Businesses tab.");
+    const base='data-list="businesses" data-i="'+i+'"';const err=errs["businesses:"+i];const n=it._o?(u.businesses[it._o]||0):0;
+    rows.push({err,html:'<div data-label="Code"><input type="text" class="c'+(err&&/code/i.test(err)?" bad":"")+'" id="cf-businesses-'+i+'-code" '+base+' data-f="code" value="'+esc(it.code)+'" aria-label="Code"></div><div data-label="Name"><input type="text" id="cf-businesses-'+i+'-name" '+base+' data-f="name" value="'+esc(it.name)+'" placeholder="Bakery" aria-label="Name"></div>'+VALUES.map(v=>numIn("cf-bv-"+i+"-"+v.k,base+' data-f="'+v.k+'"',v.label,it[v.k],d.defaults[v.k]==null?"":String(d.defaults[v.k]))).join("")+'<div class="act"><button class="ibtn del" type="button" data-del="businesses" data-i="'+i+'" title="'+(n?"Used "+n+" times":"Remove")+'" aria-label="Remove">✕</button></div>'});});
+  return'<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code, name or type" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter businesses"><span class="muted" style="font-size:12.5px">Legal front, type and recruits are in Config › Businesses.</span></div>'
+    +plainTable([{h:"Code",w:"minmax(96px,120px)"},{h:"Name",w:"minmax(150px,1.4fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(90px,1fr)"}))).concat([{h:"",w:"40px"}]),rows,(d.businesses||[]).length?"No business matches the filter.":"No businesses yet.")
+    +'<div class="row"><button class="btn sm" type="button" data-add="businesses">+ Add business</button></div>';
 }
 function nbDataTab(d,errs){
   const sel=(i,f,lab,opts,v)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o]||o)+"</option>").join("")+"</select></div>";
@@ -1286,7 +1289,7 @@ function renderConfig(){
     const val=(id,label,v,min,max,help)=>'<div class="field"><label for="cfg-'+id+'">'+label+'</label><input type="number" id="cfg-'+id+'" data-val="'+id+'" min="'+min+'" max="'+max+'" value="'+esc(v)+'"><small>'+help+"</small></div>";
     main+='<div class="vals">'+val("gridW","Columns",d.gridW,4,60,"Cells across, 4 to 60.")+val("gridH","Rows",d.gridH,4,60,"Cells down, 4 to 60.")+val("cellMeters","Meters per cell",d.cellMeters,1,500,"Size of one cell in the game.")+val("roadWidth","Road width (m)",d.roadWidth,1,100,"Asphalt only.")+val("sidewalk","Sidewalk (m)",d.sidewalk,0,50,"On each side of the road.")+"</div>";
   }else if(tab.id==="values")main+=valuesTab(d);
-  else if(tab.id==="bizvalues")main+=bizValuesTab(d);
+  else if(tab.id==="bizvalues")main+=bizValuesTab(d,errs);
   else if(tab.id==="nbdata")main+=nbDataTab(d,errs);
   else if(tab.id==="demand")main+=demandTab(d);
   else if(tab.id==="matrix")main+=matrixTab(d);
@@ -1428,7 +1431,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();renderToolbar();return;}
   if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
-  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:"",name:"",type:"",legal:"",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
+  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:(()=>{const L2=st.draft.businesses;let n=L2.length+1,c;do{c="BIZ"+String(n++).padStart(2,"0");}while(L2.some(x=>x.code===c));return c;})(),name:"",type:"",legal:"",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-"+(t.dataset.add==="businesses"?"name":"code"));if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
   if(t.dataset.del){const k=t.dataset.del,i=+t.dataset.i,it=st.draft[k][i];const n=it&&it._o?(usage()[k][it._o]||0):0;
     if(n&&!confirm('"'+(it.code||"")+'" is used '+n+" times on the map. Remove it anyway? Those places lose it."))return;
     st.draft[k].splice(i,1);markDirty();renderConfig();return;}
@@ -1468,6 +1471,7 @@ document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="step-select"){setStep(t.value);return;}
   if(t.id==="import-file"){readImport(t);return;}
+  if(t.dataset&&t.dataset.slot&&t.value==="__new"){renderPanel();openConfig("bizvalues");const add=document.querySelector('[data-add="businesses"]');if(add)add.click();toast("Name the new business, then Save values. It shows up in every block.");return;}
   if(t.dataset&&t.dataset.slot){const i=+t.dataset.i,f=t.dataset.f,v=t.value;editBlock(d=>{if(d.slots[i])d.slots[i][f]=v;});return;}
   if(t.dataset&&t.dataset.itaddop!==undefined){const it=st.draft.illegalTemplates[+t.dataset.itaddop];if(it&&t.value&&it.ops.indexOf(t.value)<0)it.ops.push(t.value);markDirty();rerenderConfig();return;}
   if(t.dataset&&t.dataset.sx){sitesAction(t);return;}
