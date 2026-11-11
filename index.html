@@ -251,6 +251,7 @@ body{font-size:14px;line-height:1.45}
 .stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:15px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #f-total{margin-top:2px}
+.tblwrap.wide2 .tbl{min-width:1850px}
 .slot.one{grid-template-columns:1fr}
 .illpick{display:grid;grid-template-columns:1fr 100px;gap:6px}
 .illpick select{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:6px 8px;font-size:13px;min-width:0}
@@ -415,7 +416,7 @@ const VALUES=[{k:"income",short:"Income/day",label:"Income per day",help:"Money 
 const NB_TYPES=["Residential","Commercial","Industrial"];
 const NB_WEALTH=["VeryPoor","Poor","Average","Rich","VeryRich"];
 const NB_WEALTH_LABEL={VeryPoor:"1 · Very poor",Poor:"2 · Poor",Average:"3 · Average",Rich:"4 · Rich",VeryRich:"5 · Very rich"};
-const DEMAND=[{k:"demandBudBags",label:"Bud bags"},{k:"demandJointPacks",label:"Joint packs"},{k:"demandMethBags",label:"Meth bags"},{k:"demandCrystalMethBags",label:"Crystal meth bags"}];
+const DEMAND=[{k:"demandBudBags",pk:"priceBudBags",label:"Bud bags",price:""},{k:"demandJointPacks",pk:"priceJointPacks",label:"Joint packs",price:"18"},{k:"demandMethBags",pk:"priceMethBags",label:"Meth bags",price:"38"},{k:"demandCrystalMethBags",pk:"priceCrystalMethBags",label:"Crystal meth bags",price:"60"}];
 const MARTIN_DEMAND="Fairview\t3\t40\t40\t20\t40\nCramer Hill\t4\t20\t60\t0\t60\nPennrose\t4\t0\t40\t0\t20\nCooper Crossing\t2\t80\t20\t100\t0\nBellview\t5\t0\t60\t0\t60\nGrant Terrace\t2\t80\t20\t100\t0\nParkside\t3\t40\t40\t20\t20\nWaterfront South\t2\t80\t20\t100\t0\nLinnwood\t1\t100\t20\t100\t0";
 const LEGAL_SEED=[{code:"GALLERY",name:"Art Gallery",ill:{}},{code:"AUTOSHOP",name:"Auto Shop",ill:{DRYING_RACK:"average"}},{code:"BAR",name:"Bar",ill:{SALES:"good"}},{code:"OFFICE",name:"Office Building",ill:{}},{code:"CASINO",name:"Casino",ill:{}},{code:"CHURCH",name:"Church",ill:{HYDROPONICS:"good"}},{code:"CLUB",name:"Club",ill:{}},{code:"DRUGSTORE",name:"Drug Store",ill:{}},{code:"GROCERY",name:"Grocery Store",ill:{HYDROPONICS:"good"}},{code:"HOUSING",name:"Habitation",ill:{HYDROPONICS:"poor"}},{code:"PAPER",name:"Paper Company",ill:{STASH:"poor"}},{code:"POLICE",name:"Police Department",ill:{}}];
 const FITS=["good","average","poor"];
@@ -1256,8 +1257,8 @@ const CFG_TABS=[
   {id:"blocktypes",area:"values",group:"Operations",label:"Blocks",lists:[],title:"Blocks",text:"Block types: how many buildings a block has, which are legal and which also run illegal, by hand or random. In 6. Gameplay, click a block on the map and pick one. Rule: 0 to 2 with illegal, 0 to 3 legal only, the rest other."},
   {id:"legalops",area:"values",group:"Operations",label:"Legal",lists:["legal"],title:"Legal",text:"The legal operations of the game (LegalOperationSO): every front a building can run, its values, and the illegal it can run behind it. Unity gets them on import; new rows become new operations."},
   {id:"illops",area:"values",group:"Operations",label:"Illegal",lists:["operations"],title:"Illegal",text:"The illegal operations of the game (IllegalOperationSO) and their values, plus Headquarter and Recruitment site, which used to be markers. Unity gets them on import; new rows become new operations, copied from an existing one."},
-  {id:"demand",area:"values",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
-  {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
+  {id:"demand",area:"hidden",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
+  {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhoods",lists:[],title:"Neighborhoods",text:"Everything each neighborhood scriptable gets in Unity: wealth (1 to 5), type, daily demand and price, citizens and recruits. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
 ];
 const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business",templates:"template",legal:"legal operation"};
 const LIST_TEXT={districts:"Groups of neighborhoods.",robbery:"How much a robbery on the block is worth.",operations:"Illegal operations a building can run."};
@@ -1375,11 +1376,13 @@ function bizValuesTab(d,errs){
     +'<div class="row"><button class="btn sm" type="button" data-add="businesses">+ Add legal data</button></div>';
 }
 function nbDataTab(d,errs){
-  const sel=(i,f,lab,opts,v)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o]||o)+"</option>").join("")+"</select></div>";
+  const sel=(i,f,lab,opts,v,labels)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc((labels&&labels[o])||o)+"</option>").join("")+"</select></div>";
   const nb=(i,f,lab,v)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'"',lab,v,"");
-  const cols=[{h:"Neighborhood",w:"minmax(150px,1.5fr)"},{h:"Type",w:"minmax(116px,1fr)"},{h:"Wealth",w:"minmax(104px,1fr)"},{h:"Citizens on the street",w:"88px"},{h:"Poor %",w:"72px"},{h:"Average %",w:"72px"},{h:"Rich %",w:"72px"},{h:"Worker %",w:"72px"},{h:"Recruits available",w:"88px"},{h:"Starting intel",w:"76px"},{h:"Level for Stash or HQ",w:"88px"}];
-  const rows=(d.neighborhoods||[]).map((n,i)=>({err:errs["nbdata:"+i],html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+sel(i,"nbType","Type",NB_TYPES,n.nbType)+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth)+nb(i,"population","Citizens on the street",n.population)+nb(i,"mixPoor","Poor %",n.mixPoor)+nb(i,"mixAverage","Average %",n.mixAverage)+nb(i,"mixRich","Rich %",n.mixRich)+nb(i,"mixWorker","Worker %",n.mixWorker)+nb(i,"candidates","Recruits available",n.candidates)+nb(i,"intel","Starting intel",n.intel)+nb(i,"installLevel","Level for Stash or HQ",n.installLevel)}));
-  return plainTable(cols,rows,"Add neighborhoods first, in the Neighborhoods tab.");
+  const cols=[{h:"Neighborhood",w:"minmax(150px,1.4fr)"},{h:"Wealth",w:"minmax(118px,1fr)"},{h:"Type",w:"minmax(112px,1fr)"}].concat(DEMAND.flatMap(p=>[{h:p.label+" a day",w:"80px"},{h:p.label+" price",w:"80px"}])).concat([{h:"Citizens on the street",w:"84px"},{h:"Poor %",w:"68px"},{h:"Average %",w:"68px"},{h:"Rich %",w:"68px"},{h:"Worker %",w:"68px"},{h:"Recruits available",w:"84px"},{h:"Starting intel",w:"72px"},{h:"Level for Stash or HQ",w:"84px"}]);
+  const rows=(d.neighborhoods||[]).map((n,i)=>({err:errs["nbdata:"+i],html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth,NB_WEALTH_LABEL)+sel(i,"nbType","Type",NB_TYPES,n.nbType)
+    +DEMAND.map(p=>nb(i,p.k,p.label+" a day",n[p.k])+numIn("cf-nd-"+i+"-"+p.pk,'data-list="neighborhoods" data-i="'+i+'" data-f="'+p.pk+'"',p.label+" price",n[p.pk],p.price)).join("")
+    +nb(i,"population","Citizens on the street",n.population)+nb(i,"mixPoor","Poor %",n.mixPoor)+nb(i,"mixAverage","Average %",n.mixAverage)+nb(i,"mixRich","Rich %",n.mixRich)+nb(i,"mixWorker","Worker %",n.mixWorker)+nb(i,"candidates","Recruits available",n.candidates)+nb(i,"intel","Starting intel",n.intel)+nb(i,"installLevel","Level for Stash or HQ",n.installLevel)}));
+  return'<div class="row"><button class="btn" type="button" id="demand-paste">Paste from a spreadsheet</button><span class="muted" style="font-size:12.5px">Name, wealth 1 to 5, then daily demand of the four products.</span></div><div class="tblwrap wide2">'+plainTable(cols,rows,"Add neighborhoods first, in Config.")+"</div>";
 }
 function matrixTab(d){
   const ops=d.operations||[],legal=d.legal||[];
@@ -1496,7 +1499,7 @@ function renderConfig(){
   const root=$("#cfg-root");
   if(!st.cfgOpen){root.innerHTML="";return;}
   const d=ensureDraft();const errs=draftErrors();const u=usage();
-  const VORDER=["blocktypes","legalops","illops","demand","nbdata","resources"];
+  const VORDER=["blocktypes","legalops","illops","nbdata","resources"];
   const tabs=CFG_TABS.filter(x=>(x.area||"config")===(st.cfgMode||"config")).sort((a,b)=>st.cfgMode==="values"?VORDER.indexOf(a.id)-VORDER.indexOf(b.id):0);
   const tab=tabs.find(x=>x.id===st.cfgTab)||tabs[0];
   let nav="";let g=null;
@@ -1562,7 +1565,7 @@ function saveConfig(){
 function pairs(o){return Object.keys(isObj(o)?o:{}).filter(k=>o[k]!=null&&o[k]!==""&&isFinite(+o[k])).map(k=>({key:k,value:+o[k]}));}
 function pick(o,keys){const r={};for(const k of keys)if(o[k]!=null&&o[k]!=="")r[k]=o[k];return r;}
 function economyExport(){
-  const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"].concat(DEMAND.map(p=>p.k));
+  const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"].concat(DEMAND.map(p=>p.k)).concat(DEMAND.map(p=>p.pk));
   const lv=it=>pairs(pick(it,LEGAL_COLS.map(c=>c[0]).filter(f=>["code","name","illegalText"].indexOf(f)<0))),iv=it=>pairs(pick(it,ILLEGAL_COLS.map(c=>c[0]).filter(f=>["code","name","type"].indexOf(f)<0)));
   return{illegalOps:list("operations").map(o=>({code:o.code,name:o.name||o.code,asset:o.asset||"",baseAsset:(list("operations").find(x=>x.code===o.base)||list("operations").find(x=>x.asset)||{}).asset||"",type:o.type||"",values:iv(o)})),legal:list("legal").map(l=>({code:l.code,name:l.name||l.code,asset:l.asset||"",baseAsset:(list("legal").find(x=>x.code===l.base)||list("legal").find(x=>x.asset)||{}).asset||"",values:lv(l),illegal:Object.keys(isObj(l.ill)?l.ill:{}).map(k=>({key:k,level:FIT_LABEL[l.ill[k]]||"Average"}))})),defaults:pairs(st.d.cfg.defaults),
     businesses:list("businesses").map(b=>({code:b.code,values:pairs(pick(b,vk))})).filter(b=>b.values.length),
