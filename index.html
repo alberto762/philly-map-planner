@@ -356,6 +356,9 @@ const MAP_ID="philly";
 const VALUES=[{k:"income",short:"Income/day",label:"Income per day",help:"Money the building makes each day."},{k:"purchase",short:"Purchase",label:"Purchase price",help:"What the player pays to buy it."},{k:"sell",short:"Sell",label:"Sell price",help:"What the player gets when selling it."},{k:"repair",short:"Repair",label:"Repair cost",help:"What it costs to fix after damage."},{k:"inventory",short:"Inventory",label:"Inventory capacity",help:"How much it can store."}];
 const NB_TYPES=["Residential","Commercial","Industrial"];
 const NB_WEALTH=["VeryPoor","Poor","Average","Rich","VeryRich"];
+const NB_WEALTH_LABEL={VeryPoor:"1 · Very poor",Poor:"2 · Poor",Average:"3 · Average",Rich:"4 · Rich",VeryRich:"5 · Very rich"};
+const DEMAND=[{k:"demandBudBags",label:"Bud bags"},{k:"demandJointPacks",label:"Joint packs"},{k:"demandMethBags",label:"Meth bags"},{k:"demandCrystalMethBags",label:"Crystal meth bags"}];
+const MARTIN_DEMAND="Fairview\t3\t40\t40\t20\t40\nCramer Hill\t4\t20\t60\t0\t60\nPennrose\t4\t0\t40\t0\t20\nCooper Crossing\t2\t80\t20\t100\t0\nBellview\t5\t0\t60\t0\t60\nGrant Terrace\t2\t80\t20\t100\t0\nParkside\t3\t40\t40\t20\t20\nWaterfront South\t2\t80\t20\t100\t0\nLinnwood\t1\t100\t20\t100\t0";
 const STARTER=[{code:"SMALL",name:"Small block",w:1,h:1,legal:2,ill:1,other:9,building:""},{code:"MEDIUM",name:"Medium block",w:2,h:1,legal:3,ill:1,other:14,building:""},{code:"LARGE",name:"Large block",w:2,h:2,legal:4,ill:2,other:24,building:""}];
 const BOOT_ADMIN="admin@762interactive.com";
 const FB="https://www.gstatic.com/firebasejs/10.12.2/";
@@ -450,7 +453,7 @@ function blockData(b){
 function normBlock(x){x=isObj(x)?x:{};const n=v=>v==null||v===""?null:Math.max(0,parseInt(v,10)||0);
   return{legal:n(x.legal!=null?x.legal:x.purchasable),ill:n(x.ill),nonPlay:n(x.nonPlay),tpl:x.tpl||null,illegal:Array.isArray(x.illegal)?x.illegal:[],robbery:x.robbery||null,other:x.other||null,notes:x.notes||"",reqIll:x.reqIll||null,reqBuy:Array.isArray(x.reqBuy)?x.reqBuy:[],vals:isObj(x.vals)?x.vals:{}};}
 const blockTotal=n=>(n.legal||0)+(n.ill||0)+(n.nonPlay||0);
-const illBad=n=>!!(n.ill&&n.ill>=(n.legal||0));
+const illBad=n=>!!(n.ill&&n.ill>(n.legal||0));
 function blockNbs(b){const s=new Set();for(const [x,y] of b.cells){const n=cellAt(x,y).n;if(n)s.add(n);}return[...s];}
 
 function issues(){
@@ -479,7 +482,7 @@ function issues(){
     if(d.robbery&&!I.robbery.has(d.robbery))add("error",b.ax,b.ay,'Unknown robbery level "'+d.robbery+'"');
     if(d.other&&!I.robbery.has(d.other))add("error",b.ax,b.ay,'Unknown robbery level "'+d.other+'"');
     if(d.legal==null&&d.ill==null&&d.nonPlay==null)add("warn",b.ax,b.ay,"Block has no building counts (legal, illegal, not playable)");
-    if(illBad(d))add("error",b.ax,b.ay,"Block has "+d.ill+" illegal buildings, it needs fewer than its "+(d.legal||0)+" legal ones");
+    if(illBad(d))add("error",b.ax,b.ay,"Block has "+d.ill+" illegal buildings, more than its "+(d.legal||0)+" legal ones");
     if(d.illegal.length&&!d.ill)add("warn",b.ax,b.ay,"Illegal operations allowed but no illegal buildings");
     for(const c of [d.reqIll,...d.reqBuy].filter(Boolean))if(!I.businesses.has(c))add("error",b.ax,b.ay,'Unknown business "'+c+'"');
     if(d.reqIll){const it=I.businesses.get(d.reqIll);if(it&&!it.op)add("warn",b.ax,b.ay,'Business "'+d.reqIll+'" for the illegal operation allows none');if(!d.ill)add("warn",b.ax,b.ay,"Required illegal business but no illegal buildings");}
@@ -773,7 +776,7 @@ function gameplayPanel(C){
   h+='<div class="sec"><h3>Block '+esc(cellName(b.ax,b.ay))+'</h3><dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Neighborhood</dt><dd>"+(ns.length?esc(ns.join(", ")):"none yet")+"</dd><dt>Building types</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+(mk.length?"<dt>Markers</dt><dd>"+esc(mk.join(", "))+"</dd>":"")+(d.tpl?"<dt>Template</dt><dd>"+esc(tp?(tp.name||tp.code):d.tpl)+"</dd>":"")+"</dl></div>";
   if(ns.length>1)h+='<p class="note warn">This block touches '+ns.length+" neighborhoods. Add a street between them or repaint in 2. Neighborhoods.</p>";
   const cnt=(id,lab,help,v)=>'<div class="count-row"><label for="'+id+'"><b>'+lab+"</b><small>"+help+'</small></label><div class="stepper"><button type="button" data-bump="'+id+'" data-d="-1" aria-label="One less '+lab.toLowerCase()+'">−</button><input type="number" id="'+id+'" min="0" max="999" inputmode="numeric" placeholder="0" value="'+esc(v==null?"":v)+'"><button type="button" data-bump="'+id+'" data-d="1" aria-label="One more '+lab.toLowerCase()+'">+</button></div></div>';
-  h+='<div class="sec"><h3>Buildings on this block</h3><div>'+cnt("f-legal","Legal","Businesses the player can buy",d.legal)+cnt("f-ill","Illegal","Places for an illegal operation",d.ill)+cnt("f-np","Not playable","Background buildings",d.nonPlay)+'</div><p id="f-total" style="font-size:12.5px" class="'+(illBad(d)?"note warn":"muted")+'">'+(illBad(d)?"Illegal has to be less than legal.":blockTotal(d)+" buildings in total. Illegal has to be less than legal.")+"</p></div>";
+  h+='<div class="sec"><h3>Buildings on this block</h3><div>'+cnt("f-legal","Legal","Businesses the player can buy",d.legal)+cnt("f-ill","Illegal","Places for an illegal operation",d.ill)+cnt("f-np","Not playable","Background buildings",d.nonPlay)+'</div><p id="f-total" style="font-size:12.5px" class="'+(illBad(d)?"note warn":"muted")+'">'+(illBad(d)?"Illegal can't be more than legal.":blockTotal(d)+" buildings in total. Illegal can't be more than legal.")+"</p></div>";
   const bz=list("businesses");
   const bname=x=>esc((x.name||x.code)+(x.op?" · "+nameOf("operations",x.op):"")+(x.recruit?" · recruits":""));
   h+='<div class="sec"><h3>Businesses on this block</h3>';
@@ -781,7 +784,7 @@ function gameplayPanel(C){
   else{
     h+='<div class="field"><label for="f-reqill">Required illegal business (0 or 1)</label><select id="f-reqill"><option value="">None</option>'+bz.filter(x=>x.op).map(x=>'<option value="'+esc(x.code)+'"'+(d.reqIll===x.code?" selected":"")+">"+bname(x)+"</option>").join("")+"</select></div>";
     h+='<div class="field"><span class="lab">Required to be purchased</span><div class="checks">'+bz.filter(x=>!x.op).map(x=>'<label><input type="checkbox" data-buy="'+esc(x.code)+'"'+(d.reqBuy.indexOf(x.code)>=0?" checked":"")+">"+bname(x)+"</label>").join("")+"</div></div>";
-    h+='<p class="muted" style="font-size:12.5px">'+Math.max(0,(d.legal||0)-d.reqBuy.length)+" legal buildings get a random business of the same wealth.</p>";
+    h+='<p class="muted" style="font-size:12.5px">'+Math.max(0,(d.legal||0)-d.reqBuy.length)+" legal buildings get a random business.</p>";
   }
   h+="</div>";
   h+='<div class="sec"><h3>Illegal operations and robbery</h3>';
@@ -808,7 +811,7 @@ function saveBlock(){
   pushUndo();
   if(bd){for(const k of bd.legacy)delete st.d.blocks[k];delete st.d.blocks[bd.key];}
   st.d.blocks[b.anchor]=d;save();renderMap();renderSide();renderToolbar();
-  const tot=$("#f-total");if(tot){tot.className=illBad(d)?"note warn":"muted";tot.textContent=illBad(d)?"Illegal has to be less than legal.":blockTotal(d)+" buildings in total. Illegal has to be less than legal.";}
+  const tot=$("#f-total");if(tot){tot.className=illBad(d)?"note warn":"muted";tot.textContent=illBad(d)?"Illegal can't be more than legal.":blockTotal(d)+" buildings in total. Illegal can't be more than legal.";}
 }
 function checkPanel(){
   if(!st.d.cfg)return"<h2>Check</h2><p>Set up the lists in Config first.</p>";
@@ -982,7 +985,7 @@ const CFG_TABS=[
   {id:"terrain",group:"Map",label:"Ground",lists:["terrain"],title:"Ground types",text:"What each cell is made of. Buildable lots are where buildings go; the first row fills empty cells."},
   {id:"streets",group:"Map",label:"Streets",lists:["streets"],title:"Street types",text:"Streets run on the lines between cells."},
   {id:"buildings",group:"Map",label:"Buildings",lists:["buildings"],title:"Building types",text:"The type of building on each lot. Unity picks the 3D models for each code."},
-  {id:"templates",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Legal, illegal and not playable say how many buildings Unity puts on it; illegal has to be less than legal."},
+  {id:"templates",group:"Map",label:"Block templates",lists:["templates"],title:"Block templates",text:"Ready-made blocks to place anywhere in 6. Gameplay. Size is in cells. Legal, illegal and not playable say how many buildings Unity puts on it; illegal can't be more than legal."},
   {id:"markers",group:"Map",label:"Markers",lists:["markers"],title:"Markers",text:"Special spots on a lot: HQs and recruitment sites. PLY, G1, G2, G3 and REC are read by Unity, keep those codes."},
   {id:"areas",group:"People and places",label:"Neighborhoods",lists:["neighborhoods","districts"],title:"Neighborhoods and districts",text:"Each neighborhood becomes its own scene in Unity, named after it."},
   {id:"owners",group:"People and places",label:"Owners",lists:["owners"],title:"Owners",text:"Who holds each block when the game starts. Kind is what the game uses. Which gang each owner is gets set in Unity."},
@@ -990,6 +993,7 @@ const CFG_TABS=[
   {id:"rules",group:"Gameplay",label:"Operations and robbery",lists:["operations","robbery"],title:"Operations and robbery",text:"The lists used by businesses and by 6. Gameplay."},
   {id:"values",area:"values",group:"Buildings",label:"Default values",lists:[],title:"Default values",text:"Every building starts with these. A business can change them in Business values, and a block can change them again in 6. Gameplay. Empty means not set."},
   {id:"bizvalues",area:"values",group:"Buildings",label:"Business values",lists:[],title:"Business values",text:"Values per business. Empty cells use the default, shown in grey."},
+  {id:"demand",area:"values",group:"Neighborhoods",label:"Wealth and demand",lists:[],title:"Wealth and demand",text:"How rich each neighborhood is (1 to 5) and how much of each product its people buy a day. This goes to the neighborhood and its demand scriptables in Unity. Empty means Unity keeps what it has."},
   {id:"nbdata",area:"values",group:"Neighborhoods",label:"Neighborhood data",lists:[],title:"Neighborhood data",text:"What each neighborhood scriptable gets in Unity. Empty means Unity keeps what it has. Citizen mix is in percent and adds up to 100, or leave all four empty."}
 ];
 const ADD_LABEL={terrain:"ground type",streets:"street type",buildings:"building type",markers:"marker",districts:"district",neighborhoods:"neighborhood",owners:"owner",operations:"operation",robbery:"robbery level",businesses:"business",templates:"template"};
@@ -1027,7 +1031,7 @@ function draftErrors(){
     if(c&&seen[c]==null)seen[c]=i;
     if(!m&&L.k==="businesses"&&it.op&&!(d.operations||[]).some(o=>o.code===it.op))m="Its illegal operation is not in the list anymore.";
     if(!m&&L.k==="neighborhoods"&&it.district&&!(d.districts||[]).some(o=>o.code===it.district))m="Its district is not in the list anymore.";
-    if(!m&&L.k==="templates"){const w=+it.w,h=+it.h;if(!(w>=1&&w<=20&&h>=1&&h<=20))m="Width and height go from 1 to 20 cells.";else if(+it.ill>0&&+it.ill>=(+it.legal||0))m="Illegal has to be less than legal.";else if(it.building&&!(d.buildings||[]).some(o=>o.code===it.building))m="Its building type is not in the list anymore.";}
+    if(!m&&L.k==="templates"){const w=+it.w,h=+it.h;if(!(w>=1&&w<=20&&h>=1&&h<=20))m="Width and height go from 1 to 20 cells.";else if(+it.ill>(+it.legal||0))m="Illegal can't be more than legal.";else if(it.building&&!(d.buildings||[]).some(o=>o.code===it.building))m="Its building type is not in the list anymore.";}
     if(m)e[L.k+":"+i]=m;});}
   (d.neighborhoods||[]).forEach((n,i)=>{const mix=["mixPoor","mixAverage","mixRich","mixWorker"].map(f=>n[f]);if(mix.some(v=>v!=null)){const s=mix.reduce((a,v)=>a+(+v||0),0);if(s!==100)e["nbdata:"+i]="Citizen mix adds up to "+s+", it needs 100.";}});
   if((d.terrain||[]).length&&!d.terrain.some(x=>x.lot))e["terrain:lot"]='Tick "Buildable" on at least one ground type.';
@@ -1040,7 +1044,7 @@ function cfgCols(k){
   if(k==="neighborhoods")return[code,name,{h:"District",w:"minmax(120px,1fr)"},color,used,act];
   if(k==="owners")return[code,name,{h:"Kind in the game",w:"minmax(140px,1fr)"},color,used,act];
   if(k==="templates")return[code,name,{h:"Width",w:"72px"},{h:"Height",w:"72px"},{h:"Legal",w:"72px"},{h:"Illegal",w:"72px"},{h:"Not playable",w:"80px"},{h:"Building type (optional)",w:"minmax(150px,1fr)"},used,act];
-  if(k==="businesses")return[code,name,{h:"Type",w:"minmax(100px,1fr)"},{h:"Wealth",w:"110px"},{h:"Illegal operation",w:"minmax(150px,1.3fr)"},{h:"Recruits",w:"84px"},used,act];
+  if(k==="businesses")return[code,name,{h:"Type",w:"minmax(100px,1fr)"},{h:"Illegal operation",w:"minmax(150px,1.3fr)"},{h:"Recruits",w:"84px"},used,act];
   if(LISTS.find(l=>l.k===k).color)return[code,name,color,used,act];
   return[code,name,used,act];
 }
@@ -1067,7 +1071,7 @@ function cfgTable(k,errs,u){
     else if(k==="neighborhoods")cells+=sel("district","District",[["","No district"]].concat((d.districts||[]).map(x=>[x.code,(x.name||x.code)])))+clr;
     else if(k==="templates")cells+=nmb("w","Width")+nmb("h","Height")+nmb("legal","Legal")+nmb("ill","Illegal")+nmb("other","Not playable")+sel("building","Building type",[["","Keep what is painted"]].concat((d.buildings||[]).map(x=>[x.code,x.code+" · "+(x.name||"")])));
     else if(k==="owners")cells+=sel("kind","Kind in the game",OWNER_KINDS.map(x=>[x,x]))+clr;
-    else if(k==="businesses")cells+=txt("type","Type","","Bakery")+sel("wealth","Wealth",WEALTH.map(x=>[x,x]))+sel("op","Illegal operation",[["","None"]].concat((d.operations||[]).map(o=>[o.code,o.name||o.code])))+chk("recruit","Recruits","Recruits");
+    else if(k==="businesses")cells+=txt("type","Type","","Bakery")+sel("op","Illegal operation",[["","None"]].concat((d.operations||[]).map(o=>[o.code,o.name||o.code])))+chk("recruit","Recruits","Recruits");
     else if(L.color)cells+=clr;
     cells+='<div data-label="Used"><span class="used'+(n?" on":"")+'" title="'+(n?"Used "+n+" times on the map":"Not used on the map")+'">'+(n||"–")+"</span></div>";
     cells+='<div class="act">'+(k==="businesses"||k==="templates"?'<button class="ibtn" type="button" data-dup="'+i+'" data-dl="'+k+'" title="Duplicate" aria-label="Duplicate">⧉</button>':"")+'<button class="ibtn del" type="button" data-del="'+k+'" data-i="'+i+'" title="Remove" aria-label="Remove">✕</button></div>';
@@ -1093,11 +1097,36 @@ function bizValuesTab(d){
   return'<div class="row"><input type="search" class="filter" id="cfg-filter" placeholder="Filter by code, name or type" value="'+esc(st.cfgFilter||"")+'" aria-label="Filter businesses"></div>'+plainTable([{h:"Business",w:"minmax(170px,1.6fr)"}].concat(VALUES.map(v=>({h:v.label,w:"minmax(96px,1fr)"}))),rows,(d.businesses||[]).length?"No business matches the filter.":"Add businesses first, in the Businesses tab.");
 }
 function nbDataTab(d,errs){
-  const sel=(i,f,lab,opts,v)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+o+"</option>").join("")+"</select></div>";
+  const sel=(i,f,lab,opts,v)=>'<div data-label="'+lab+'"><select id="cf-nd-'+i+"-"+f+'" data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'" aria-label="'+lab+'"><option value="">Keep</option>'+opts.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o]||o)+"</option>").join("")+"</select></div>";
   const nb=(i,f,lab,v)=>numIn("cf-nd-"+i+"-"+f,'data-list="neighborhoods" data-i="'+i+'" data-f="'+f+'"',lab,v,"");
   const cols=[{h:"Neighborhood",w:"minmax(150px,1.5fr)"},{h:"Type",w:"minmax(116px,1fr)"},{h:"Wealth",w:"minmax(104px,1fr)"},{h:"Citizens on the street",w:"88px"},{h:"Poor %",w:"72px"},{h:"Average %",w:"72px"},{h:"Rich %",w:"72px"},{h:"Worker %",w:"72px"},{h:"Recruits available",w:"88px"},{h:"Starting intel",w:"76px"},{h:"Level for Stash or HQ",w:"88px"}];
   const rows=(d.neighborhoods||[]).map((n,i)=>({err:errs["nbdata:"+i],html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+sel(i,"nbType","Type",NB_TYPES,n.nbType)+sel(i,"wealth","Wealth",NB_WEALTH,n.wealth)+nb(i,"population","Citizens on the street",n.population)+nb(i,"mixPoor","Poor %",n.mixPoor)+nb(i,"mixAverage","Average %",n.mixAverage)+nb(i,"mixRich","Rich %",n.mixRich)+nb(i,"mixWorker","Worker %",n.mixWorker)+nb(i,"candidates","Recruits available",n.candidates)+nb(i,"intel","Starting intel",n.intel)+nb(i,"installLevel","Level for Stash or HQ",n.installLevel)}));
   return plainTable(cols,rows,"Add neighborhoods first, in the Neighborhoods tab.");
+}
+function demandTab(d){
+  const wsel=(i,v)=>'<div data-label="Wealth"><select id="cf-dm-'+i+'-wealth" data-list="neighborhoods" data-i="'+i+'" data-f="wealth" aria-label="Wealth"><option value="">Keep</option>'+NB_WEALTH.map(o=>'<option value="'+o+'"'+(v===o?" selected":"")+">"+esc(NB_WEALTH_LABEL[o])+"</option>").join("")+"</select></div>";
+  const rows=(d.neighborhoods||[]).map((n,i)=>({html:'<div class="ro" title="'+esc(n.name||"")+'"><b>'+esc(n.code)+"</b>"+esc(n.name||"")+"</div>"+wsel(i,n.wealth)+DEMAND.map(p=>numIn("cf-dm-"+i+"-"+p.k,'data-list="neighborhoods" data-i="'+i+'" data-f="'+p.k+'"',p.label,n[p.k],"")).join("")}));
+  return'<div class="row"><button class="btn" type="button" id="demand-paste">Paste from a spreadsheet</button><span class="muted" style="font-size:12.5px">Copy the rows from Excel or Google Sheets: name, wealth, then the four products.</span></div>'
+    +plainTable([{h:"Neighborhood",w:"minmax(170px,1.6fr)"},{h:"Wealth",w:"minmax(130px,1fr)"}].concat(DEMAND.map(p=>({h:p.label+" a day",w:"minmax(96px,1fr)"}))),rows,"Add neighborhoods first, in Config.");
+}
+function nameKey(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"").replace(/(.)\1+/g,"$1");}
+function openDemandPaste(){
+  const d=ensureDraft();const empty=(d.neighborhoods||[]).every(n=>DEMAND.every(p=>n[p.k]==null));
+  openModal('<h2>Paste from a spreadsheet</h2><p>One row per neighborhood: name, wealth (1 to 5), then daily demand for bud bags, joint packs, meth bags and crystal meth bags. Header rows are skipped.</p><textarea id="demand-text" spellcheck="false">'+esc(empty?MARTIN_DEMAND.replace(/\\t/g,"\t").replace(/\\n/g,"\n"):"")+'</textarea>'+(empty?'<p class="note">Filled with Martin\'s table from 11 Nov. Check it and press Fill.</p>':"")+'<p class="note warn" id="demand-msg" hidden></p><div class="row"><button class="btn primary" type="button" id="demand-apply">Fill the table</button><button class="btn" type="button" data-modal-close>Cancel</button></div>');
+}
+function applyDemandPaste(){
+  const d=ensureDraft();const txt=($("#demand-text")||{}).value||"";const byName={};
+  (d.neighborhoods||[]).forEach(n=>{byName[nameKey(n.name)]=n;byName[nameKey(n.code)]=n;});
+  let filled=0;const unknown=[];
+  for(const line of txt.split(/\r?\n/)){
+    const cells=line.split(/\t|\s{2,}|\|/).map(s=>s.trim()).filter(Boolean);if(cells.length<2)continue;
+    const nums=cells.slice(1).filter(c=>/^-?\d+(\.\d+)?$/.test(c)).map(Number);if(!nums.length)continue;
+    const n=byName[nameKey(cells[0])];if(!n){unknown.push(cells[0]);continue;}
+    let demand=nums;if(nums.length===5||nums.length===1){const w=Math.round(nums[0]);if(w>=1&&w<=5)n.wealth=NB_WEALTH[w-1];demand=nums.slice(1);}
+    DEMAND.forEach((p,j)=>{if(demand[j]!=null)n[p.k]=Math.max(0,demand[j]);});filled++;
+  }
+  if(!filled){const m=$("#demand-msg");m.textContent="No row matched a neighborhood."+(unknown.length?" Not found: "+unknown.join(", ")+".":"");m.hidden=false;return;}
+  closeModal();markDirty();renderConfig();toast(filled+" neighborhoods filled. Press Save values to keep it."+(unknown.length?" Not found: "+unknown.join(", ")+".":""));
 }
 function renderConfig(){
   const root=$("#cfg-root");
@@ -1118,6 +1147,7 @@ function renderConfig(){
   }else if(tab.id==="values")main+=valuesTab(d);
   else if(tab.id==="bizvalues")main+=bizValuesTab(d);
   else if(tab.id==="nbdata")main+=nbDataTab(d,errs);
+  else if(tab.id==="demand")main+=demandTab(d);
   else for(const k of tab.lists)main+=cfgTable(k,errs,u);
   const nErr=Object.keys(errs).length;
   const state=st.draftMsg?st.draftMsg:nErr?nErr+(nErr===1?" problem":" problems")+" to fix before saving":st.draftDirty?"Unsaved changes":"All changes saved";
@@ -1156,7 +1186,7 @@ function saveConfig(){
 function pairs(o){return Object.keys(isObj(o)?o:{}).filter(k=>o[k]!=null&&o[k]!==""&&isFinite(+o[k])).map(k=>({key:k,value:+o[k]}));}
 function pick(o,keys){const r={};for(const k of keys)if(o[k]!=null&&o[k]!=="")r[k]=o[k];return r;}
 function economyExport(){
-  const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"];
+  const vk=VALUES.map(v=>v.k);const nk=["population","mixPoor","mixAverage","mixRich","mixWorker","candidates","intel","installLevel"].concat(DEMAND.map(p=>p.k));
   return{defaults:pairs(st.d.cfg.defaults),
     businesses:list("businesses").map(b=>({code:b.code,values:pairs(pick(b,vk))})).filter(b=>b.values.length),
     neighborhoods:list("neighborhoods").map(n=>({code:n.code,type:n.nbType||"",wealth:n.wealth||"",numbers:pairs(pick(n,nk))})).filter(n=>n.type||n.wealth||n.numbers.length)};
@@ -1208,12 +1238,14 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
-  const t=e.target.closest("#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("#demand-paste,#demand-apply,#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
   if(t.dataset.bump){const el=document.getElementById(t.dataset.bump);if(!el)return;el.value=Math.max(0,(parseInt(el.value,10)||0)+(+t.dataset.d));el.dispatchEvent(new Event("change",{bubbles:true}));return;}
   if(t.id==="sel-btn"){st.selMode=!st.selMode;st.pasting=false;renderToolbar();renderHover();toast(st.selMode?"Drag over the map to select an area, then Copy.":"Select is off.");return;}
   if(t.id==="copy-btn"){copyArea();return;}
   if(t.id==="fill-btn"){fillArea();return;}
+  if(t.id==="demand-paste"){openDemandPaste();return;}
+  if(t.id==="demand-apply"){applyDemandPaste();return;}
   if(t.id==="paste-btn"){st.pasting=!st.pasting&&!!st.clip;st.selMode=false;renderToolbar();renderHover();if(st.pasting)toast("Click the top-left cell where it goes. Esc cancels.");return;}
   if(t.id==="tpl-starter"){if(!st.d.cfg){toast("Set up Config first.");return;}pushUndo();st.d.cfg=Object.assign({},st.d.cfg,{templates:clone(STARTER)});rebuildIdx();st.draft=null;save();render();toast("3 templates added. Edit them in Config.");return;}
   if(t.dataset.gmode){st.gmode=t.dataset.gmode;renderPanel();renderHover();return;}
@@ -1241,7 +1273,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();renderToolbar();return;}
   if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
-  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:"",name:"",type:"",wealth:"Medium",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
+  if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:"",name:"",type:"",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
   if(t.dataset.del){const k=t.dataset.del,i=+t.dataset.i,it=st.draft[k][i];const n=it&&it._o?(usage()[k][it._o]||0):0;
     if(n&&!confirm('"'+(it.code||"")+'" is used '+n+" times on the map. Remove it anyway? Those places lose it."))return;
     st.draft[k].splice(i,1);markDirty();renderConfig();return;}
