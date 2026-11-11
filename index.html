@@ -230,56 +230,28 @@ button,input,select,textarea{font:inherit;color:inherit}
   .panel{border-left:0;border-top:1px solid var(--line)}
   .sheet{min-height:420px}
 }
-body{font-size:15px;line-height:1.5}
-:root{--muted:#b3bacb;--label:#a9b1c4}
-.btn{min-height:38px;padding:8px 14px}
-.btn.sm{min-height:34px;padding:6px 11px;font-size:14px}
+body{font-size:14px;line-height:1.45}
+:root{--muted:#b0b7c8;--label:#a3abbf}
+.btn{min-height:34px}
+.btn.sm{min-height:30px}
 .btn.icon{min-width:auto}
-.step .lbl{font-size:15px}
-.step .meta{font-size:13px}
-.side .group,.cfg-tabs .group{font-size:13px}
-.toolbar .hint{font-size:14px}
-.zoom button{padding:6px 12px;font-size:15px}
-.zoom span{font-size:13px}
-.caption{font-size:14px}
-.panel{gap:16px}
-.panel p{font-size:15px}
-.panel h3{font-size:15px;color:var(--ink);letter-spacing:.06em}
-.note{font-size:14px;padding:10px 12px}
-.field label,.field .lab{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink)}
-.field input[type="number"],.field select,.field textarea,.field input[type="text"],.field input[type="email"],.field input[type="password"]{padding:9px 10px;font-size:15px}
-.checks{gap:7px 12px}
-.checks label{font-size:14px}
-.checks input{width:18px;height:18px}
-.stat b{font-size:19px}
-.stat span{font-size:12.5px;text-transform:none;letter-spacing:0}
-.sw{padding:8px 9px;grid-template-columns:22px 76px 1fr auto}
-.code{font-size:13px}
-.nm{font-size:14px}
-.sw .cnt{font-size:12.5px}
-.toast{font-size:15px;padding:11px 18px}
-.kv{font-size:14px}
-.kv dd{font-size:13.5px}
-.seg button{padding:9px 10px;font-size:14.5px}
-.cfg-tab{font-size:15px;padding:10px 12px}
-.cfg-head p{font-size:15px}
-.cfg-sub p{font-size:14px}
-.trow.head{font-size:12.5px;text-transform:none;letter-spacing:0;line-height:1.25}
-.trow input[type="text"],.trow input[type="number"],.trow select{font-size:14px;padding:7px 9px}
-.issue{font-size:14px;padding:9px 11px}
-.sev{font-size:11.5px}
+.panel h3{color:var(--ink)}
+.field label,.field .lab{font-size:12.5px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.checks input{width:16px;height:16px}
+.stat span{font-size:11.5px;text-transform:none;letter-spacing:0}
+.trow.head{font-size:12px;text-transform:none;letter-spacing:0;line-height:1.25}
 .count-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
 .count-row label{cursor:pointer}
-.count-row b{display:block;font-size:15px}
-.count-row small{display:block;color:var(--muted);font-size:13px;line-height:1.3}
-.stepper{display:inline-grid;grid-template-columns:42px 60px 42px;border:1px solid var(--line);border-radius:8px;overflow:hidden;height:42px}
-.stepper button{border:0;background:var(--surface-2);font-size:21px;cursor:pointer;line-height:1}
+.count-row b{display:block;font-size:14px}
+.count-row small{display:block;color:var(--muted);font-size:12px;line-height:1.3}
+.stepper{display:inline-grid;grid-template-columns:34px 52px 34px;border:1px solid var(--line);border-radius:7px;overflow:hidden;height:34px}
+.stepper button{border:0;background:var(--surface-2);font-size:17px;cursor:pointer;line-height:1}
 .stepper button:hover{background:var(--accent-soft)}
-.stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:17px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
+.stepper input{border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--surface);text-align:center;font-family:var(--font-mono);font-size:15px;font-weight:600;width:100%;min-width:0;-moz-appearance:textfield;appearance:textfield}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #f-total{margin-top:2px}
 @media (max-width:1440px){.toolbar .hint{display:none}}
-@media (min-width:1181px){.app{grid-template-columns:240px minmax(0,1fr) 370px}}
+@media (min-width:1181px){.app{grid-template-columns:232px minmax(0,1fr) 350px}}
 @media (min-width:961px) and (max-width:1180px){.app{grid-template-columns:214px minmax(0,1fr) 336px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -299,7 +271,7 @@ body{font-size:15px;line-height:1.5}
   <nav class="side" id="side" aria-label="Steps"></nav>
   <section class="stage">
     <div class="toolbar"><span class="title" id="tb-title"></span><span class="hint" id="tb-hint"></span><span class="spacer"></span>
-      <div class="tb-tools" role="group" aria-label="Copy and paste"><button class="btn sm" type="button" id="sel-btn" aria-pressed="false" title="Drag over the map to select an area. Shift+drag works too.">Select area</button><button class="btn sm" type="button" id="copy-btn" title="Copy the selected area (Ctrl+C)">Copy</button><button class="btn sm" type="button" id="paste-btn" aria-pressed="false" title="Paste, then click the top-left cell (Ctrl+V pastes where you point)">Paste</button></div>
+      <div class="tb-tools" role="group" aria-label="Copy and paste"><button class="btn sm" type="button" id="sel-btn" aria-pressed="false" title="Drag over the map to select an area. Shift+drag works too.">Select area</button><button class="btn sm" type="button" id="fill-btn" title="Paint every cell in the selected area with the current brush">Fill area</button><button class="btn sm" type="button" id="copy-btn" title="Copy the selected area (Ctrl+C)">Copy</button><button class="btn sm" type="button" id="paste-btn" aria-pressed="false" title="Paste, then click the top-left cell (Ctrl+V pastes where you point)">Paste</button></div>
       <div class="zoom" role="group" aria-label="Zoom"><button type="button" data-zoom="-1" aria-label="Zoom out">&minus;</button><span id="zoom-val">100%</span><button type="button" data-zoom="1" aria-label="Zoom in">+</button><button type="button" data-zoom="0" title="Fit to screen">Fit</button></div>
     </div>
     <div class="sheet" id="sheet"><svg id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map grid"></svg></div>
@@ -504,9 +476,21 @@ function applyEdge(k){
 }
 
 let toastTimer=null;
-function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},4500);}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},3800);}
 
 function areaRect(){const a=st.area;if(!a)return null;return{x0:Math.min(a.ax,a.bx),y0:Math.min(a.ay,a.by),x1:Math.max(a.ax,a.bx),y1:Math.max(a.ay,a.by)};}
+function fillArea(){
+  const r=areaRect();if(!r){toast("Select an area first: press Select area and drag over the map.");return;}
+  const bl=brushList();const b=currentBrush();
+  if(!bl||!bl.field||b===undefined){toast("Fill works in Ground, Neighborhoods, Buildings and Owners. Pick one of those steps first.");return;}
+  const f=bl.field;if(f==="t"&&!b)return;const val=b===""?null:b;
+  pushUndo();let n=0,skip=0;
+  for(let y=r.y0;y<=r.y1;y++)for(let x=r.x0;x<=r.x1;x++){
+    if((f==="b"||f==="m")&&val&&!isLot(x,y)){skip++;continue;}
+    if((cellAt(x,y)[f]||null)===val)continue;setCell(key(x,y),f,val);n++;}
+  if(!n){st.undo.pop();toast("Nothing to change: the area already has that."+(skip?" Cells that are not lots were skipped.":""));return;}
+  save();render();toast((val?"Filled "+n+" cells with "+nameOf(bl.k,val):"Cleared "+n+" cells")+(skip?". "+skip+" cells are not lots and were skipped.":".")+" Undo takes it back.");
+}
 function copyArea(){
   const r=areaRect();if(!r){toast("Select an area first: press Select and drag over the map.");return;}
   const c={w:r.x1-r.x0+1,h:r.y1-r.y0+1,cells:{},edges:{},blocks:{}};
@@ -570,7 +554,7 @@ function onMove(e){
   }else renderHover();
   renderCaption();
 }
-function onUp(){if(!stroke)return;const s=stroke;stroke=null;if(s.area){renderToolbar();return;}if(s.pushed){save();render();}}
+function onUp(){if(!stroke)return;const s=stroke;stroke=null;if(s.area){renderToolbar();const r=areaRect();if(r)toast("Area selected: "+(r.x1-r.x0+1)+"×"+(r.y1-r.y0+1)+" cells. Fill it with the brush, or Copy it.");return;}if(s.pushed){save();render();}}
 
 function stepMeta(id,C){
   if(!st.d.cfg)return"";
@@ -621,7 +605,7 @@ function renderMap(){
     o.push('<rect x="'+px+'" y="'+py+'" width="'+S+'" height="'+S+'" fill="'+esc(t?color("terrain",t,"#9aa5ae"):"#c9d1d8")+'" stroke="rgba(0,0,0,.12)" stroke-width="1"/>');
     if(owners&&c.o){const oc=color("owners",c.o,"#888");o.push('<rect x="'+(px+3)+'" y="'+(py+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="'+esc(oc)+'" fill-opacity=".8" rx="3"/><text x="'+(px+S/2)+'" y="'+(py+S/2+4)+'" font-size="9.5" font-weight="600" text-anchor="middle" fill="'+(lum(oc)>.6?"#15202a":"#ffffff")+'" style="font-size:'+(c.o.length>4?9:11)+'px">'+esc(c.o)+"</text>");}
     else if(areas&&c.n){const nc=color("neighborhoods",c.n,"#888");o.push('<rect x="'+(px+3)+'" y="'+(py+3)+'" width="'+(S-6)+'" height="'+(S-6)+'" fill="'+esc(nc)+'" fill-opacity=".72" rx="3"/><text x="'+(px+S/2)+'" y="'+(py+S/2+4)+'" font-size="'+(c.n.length>4?9:11)+'" font-weight="600" text-anchor="middle" fill="'+(lum(nc)>.6?"#15202a":"#ffffff")+'">'+esc(c.n)+"</text>");}
-    else if(c.b){const bc=color("buildings",c.b,"#bbbbbb");o.push('<rect x="'+(px+6)+'" y="'+(py+6)+'" width="'+(S-12)+'" height="'+(S-12)+'" fill="'+esc(bc)+'" stroke="rgba(0,0,0,.45)" stroke-width="1" rx="2"/><text x="'+(px+S/2)+'" y="'+(py+S/2+3.5)+'" font-size="'+(c.b.length>4?8.5:12)+'" font-weight="600" text-anchor="middle" fill="'+(lum(bc)>.6?"#15202a":"#ffffff")+'">'+esc(c.b)+"</text>");}
+    else if(c.b){const bc=color("buildings",c.b,"#bbbbbb");o.push('<rect x="'+(px+6)+'" y="'+(py+6)+'" width="'+(S-12)+'" height="'+(S-12)+'" fill="'+esc(bc)+'" stroke="rgba(0,0,0,.45)" stroke-width="1" rx="2"/><text x="'+(px+S/2)+'" y="'+(py+S/2+3.5)+'" font-size="'+(c.b.length>4?7.5:10.5)+'" font-weight="600" text-anchor="middle" fill="'+(lum(bc)>.6?"#15202a":"#ffffff")+'">'+esc(c.b)+"</text>");}
     if(c.o&&!owners&&!areas){o.push('<rect x="'+(px+6)+'" y="'+(py+S-9)+'" width="'+(S-12)+'" height="4" fill="'+esc(color("owners",c.o,"#888"))+'" rx="1"/>');}
     if(c.m){const mc=color("markers",c.m,"#333");o.push('<circle cx="'+(px+S-9)+'" cy="'+(py+9)+'" r="8" fill="'+esc(mc)+'" stroke="#fff" stroke-width="1.5"/><text x="'+(px+S-9)+'" y="'+(py+11.5)+'" font-size="'+(c.m.length>2?5.5:7)+'" font-weight="600" text-anchor="middle" fill="'+(lum(mc)>.6?"#15202a":"#ffffff")+'">'+esc(c.m)+"</text>");}
   }
@@ -635,7 +619,7 @@ function renderMap(){
   if(st.step==="gameplay"){
     const B=computeBlocks();
     for(const b of B.blocks){const bd=blockData(b);if(!bd)continue;const n=normBlock(bd.data);const tot=blockTotal(n);const cx=OFF+b.ax*S+13,cy=OFF+b.ay*S+13;
-      o.push('<circle cx="'+cx+'" cy="'+cy+'" r="'+(tot?11:5)+'" fill="'+(illBad(n)?"var(--danger)":"var(--accent)")+'" stroke="#fff" stroke-width="1.2"/>'+(tot?'<text x="'+cx+'" y="'+(cy+4)+'" font-size="'+(tot>99?8.5:11)+'" font-weight="700" text-anchor="middle" fill="#060d2c">'+tot+"</text>":""));}
+      o.push('<circle cx="'+cx+'" cy="'+cy+'" r="'+(tot?10:5)+'" fill="'+(illBad(n)?"var(--danger)":"var(--accent)")+'" stroke="#fff" stroke-width="1.2"/>'+(tot?'<text x="'+cx+'" y="'+(cy+4)+'" font-size="'+(tot>99?8:10)+'" font-weight="700" text-anchor="middle" fill="#060d2c">'+tot+"</text>":""));}
     const sb=B.blocks.find(b=>b.anchor===st.sel);
     if(sb){const inB=new Set(sb.cells.map(([x,y])=>key(x,y)));
       for(const [x,y] of sb.cells){const px=OFF+x*S,py=OFF+y*S;o.push('<rect x="'+px+'" y="'+py+'" width="'+S+'" height="'+S+'" fill="var(--accent)" fill-opacity=".2"/>');
@@ -671,7 +655,7 @@ function renderCaption(){
   if(cl.o)parts.push("<span>Owner: "+esc(nameOf("owners",cl.o))+"</span>");
   c.innerHTML=parts.join("");
 }
-function renderToolbar(){const s=STEPS.find(x=>x.id===st.step)||TOOLS.find(x=>x.id===st.step);$("#tb-title").textContent=(s.n?s.n+". ":"")+s.label;$("#tb-hint").textContent=s.hint;$("#undo").disabled=!st.undo.length;$("#redo").disabled=!st.redo.length;$("#sel-btn").setAttribute("aria-pressed",String(!!st.selMode));$("#copy-btn").disabled=!st.area;$("#paste-btn").disabled=!st.clip;$("#paste-btn").setAttribute("aria-pressed",String(!!st.pasting));}
+function renderToolbar(){const s=STEPS.find(x=>x.id===st.step)||TOOLS.find(x=>x.id===st.step);$("#tb-title").textContent=(s.n?s.n+". ":"")+s.label;$("#tb-hint").textContent=s.hint;$("#undo").disabled=!st.undo.length;$("#redo").disabled=!st.redo.length;$("#sel-btn").setAttribute("aria-pressed",String(!!st.selMode));const fb=brushList(),fv=currentBrush();const fok=!!(st.area&&fb&&fb.field&&fv!==undefined);$("#fill-btn").disabled=!fok;$("#fill-btn").textContent=fok?(fv?"Fill area: "+fv:"Clear area"):"Fill area";$("#copy-btn").disabled=!st.area;$("#paste-btn").disabled=!st.clip;$("#paste-btn").setAttribute("aria-pressed",String(!!st.pasting));}
 
 function swatches(bl){
   const cur=currentBrush();const cnt={};
@@ -1155,11 +1139,12 @@ function render(){renderSide();renderToolbar();renderMap();renderPanel();renderC
 
 document.addEventListener("click",e=>{
   if(e.target.matches&&e.target.matches("[data-modal-bg]")){if(cloud.first||cloud.conflict)return;closeModal();return;}
-  const t=e.target.closest("[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
+  const t=e.target.closest("#fill-btn,[data-bump],#sel-btn,#copy-btn,#paste-btn,#tpl-starter,[data-gmode],[data-tpl],[data-cfgopen],#lg-forgot,[data-unmember],#cloud-btn,#cloud-signin,#cloud-signout,#cloud-retry,#cloud-version,#cloud-history,[data-restore],#cloud-use-shared,#cloud-upload-mine,#cloud-load-theirs,#cloud-keep-mine,[data-cfgtab],[data-dup],#cfg-close,#cfg-close-save,#cfg-close-discard,[data-step],[data-brush],[data-bmode],[data-add],[data-del],[data-issue],[data-zoom],[data-grow],#cfg-save,#cfg-reset,#export-btn,#export-btn2,#import-btn,#seed-btn,#undo,#redo,[data-modal-close],#modal-copy,#import-confirm");
   if(!t)return;
   if(t.dataset.bump){const el=document.getElementById(t.dataset.bump);if(!el)return;el.value=Math.max(0,(parseInt(el.value,10)||0)+(+t.dataset.d));el.dispatchEvent(new Event("change",{bubbles:true}));return;}
   if(t.id==="sel-btn"){st.selMode=!st.selMode;st.pasting=false;renderToolbar();renderHover();toast(st.selMode?"Drag over the map to select an area, then Copy.":"Select is off.");return;}
   if(t.id==="copy-btn"){copyArea();return;}
+  if(t.id==="fill-btn"){fillArea();return;}
   if(t.id==="paste-btn"){st.pasting=!st.pasting&&!!st.clip;st.selMode=false;renderToolbar();renderHover();if(st.pasting)toast("Click the top-left cell where it goes. Esc cancels.");return;}
   if(t.id==="tpl-starter"){if(!st.d.cfg){toast("Set up Config first.");return;}pushUndo();st.d.cfg=Object.assign({},st.d.cfg,{templates:clone(STARTER)});rebuildIdx();st.draft=null;save();render();toast("3 templates added. Edit them in Config.");return;}
   if(t.dataset.gmode){st.gmode=t.dataset.gmode;renderPanel();renderHover();return;}
@@ -1183,8 +1168,8 @@ document.addEventListener("click",e=>{
   if(t.id==="cfg-close-save"){closeModal();if(saveConfig())closeConfig(true);return;}
   if(t.id==="cfg-close-discard"){closeModal();closeConfig(true);return;}
   if(t.dataset.step){setStep(t.dataset.step);return;}
-  if(t.dataset.brush!==undefined){const bl=brushList();if(bl){st.brush[bl.k]=t.dataset.brush;renderPanel();}return;}
-  if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();return;}
+  if(t.dataset.brush!==undefined){const bl=brushList();if(bl){st.brush[bl.k]=t.dataset.brush;renderPanel();renderToolbar();}return;}
+  if(t.dataset.bmode){st.bmode=t.dataset.bmode;renderPanel();renderToolbar();return;}
   if(t.dataset.grow){growGrid(t.dataset.grow,+t.dataset.n);return;}
   if(t.dataset.zoom!==undefined){const z=+t.dataset.zoom;const cur=st.zoom||fitScale();st.zoom=z===0?0:Math.max(.3,Math.min(4,Math.round((cur*(z>0?1.25:0.8))*100)/100));applyZoom();return;}
   if(t.dataset.add){const L=LISTS.find(l=>l.k===t.dataset.add);st.draft[t.dataset.add].push(L.tpl?{code:"",name:"",w:1,h:1,legal:2,ill:1,other:9,building:""}:L.biz?{code:"",name:"",type:"",wealth:"Medium",op:"",recruit:false}:L.own?{code:"",name:"",kind:"Civilian",color:"#8899aa"}:L.color?{code:"",name:"",color:"#8899aa"}:{code:"",name:""});markDirty();renderConfig();const nf=document.getElementById("cf-"+t.dataset.add+"-"+(st.draft[t.dataset.add].length-1)+"-code");if(nf){nf.scrollIntoView({block:"center"});nf.focus();}return;}
