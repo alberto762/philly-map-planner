@@ -1200,7 +1200,7 @@ function filePanel(){
   let h="<h2>Save and share</h2><p>Your work is saved in this browser automatically"+(cloud.on?", and shared with the team when you are signed in":"")+". Unity reads the exported JSON.</p>"+cloudSection();
   h+='<div class="sec"><h3>Export</h3><p>Downloads the map as a JSON file. Send it to the team or put it in the repo for the Unity import.</p><div class="row"><button class="btn primary" type="button" id="export-btn2">Export JSON</button></div></div>';
   h+='<div class="sec"><h3>Import</h3><p>Opens a JSON exported from this tool. It replaces the current map. Undo brings it back.</p><div class="row"><button class="btn" type="button" id="import-btn">Choose a file</button></div></div>';
-  if(seed)h+='<div class="sec"><h3>Miro version</h3><p>The map as it was read from the Miro board'+(seed.source?" ("+esc(seed.source)+")":"")+'. Loading it replaces the current map.</p><div class="row"><button class="btn" type="button" id="seed-btn">Load the Miro version</button></div></div>';
+  if(seed)h+='<div class="sec"><h3>Miro version</h3><p>The map as it was read from the Miro board'+(seed.source?" ("+esc(seed.source)+")":"")+'. Loading it replaces the map (ground, neighborhoods, streets, lots, owners, blocks). Config and Values stay as they are.</p><div class="row"><button class="btn" type="button" id="seed-btn">Load the Miro map</button></div></div>';
   if(st.d.review&&st.d.review.length)h+='<div class="sec"><h3>To review from Miro</h3><ul class="review">'+st.d.review.map(r=>"<li>"+esc(r)+"</li>").join("")+"</ul></div>";
   return h;
 }
@@ -1642,7 +1642,7 @@ document.addEventListener("click",e=>{
   if(t.id==="cfg-reset"){st.draft=null;st.draftDirty=false;st.draftMsg="";renderConfig();renderSide();return;}
   if(t.id==="export-btn"||t.id==="export-btn2"){doExport();return;}
   if(t.id==="import-btn"){$("#import-file").click();return;}
-  if(t.id==="seed-btn"){openModal('<h2>Load the Miro version</h2><p>This replaces the current map with the one read from Miro. Undo brings your map back.</p><div class="row"><button class="btn primary" type="button" id="seed-confirm">Load it</button><button class="btn" type="button" data-modal-close>Cancel</button></div>');document.getElementById("seed-confirm").onclick=()=>replaceWith(seed,"Miro version loaded");return;}
+  if(t.id==="seed-btn"){openModal('<h2>Load the Miro map</h2><p>This puts back the map exactly as it is on the Miro board: ground, neighborhoods, streets, lots, owners and blocks. Config and Values (legal, illegal, demand, block types) stay. Undo and Versions bring the current map back.</p><div class="row"><button class="btn primary" type="button" id="seed-confirm">Load the Miro map</button><button class="btn" type="button" data-modal-close>Cancel</button></div>');document.getElementById("seed-confirm").onclick=()=>{pushUndo();const d=fromExport(seed);st.d.cells=d.cells;st.d.edges=d.edges;st.d.blocks=d.blocks;st.d.source=d.source;st.d.review=d.review;if(d.cfg){st.d.cfg=Object.assign({},st.d.cfg,{gridW:d.cfg.gridW,gridH:d.cfg.gridH});}rebuildIdx();st.bc=null;st.sel=null;save();closeModal();render();toast("Miro map loaded. Config and Values kept.");};return;}
   if(t.id==="undo"){undo();return;}
   if(t.id==="redo"){redo();return;}
   if(t.dataset.modalClose!==undefined){closeModal();return;}
