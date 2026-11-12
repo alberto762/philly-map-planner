@@ -423,22 +423,62 @@ body{font-size:14px;line-height:1.45}
   .sheet{min-height:420px}
   .saved{display:none}
 }
+
+.top .nav{grid-row:auto;grid-column:auto;background:transparent;border-bottom:0;padding:0}
+.tail{display:flex;align-items:center;gap:8px;flex:none}
+.hdr-tools{gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);margin:0;flex:none}
+.htool{border:0;background:transparent;padding:6px 11px 6px 7px;border-radius:7px;gap:7px}
+.htool:hover{background:var(--surface);border:0}
+.htool[aria-current="true"]{background:rgba(214,173,85,.16)}
+.htool .hi{width:24px;height:24px;font-size:13px;border-radius:6px}
+.htool b{font-size:14px}
+@media (min-width:1400px){
+  .top{flex-wrap:nowrap;padding-top:0;padding-bottom:0;min-height:60px;gap:8px}
+  .top .brand{flex:none}
+  .htool{padding:6px 9px 6px 6px;gap:5px}
+  .htool .hi{border:0;background:transparent;width:auto;height:auto;font-size:14px}
+  .top .brand{align-self:stretch;padding-right:12px;border-right:1px solid var(--line)}
+  .top .brand .plate{display:none}
+  .top .brand h1{font-size:17px;letter-spacing:.07em;white-space:nowrap;color:var(--gold)}
+  .top .brand .bsub{display:block;font-family:var(--font-body,inherit);font-size:10.5px;letter-spacing:.16em;color:var(--label);margin-top:3px}
+  .top .nav{flex:0 1 auto;min-width:0;align-self:stretch}
+  .top .nav .grp{display:none}
+  .top .nav .chev{font-size:14px}
+  .top .nstep{padding:8px 5px 6px;gap:6px}
+  .top .nstep .t b{font-size:13.5px}
+  .top .nstep .t small{display:none}
+  .top .nstep[aria-current="true"] .t small{display:block}
+  .top .nstep .n{width:24px;height:24px}
+  .top .spacer{flex:1 1 0;min-width:4px}
+  .top .tail{align-self:stretch;padding-left:12px;border-left:1px solid var(--line)}
+  .top .saved{max-width:80px;line-height:1.15;white-space:normal;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+  .top .cloud{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  #undo .lbl,#redo .lbl,#export-btn .lbl{display:none}
+  #undo,#redo{width:34px;padding:7px 0}
+}
+@media (min-width:1400px) and (max-width:1559.98px){.top .saved{display:none}}
+@media (min-width:1800px){.top .nstep .t small{display:block}.top .nstep{padding:8px 7px 6px}}
+@media (max-width:1399.98px){
+  .top .nav{order:10;flex:1 1 100%;margin:10px calc(-1 * max(16px,env(safe-area-inset-right,0px))) -10px calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 10px;border-top:1px solid var(--line)}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="app2">
   <header class="top">
-    <div class="brand"><div class="plate" aria-hidden="true"><span>UNION CITY</span></div><h1>Philly Map Planner</h1></div>
+    <div class="brand"><div class="plate" aria-hidden="true"><span>UNION CITY</span></div><h1>Philly Map <span class="bsub">Planner</span></h1></div>
+    <nav class="nav" id="nav" aria-label="Steps"></nav>
     <div class="spacer"></div>
-    <div class="hdr-tools" id="hdr-tools"></div>
-    <span class="saved" id="saved">Saved in this browser</span>
-    <button class="cloud" type="button" id="cloud-btn" hidden></button>
-    <button class="btn" type="button" id="undo" title="Undo (Ctrl+Z)">&#8630;<span class="lbl"> Undo</span></button>
-    <button class="btn" type="button" id="redo" title="Redo (Ctrl+Y)">&#8631;<span class="lbl"> Redo</span></button>
-    <button class="btn primary" type="button" id="export-btn">Export JSON</button>
+    <div class="hdr-tools" id="hdr-tools" role="group" aria-label="Values, Config and Share"></div>
+    <div class="tail">
+      <span class="saved" id="saved">Saved in this browser</span>
+      <button class="cloud" type="button" id="cloud-btn" hidden></button>
+      <button class="btn" type="button" id="undo" title="Undo (Ctrl+Z)">&#8630;<span class="lbl"> Undo</span></button>
+      <button class="btn" type="button" id="redo" title="Redo (Ctrl+Y)">&#8631;<span class="lbl"> Redo</span></button>
+      <button class="btn primary" type="button" id="export-btn" title="Export JSON">Export<span class="lbl"> JSON</span></button>
+    </div>
   </header>
-  <nav class="nav" id="nav" aria-label="Steps"></nav>
   <aside class="rail" aria-label="Map tools">
     <div class="rlab">Area</div>
     <button class="tool" type="button" id="sel-btn" aria-pressed="false" title="Drag over the map to select an area. Shift+drag works too."><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1.5" stroke-dasharray="3 2.6"/></svg><span>Select</span></button>
@@ -537,7 +577,7 @@ function load(){
 }
 let saveTimer=null;
 function save(fromCloud){if(!fromCloud)cloudChanged();clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{st.d.savedAt=new Date().toISOString();localStorage.setItem(STORE,JSON.stringify(st.d));st.savedAt=st.d.savedAt;st.saveErr=false;}catch(_){st.saveErr=true;}renderSaved();},250);}
-function renderSaved(){const el=$("#saved");if(st.saveErr){el.textContent="Not saved in this browser. Export to keep your work.";el.style.color="var(--danger)";return;}el.style.color="";el.textContent=st.savedAt?"Saved in this browser, "+new Date(st.savedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}):"Not saved yet";}
+function renderSaved(){const el=$("#saved");if(st.saveErr){el.textContent="Not saved in this browser. Export to keep your work.";el.style.color="var(--danger)";return;}el.style.color="";el.title="";el.textContent=st.savedAt?"Saved in this browser, "+new Date(st.savedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}):"Not saved yet";}
 function snapshot(){return JSON.stringify({cfg:st.d.cfg,cells:st.d.cells,edges:st.d.edges,blocks:st.d.blocks});}
 function pushUndo(){st.undo.push(snapshot());if(st.undo.length>60)st.undo.shift();st.redo=[];}
 function restore(s){const o=JSON.parse(s);st.d.cfg=o.cfg;st.d.cells=o.cells;st.d.edges=o.edges;st.d.blocks=o.blocks;rebuildIdx();st.bc=null;st.draft=null;st.draftDirty=false;save();render();}
@@ -805,7 +845,7 @@ function renderSide(){
   h+='<span class="chev" aria-hidden="true">›</span><button class="nstep check'+(errs?" bad":"")+'" type="button" data-step="check" aria-current="'+cur("check")+'" title="'+esc(ck.hint)+'"><span class="n">7</span><span class="t"><b>Check</b><small>'+esc(ckSmall)+"</small></span></button>";
   $("#nav").innerHTML=h;
   const ICON={values:"$",config:"⚙",file:"⇅"};
-  $("#hdr-tools").innerHTML=TOOLS.filter(t=>t.id!=="check").map(t=>{const dirty=st.cfgOpen&&st.draftDirty&&(t.id==="values"?st.cfgMode==="values":t.id==="config"&&st.cfgMode!=="values");return'<button class="htool" type="button" data-step="'+t.id+'" aria-current="'+cur(t.id)+'" title="'+esc(t.hint)+'"><span class="hi" aria-hidden="true">'+ICON[t.id]+"</span><span><b>"+esc(t.label)+"</b>"+(dirty?"<small>Not saved yet</small>":"")+"</span></button>";}).join("");
+  $("#hdr-tools").innerHTML=TOOLS.filter(t=>t.id!=="check").map(t=>{const dirty=st.cfgOpen&&st.draftDirty&&(t.id==="values"?st.cfgMode==="values":t.id==="config"&&st.cfgMode!=="values");return'<button class="htool" type="button" data-step="'+t.id+'" aria-current="'+cur(t.id)+'" title="'+esc(t.label+": "+t.hint)+'"><span class="hi" aria-hidden="true">'+ICON[t.id]+"</span><span><b>"+esc(t.label)+"</b>"+(dirty?"<small>Not saved yet</small>":"")+"</span></button>";}).join("");
   const on=$("#nav").querySelector('[aria-current="true"]');if(on&&on.scrollIntoView)on.scrollIntoView({block:"nearest",inline:"nearest"});
 }
 function color(k,code,fb){const it=st.idx[k]&&st.idx[k].get(code);return it&&it.color?it.color:fb;}
