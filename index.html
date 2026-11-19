@@ -626,7 +626,7 @@ function blockData(b){
 }
 function normBlock(x){x=isObj(x)?x:{};const n=v=>v==null||v===""?null:Math.max(0,parseInt(v,10)||0);
   const reqBuy=Array.isArray(x.reqBuy)?x.reqBuy:[];
-  let slots=Array.isArray(x.slots)?x.slots.map(s=>({biz:(s&&s.biz)||"",it:(s&&s.it)||"",ills:s&&Array.isArray(s.ills)?s.ills.slice():(s&&s.it?[s.it]:[]),rec:!!(s&&s.rec),noBuy:!!(s&&s.noBuy),own:(s&&s.own)||""})):null;
+  let slots=Array.isArray(x.slots)?x.slots.map(s=>({biz:(s&&s.biz)||"",it:(s&&s.it)||"",ills:s&&Array.isArray(s.ills)?s.ills.slice():(s&&s.it?[s.it]:[]),rec:!!(s&&s.rec),noBuy:!!(s&&s.noBuy),own:(s&&s.own)||"",rob:(s&&s.rob)||""})):null;
   if(!slots){
     slots=[];
     if(Array.isArray(x.pairs))x.pairs.forEach(p=>slots.push({biz:(p&&p.biz)||"",it:(p&&p.it)||"*"}));
@@ -684,6 +684,7 @@ function issues(){
       if(s.biz&&s.biz!=="*"&&!(I.legal&&I.legal.has(s.biz)))add("error",b.ax,b.ay,'Unknown legal "'+s.biz+'"');
       if(s.it&&s.it!=="*"&&!I.operations.has(s.it))add("error",b.ax,b.ay,'Unknown illegal "'+s.it+'"');
       if(s.own&&!I.owners.has(s.own))add("error",b.ax,b.ay,'Unknown owner "'+s.own+'"');
+      if(s.rob&&!I.robbery.has(s.rob))add("error",b.ax,b.ay,'Unknown robbery level "'+s.rob+'"');
     }
   }
   out.sort((a,b)=>(a.sev===b.sev?0:a.sev==="error"?-1:1)||(a.y-b.y)||(a.x-b.x));
@@ -1097,6 +1098,7 @@ function blockSlotsSec(d,t,bo){
   const legal=list("legal"),ops=list("operations");const opName=c=>c==="*"?"Any illegal":((ops.find(o=>o.code===c)||{}).name||c);
   const slots=d.slots||[];const other=Math.max(0,+d.nonPlay||0);const total=slots.length+other;
   const owners=list("owners");const sameOwner=bo?"Block owner: "+nameOf("owners",bo):"Block owner: none";
+  const robs=list("robbery");const sameRob=d.robbery?"Block robbery: "+nameOf("robbery",d.robbery):"Block robbery: not set";
   const step=(f,v,lab,help)=>'<div class="count-row"><label><b>'+lab+"</b><small>"+help+'</small></label><div class="stepper"><button type="button" data-gs="'+f+'" data-gsd="-1" aria-label="One less">−</button><input type="number" min="0" data-gs="'+f+'" value="'+v+'" aria-label="'+esc(lab)+'"><button type="button" data-gs="'+f+'" data-gsd="1" aria-label="One more">+</button></div></div>';
   let h='<div class="sec"><h3>Buildings</h3>';
   if(t)h+='<p class="note">Filled from the block type <b>'+esc(t.name||t.code)+"</b>. Changing anything here makes it this block's own.</p>";
@@ -1106,7 +1108,7 @@ function blockSlotsSec(d,t,bo){
     return'<div class="gslot"><div class="gslot-head"><b>'+(i+1)+'.</b><select data-gs="biz" data-i="'+i+'" aria-label="Legal '+(i+1)+'"><option value="">Random legal</option>'+legal.map(l=>'<option value="'+esc(l.code)+'"'+(s.biz===l.code?" selected":"")+">"+esc(legalName(l))+"</option>").join("")+"</select></div>"
       +'<div class="chips">'+(ills.length?ills.map(c=>'<span class="chip2 on">'+esc(opName(c))+'<button type="button" class="chipx" data-gs="illdel" data-i="'+i+'" data-c="'+esc(c)+'" title="Remove" aria-label="Remove">✕</button></span>').join(""):'<span class="muted" style="font-size:12.5px">Legal only</span>')
       +'<select class="addop" data-gs="illadd" data-i="'+i+'" aria-label="Add an illegal"><option value="">+ illegal</option>'+(ills.indexOf("*")<0?'<option value="*">Any illegal</option>':"")+ops.filter(o=>ills.indexOf(o.code)<0).map(o=>'<option value="'+esc(o.code)+'">'+esc(o.name||o.code)+"</option>").join("")+"</select></div>"
-      +'<div class="gslot-flags"><label title="Crews can be recruited here"><input type="checkbox" data-gs="rec" data-i="'+i+'"'+(s.rec?" checked":"")+'>Recruitment site</label><label title="Off: the player can never buy it"><input type="checkbox" data-gs="buy" data-i="'+i+'"'+(s.noBuy?"":" checked")+'>Can be bought</label></div><label class="gslot-own">Owner<select data-gs="own" data-i="'+i+'" aria-label="Owner of building '+(i+1)+'"><option value="">'+esc(sameOwner)+"</option>"+owners.map(o=>'<option value="'+esc(o.code)+'"'+(s.own===o.code?" selected":"")+">"+esc(o.name||o.code)+"</option>").join("")+"</select></label></div>";}).join("");
+      +'<div class="gslot-flags"><label title="Crews can be recruited here"><input type="checkbox" data-gs="rec" data-i="'+i+'"'+(s.rec?" checked":"")+'>Recruitment site</label><label title="Off: the player can never buy it"><input type="checkbox" data-gs="buy" data-i="'+i+'"'+(s.noBuy?"":" checked")+'>Can be bought</label></div><label class="gslot-own">Owner<select data-gs="own" data-i="'+i+'" aria-label="Owner of building '+(i+1)+'"><option value="">'+esc(sameOwner)+"</option>"+owners.map(o=>'<option value="'+esc(o.code)+'"'+(s.own===o.code?" selected":"")+">"+esc(o.name||o.code)+"</option>").join("")+'</select></label><label class="gslot-own">Robbery<select data-gs="rob" data-i="'+i+'" aria-label="Robbery of building '+(i+1)+'"><option value="">'+esc(sameRob)+"</option>"+robs.map(r=>'<option value="'+esc(r.code)+'"'+(s.rob===r.code?" selected":"")+">"+esc(r.name||r.code)+"</option>").join("")+"</select></label></div>";}).join("");
   const ill=slots.filter(s=>(s.ills||[]).length).length,only=slots.length-ill;
   const warn=ill>MAX_LI?"More than "+MAX_LI+" legal with illegal.":only>MAX_LO?"More than "+MAX_LO+" legal only.":"";
   h+='<p class="'+(warn?"note warn":"muted")+'" style="font-size:12.5px">'+esc(warn||(ill+" with illegal · "+only+" legal only · "+other+" other"))+"</p>";
@@ -1115,7 +1117,7 @@ function blockSlotsSec(d,t,bo){
 }
 function gsAction(t){
   const f=t.dataset.gs,i=+t.dataset.i,dd=+(t.dataset.gsd||0);
-  if((f==="illadd"||f==="biz"||f==="own")&&t.tagName!=="SELECT")return;
+  if((f==="illadd"||f==="biz"||f==="own"||f==="rob")&&t.tagName!=="SELECT")return;
   editBlock(d=>{d.bt=null;const S=d.slots;const other=Math.max(0,+d.nonPlay||0);
     const val=()=>Math.max(0,parseInt(t.value,10)||0);
     if(f==="total"){const n=dd?S.length+other+dd:val();d.nonPlay=Math.max(0,n-S.length);}
@@ -1126,7 +1128,8 @@ function gsAction(t){
     else if(f==="illdel")S[i].ills=(S[i].ills||[]).filter(c=>c!==t.dataset.c);
     else if(f==="rec")S[i].rec=t.checked;
     else if(f==="buy")S[i].noBuy=!t.checked;
-    else if(f==="own")S[i].own=t.value;});
+    else if(f==="own")S[i].own=t.value;
+    else if(f==="rob")S[i].rob=t.value;});
 }
 function gameplayPanel(C){
   const B=computeBlocks();st.gmode="select";
@@ -1144,7 +1147,7 @@ function gameplayPanel(C){
   const ro=list("robbery");
   const opt=cur=>'<option value="">Not set</option>'+ro.map(r=>'<option value="'+esc(r.code)+'"'+(cur===r.code?" selected":"")+">"+esc(r.name||r.code)+"</option>").join("");
   let more='<dl class="kv"><dt>Lots</dt><dd>'+b.cells.length+"</dd><dt>Building look</dt><dd>"+(Object.keys(types).length?esc(Object.entries(types).map(([k,v])=>v+"× "+k).join(", ")):"none yet")+"</dd>"+"</dl>";
-  more+='<div class="field"><label for="f-rob">Robbery, playable buildings</label><select id="f-rob">'+opt(d.robbery||"")+'</select></div><div class="field"><label for="f-other">Robbery, other buildings</label><select id="f-other">'+opt(d.other||"")+"</select></div>";
+  more+='<div class="field"><label for="f-rob">Robbery, playable buildings (each building can change it)</label><select id="f-rob">'+opt(d.robbery||"")+'</select></div><div class="field"><label for="f-other">Robbery, other buildings</label><select id="f-other">'+opt(d.other||"")+"</select></div>";
   more+='<div class="field"><label for="f-notes">Notes (not imported)</label><textarea id="f-notes">'+esc(d.notes)+"</textarea></div>";
   more+='<div class="field"><label for="f-bt">Block type (optional)</label><div class="slot"><select id="f-bt" aria-label="Block type"><option value="">None</option>'+T.map(x=>'<option value="'+esc(x.code)+'"'+(raw.bt===x.code?" selected":"")+">"+esc(x.name||x.code)+"</option>").join("")+'<option value="__new">+ New block type…</option></select>'+(t?'<button class="btn sm" type="button" data-btedit="'+esc(t.code)+'">Edit</button>':"")+'</div><small>A block type fills the buildings above for you.</small></div>';
   if(bd&&bd.key!==b.anchor)more+='<p class="note">This data was saved when the block had another shape. The next edit moves it to '+esc(cellName(b.ax,b.ay))+".</p>";
@@ -1731,7 +1734,7 @@ function remap(ren,d){
   const m=(k,v)=>v&&ren[k][v]!==undefined?ren[k][v]:v;
   for(const c of Object.values(st.d.cells)){if(c.t)c.t=m("terrain",c.t);if(c.b)c.b=m("buildings",c.b);if(c.m)c.m=m("markers",c.m);if(c.n)c.n=m("neighborhoods",c.n);if(c.o)c.o=m("owners",c.o);}
   for(const k of Object.keys(st.d.edges))st.d.edges[k]=m("streets",st.d.edges[k]);
-  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;b.tpl=m("templates",b.tpl);if(Array.isArray(b.illegal))b.illegal=b.illegal.map(x=>m("operations",x));b.robbery=m("robbery",b.robbery);b.other=m("robbery",b.other);b.reqIll=m("businesses",b.reqIll);if(Array.isArray(b.reqBuy))b.reqBuy=b.reqBuy.map(x=>m("businesses",x));if(Array.isArray(b.slots))b.slots.forEach(q=>{if(q&&q.own)q.own=m("owners",q.own);});}
+  for(const b of Object.values(st.d.blocks)){if(!isObj(b))continue;b.tpl=m("templates",b.tpl);if(Array.isArray(b.illegal))b.illegal=b.illegal.map(x=>m("operations",x));b.robbery=m("robbery",b.robbery);b.other=m("robbery",b.other);b.reqIll=m("businesses",b.reqIll);if(Array.isArray(b.reqBuy))b.reqBuy=b.reqBuy.map(x=>m("businesses",x));if(Array.isArray(b.slots))b.slots.forEach(q=>{if(q&&q.own)q.own=m("owners",q.own);if(q&&q.rob)q.rob=m("robbery",q.rob);});}
   for(const n of d.neighborhoods||[])n.district=m("districts",n.district);
   for(const b of d.businesses||[]){b.op=m("operations",b.op);b.legal=m("legal",b.legal);}
   for(const l of d.legal||[])if(isObj(l.ill)){const n={};for(const k of Object.keys(l.ill))n[m("operations",k)]=l.ill[k];l.ill=n;}
@@ -1763,7 +1766,7 @@ function buildExport(){
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=cellAt(x,y);cells.push({cell:cellName(x,y),x,y,ground:terrainAt(x,y),lot:isLot(x,y),building:c.b||null,marker:null,neighborhood:c.n||null,owner:c.o||null});}
   const edges=Object.keys(st.d.edges).map(k=>{const p=k.split("_");return{dir:p[0],x:+p[1],y:+p[2],street:st.d.edges[k],between:edgeLabel(k)};});
   const blocks=computeBlocks().blocks.map(b=>{const bd=blockData(b);const d=normBlock(bd?bd.data:null);const ns=blockNbs(b);const nb=ns.length===1?ns[0]:null;const it=nb&&st.idx.neighborhoods.get(nb);
-    return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,template:d.tpl,blockType:d.bt,legal:d.legal,illegalCount:d.ill,notPlayable:d.nonPlay,buildings:blockTotal(d),purchasable:d.legal,illegal:d.illegal,robbery:d.robbery,otherRobbery:d.other,notes:d.notes,requiredIllegal:d.reqIll,requiredPurchase:d.reqBuy,random:d.buys.filter(x=>!x).length,slots:d.slots.map(s=>({legal:s.biz||"*",illegal:s.it||"",illegalPool:(s.ills||[]).filter(c=>c!=="*"),recruitment:!!s.rec,notForSale:!!s.noBuy,owner:s.own||null})),values:d.vals,valueList:pairs(d.vals)};});
+    return{id:cellName(b.ax,b.ay),cells:b.cells.map(([x,y])=>cellName(x,y)),neighborhood:nb,district:it&&it.district||null,template:d.tpl,blockType:d.bt,legal:d.legal,illegalCount:d.ill,notPlayable:d.nonPlay,buildings:blockTotal(d),purchasable:d.legal,illegal:d.illegal,robbery:d.robbery,otherRobbery:d.other,notes:d.notes,requiredIllegal:d.reqIll,requiredPurchase:d.reqBuy,random:d.buys.filter(x=>!x).length,slots:d.slots.map(s=>({legal:s.biz||"*",illegal:s.it||"",illegalPool:(s.ills||[]).filter(c=>c!=="*"),recruitment:!!s.rec,notForSale:!!s.noBuy,owner:s.own||null,robbery:s.rob||null})),values:d.vals,valueList:pairs(d.vals)};});
   return{format:"philly-map-planner",version:1,exportedAt:new Date().toISOString(),source:st.d.source||null,grid:{width:W,height:H,cellMeters:+st.d.cfg.cellMeters||25,roadWidth:+st.d.cfg.roadWidth||14,sidewalk:+st.d.cfg.sidewalk||3,origin:"A1 is the top-left cell; x grows right, y grows down"},config:st.d.cfg,economy:economyExport(),cells,edges,blocks,review:st.d.review||[],issues:issues().map(i=>({severity:i.sev,cell:i.at,text:i.text}))};
 }
 function growGrid(side,n){
